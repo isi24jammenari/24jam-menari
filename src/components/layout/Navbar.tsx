@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Instagram } from "lucide-react"; // Pastikan sudah install lucide-react atau gunakan SVG biasa
+import { useRouter } from "next/navigation";
+import { Instagram } from "lucide-react";
 
 export default function Navbar() {
-  const pathname = usePathname();
+  const router = useRouter();
 
   return (
     <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border shadow-sm">
@@ -15,8 +15,9 @@ export default function Navbar() {
           <img src="/24jammenari.png" alt="Logo" className="h-10 md:h-12 w-auto object-contain" />
         </Link>
 
-        {/* Instagram Link (Placeholder) */}
-        <div className="flex items-center gap-4">
+        {/* Action Bar Kanan */}
+        <div className="flex items-center gap-3 sm:gap-6">
+          {/* Instagram Link */}
           <a 
             href="https://instagram.com/placeholder" 
             target="_blank" 
@@ -25,6 +26,16 @@ export default function Navbar() {
           >
             <Instagram size={22} />
           </a>
+
+          {/* Tombol Akses Akun (Ramah Lansia) */}
+          <button
+            onClick={() => router.push("/?login=true")}
+            className="flex items-center gap-2 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground border border-primary/30 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-semibold transition-all text-sm sm:text-base shadow-sm"
+          >
+            <span className="text-lg">👤</span>
+            <span className="hidden sm:inline">Masuk Akun</span>
+            <span className="sm:hidden">Masuk</span>
+          </button>
         </div>
       </div>
     </header>

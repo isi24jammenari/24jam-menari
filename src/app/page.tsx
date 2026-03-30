@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import PageWrapper from "@/components/layout/PageWrapper";
 import SectionTitle from "@/components/shared/SectionTitle";
 import VenueCard from "@/components/booking/VenueCard";
@@ -14,10 +14,11 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function HomePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isLoggedIn, userName, paymentStatus, setUser, setPaymentStatus } =
     useBookingStore();
 
@@ -25,6 +26,15 @@ export default function HomePage() {
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [loginError, setLoginError] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  // Logika deteksi tombol "Masuk Akun" dari Navbar via URL Query
+  useEffect(() => {
+    if (searchParams.get("login") === "true") {
+      setShowLoginDialog(true);
+      // Bersihkan URL agar dialog tidak terbuka otomatis saat di-refresh
+      router.replace("/", { scroll: false });
+    }
+  }, [searchParams, router]);
 
   // Simulasi login — demo statis
   const handleLogin = () => {
@@ -85,13 +95,18 @@ export default function HomePage() {
           <div className="h-px w-24 bg-gradient-to-l from-transparent to-accent/50" />
         </div>
 
-        {/* Tombol Akses (Tengah) */}
+        {/* Tombol Akses (Tengah - Scroll ke Venue) */}
         <div className="flex justify-center mb-10">
           <button
-            onClick={() => setShowLoginDialog(true)}
+            onClick={() => {
+              const venueSection = document.getElementById("venue-section");
+              if (venueSection) {
+                venueSection.scrollIntoView({ behavior: "smooth" });
+              }
+            }}
             className="group relative flex items-center gap-3 bg-primary text-primary-foreground text-xl font-bold px-10 py-5 rounded-full hover:scale-105 transition-all shadow-xl shadow-primary/20"
           >
-            <span className="relative z-10">Mulai Mendaftar</span>
+            <span className="relative z-10">Mulai Mendaftar ↓</span>
             <div className="absolute inset-0 rounded-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
         </div>
@@ -160,8 +175,8 @@ export default function HomePage() {
 
       </section>
 
-      {/* Divider Venue */}
-      <div className="flex items-center gap-6 mb-12">
+      {/* Divider Venue Diberi ID venue-section & scroll-mt agar scroll pas */}
+      <div id="venue-section" className="flex items-center gap-6 mb-12 scroll-mt-24">
         <div className="flex-1 h-px bg-gradient-to-r from-transparent to-border" />
         <h3 className="text-accent tracking-widest uppercase text-sm font-bold">Pilih Venue</h3>
         <div className="flex-1 h-px bg-gradient-to-l from-transparent to-border" />
