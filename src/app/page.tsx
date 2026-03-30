@@ -64,16 +64,23 @@ function HomeContent() {
       {/* Hero */}
       <section className="text-center pt-4 pb-12 px-4">
         
-        {/* Jejeran Logo Penyelenggara (Di-highlight Oranye/Primary) */}
-        <div className="flex items-center justify-center gap-3 sm:gap-4 mb-14 max-w-fit mx-auto overflow-x-auto py-3 px-6 rounded-2xl border border-primary/50 bg-primary/10 shadow-[0_0_15px_rgba(194,118,55,0.15)]">
-          <img src="/24jammenari.png" alt="24jam" className="h-6 w-auto hover:scale-105 transition-transform" />
-          <div className="w-px h-6 bg-primary/30 mx-1" />
-          <img src="/tutwuri.png" alt="tutwuri" className="h-6 w-auto" />
-          <img src="/kemendisintek.png" alt="kemendisintek" className="h-6 w-auto" />
-          <img src="/isi.png" alt="isi" className="h-6 w-auto" />
-          <img src="/himaswariska.png" alt="himaswariska" className="h-6 w-auto" />
-          <img src="/himakorin.png" alt="himakorin" className="h-6 w-auto" />
-          <img src="/sjs.png" alt="sjs" className="h-6 w-auto" />
+        {/* 1. Jejeran Logo Penyelenggara (Poin 3) */}
+        <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-14 max-w-fit mx-auto py-4 px-6 rounded-2xl border border-primary/30 bg-primary/5 shadow-sm">
+          {/* Baris 1: Logo Utama & Sekat */}
+          <div className="flex items-center gap-4">
+            <img src="/24jammenari.png" alt="24jam" className="h-8 md:h-10 w-auto object-contain" />
+            <div className="w-px h-8 bg-primary/30 mx-1 hidden md:block" />
+          </div>
+          
+          {/* Baris 2 (Mobile) / Lanjutan (Desktop): 6 Logo dalam Grid 3x2 di Mobile */}
+          <div className="grid grid-cols-3 md:flex items-center gap-4 sm:gap-6">
+            <img src="/tutwuri.png" alt="tutwuri" className="h-6 md:h-8 w-auto object-contain mx-auto" />
+            <img src="/kemendisintek.png" alt="kemendisintek" className="h-6 md:h-8 w-auto object-contain mx-auto" />
+            <img src="/isi.png" alt="isi" className="h-6 md:h-8 w-auto object-contain mx-auto" />
+            <img src="/himaswariska.png" alt="himaswariska" className="h-6 md:h-8 w-auto object-contain mx-auto" />
+            <img src="/himakorin.png" alt="himakorin" className="h-6 md:h-8 w-auto object-contain mx-auto" />
+            <img src="/sjs.png" alt="sjs" className="h-6 md:h-8 w-auto object-contain mx-auto" />
+          </div>
         </div>
 
         {/* Teks Utama (Urutan Direvisi) */}

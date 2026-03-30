@@ -21,7 +21,6 @@ export type SlotRegistrant = {
   namaKontak: string;
   cp: string;
   judulTari: string;
-  durasiKarya: string;
   formStatus: "lengkap" | "sebagian" | "kosong";
 };
 

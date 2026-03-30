@@ -85,6 +85,7 @@
 
 /* Utility teks tradisional */
 .text-tradisional {
-  font-family: Georgia, "Times New Roman", serif;
-  letter-spacing: 0.03em;
+  font-family: "Playfair Display", "Baskerville", "Palatino Linotype", serif;
+  letter-spacing: 0.02em;
+  font-variant-numeric: lining-nums; /* Memastikan angka sejajar dengan huruf */
 }

@@ -15,6 +15,13 @@ export default function Navbar() {
           <img src="/24jammenari.png" alt="Logo" className="h-10 md:h-12 w-auto object-contain" />
         </Link>
 
+        {/* Portal Text - Desktop Only (Poin 4) */}
+        <div className="hidden lg:block absolute left-1/2 -translate-x-1/2">
+          <p className="text-sm font-medium tracking-widest text-muted-foreground uppercase italic">
+            Portal Pendaftaran Penampil 24 Jam Menari Surakarta
+          </p>
+        </div>
+
         {/* Action Bar Kanan */}
         <div className="flex items-center gap-3 sm:gap-6">
           {/* Instagram Link */}
