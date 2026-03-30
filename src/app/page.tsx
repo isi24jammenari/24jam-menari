@@ -65,30 +65,34 @@ function HomeContent() {
       {/* Hero */}
       <section className="text-center pt-4 pb-12 px-4">
         
-        {/* Jejeran Logo Penyelenggara (Optimized WebP & 2 Baris di Mobile) */}
-        <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-14 max-w-fit mx-auto py-4 px-6 rounded-2xl border border-primary/30 bg-primary/5 shadow-sm">
-          {/* Baris 1: Logo Utama & Sekat */}
-          <div className="flex items-center gap-4">
+        {/* Jejeran Logo Penyelenggara (Dinamis: 1 Baris di layar lebar, Grid 3x2 di layar sempit) */}
+        <div className="flex items-center justify-center gap-3 sm:gap-5 mb-14 max-w-fit mx-auto py-3 px-4 sm:px-6 rounded-2xl border border-primary/30 bg-primary/5 shadow-sm">
+          
+          {/* Bagian Kiri: Logo Utama */}
+          <div className="flex-shrink-0">
             <Image 
               src="/24jammenari.webp" 
               alt="Logo 24 Jam Menari" 
-              width={160} 
-              height={40} 
+              width={100} 
+              height={100} 
               priority 
-              className="h-8 md:h-10 w-auto object-contain"
+              className="h-12 sm:h-16 md:h-20 w-auto object-contain"
             />
-            <div className="w-px h-8 bg-primary/30 mx-1 hidden md:block" />
           </div>
           
-          {/* Baris 2 (Mobile) / Lanjutan (Desktop): 6 Logo dalam Grid 3x2 di Mobile */}
-          <div className="grid grid-cols-3 md:flex items-center gap-4 sm:gap-6">
-            <Image src="/tutwuri.webp" alt="Tut Wuri Handayani" width={40} height={40} priority className="h-6 md:h-8 w-auto object-contain mx-auto" />
-            <Image src="/kemendisintek.webp" alt="Kemendisintek" width={40} height={40} priority className="h-6 md:h-8 w-auto object-contain mx-auto" />
-            <Image src="/isi.webp" alt="ISI Surakarta" width={40} height={40} priority className="h-6 md:h-8 w-auto object-contain mx-auto" />
-            <Image src="/himaswariska.webp" alt="Himaswariska" width={40} height={40} priority className="h-6 md:h-8 w-auto object-contain mx-auto" />
-            <Image src="/himakorin.webp" alt="Himakorin" width={40} height={40} priority className="h-6 md:h-8 w-auto object-contain mx-auto" />
-            <Image src="/sjs.webp" alt="Solo Java Solo" width={40} height={40} priority className="h-6 md:h-8 w-auto object-contain mx-auto" />
+          {/* Bagian Tengah: Sekat Vertikal */}
+          <div className="w-px h-12 sm:h-16 md:h-20 bg-primary/30 flex-shrink-0" />
+          
+          {/* Bagian Kanan: Dinamis (Grid di HP, Flex Baris di PC/Tablet) */}
+          <div className="grid grid-cols-3 lg:flex lg:flex-nowrap gap-x-3 gap-y-3 sm:gap-4 md:gap-5 items-center justify-items-center">
+            <Image src="/tutwuri.webp" alt="Tut Wuri Handayani" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
+            <Image src="/kemendisintek.webp" alt="Kemendisintek" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
+            <Image src="/isi.webp" alt="ISI Surakarta" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
+            <Image src="/himaswariska.webp" alt="Himaswariska" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
+            <Image src="/himakorin.webp" alt="Himakorin" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
+            <Image src="/sjs.webp" alt="Solo Java Solo" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
           </div>
+          
         </div>
 
         {/* Teks Utama (Urutan Direvisi) */}
