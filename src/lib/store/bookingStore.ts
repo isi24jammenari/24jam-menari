@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { SlotRegistrant } from "../data/venues"; // Import tipe data yang sudah kita update
 
 export type BookingState = {
   selectedVenueId: string | null;
@@ -6,6 +7,9 @@ export type BookingState = {
   selectedVenueName: string | null;
   selectedSlotTime: string | null;
   selectedSlotPrice: number | null;
+
+  // Tambahkan state untuk menyimpan data formulir pendaftar
+  registrant: SlotRegistrant | null;
 
   paymentStatus: "idle" | "pending" | "success" | "failed" | "expired";
   timerExpiry: number | null;
@@ -16,6 +20,10 @@ export type BookingState = {
 
   selectVenue: (id: string, name: string) => void;
   selectSlot: (id: string, time: string, price: number) => void;
+  
+  // Tambahkan fungsi untuk menyimpan data pendaftar
+  setRegistrant: (data: SlotRegistrant) => void;
+  
   startPaymentTimer: () => void;
   setPaymentStatus: (status: BookingState["paymentStatus"]) => void;
   setUser: (email: string, name: string) => void;
@@ -29,6 +37,10 @@ export const useBookingStore = create<BookingState>((set) => ({
   selectedVenueName: null,
   selectedSlotTime: null,
   selectedSlotPrice: null,
+  
+  // Inisialisasi registrant
+  registrant: null,
+
   paymentStatus: "idle",
   timerExpiry: null,
   userEmail: null,
@@ -40,6 +52,10 @@ export const useBookingStore = create<BookingState>((set) => ({
 
   selectSlot: (id, time, price) =>
     set({ selectedSlotId: id, selectedSlotTime: time, selectedSlotPrice: price }),
+
+  // Implementasi fungsi setRegistrant
+  setRegistrant: (data) => 
+    set({ registrant: data }),
 
   startPaymentTimer: () =>
     set({ timerExpiry: Date.now() + 15 * 60 * 1000, paymentStatus: "pending" }),
@@ -58,6 +74,7 @@ export const useBookingStore = create<BookingState>((set) => ({
       selectedVenueName: null,
       selectedSlotTime: null,
       selectedSlotPrice: null,
+      registrant: null, // Reset juga data pendaftar
       paymentStatus: "idle",
       timerExpiry: null,
     }),

@@ -20,7 +20,6 @@ export default function RundownTab() {
           "Narahubung": r?.namaKontak ?? "-",
           "CP": r?.cp ?? "-",
           "Judul Tari": r?.judulTari ?? "-",
-          "Durasi": r?.durasiKarya ?? "-",
           "Status Formulir": r?.formStatus ?? "-",
         };
       });
@@ -28,7 +27,7 @@ export default function RundownTab() {
       ws["!cols"] = [
         { wch: 20 }, { wch: 16 }, { wch: 10 }, { wch: 32 },
         { wch: 16 }, { wch: 22 }, { wch: 16 }, { wch: 28 },
-        { wch: 12 }, { wch: 14 },
+        { wch: 14 },
       ];
       XLSX.utils.book_append_sheet(wb, ws, venue.name);
     });
@@ -79,7 +78,7 @@ export default function RundownTab() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-muted border-b border-border">
-                  {["Jam", "Status", "Nama Kelompok", "Kota", "Judul Tari", "Durasi", "Formulir"].map((h) => (
+                  {["Jam", "Status", "Nama Kelompok", "Kota", "Judul Tari", "Formulir"].map((h) => (
                     <th key={h} className="text-left px-4 py-3 font-semibold text-muted-foreground whitespace-nowrap">
                       {h}
                     </th>
@@ -114,9 +113,6 @@ export default function RundownTab() {
                       </td>
                       <td className="px-4 py-3 text-foreground">
                         {r?.judulTari ?? <span className="text-muted-foreground italic">—</span>}
-                      </td>
-                      <td className="px-4 py-3 text-foreground whitespace-nowrap">
-                        {r?.durasiKarya ?? <span className="text-muted-foreground italic">—</span>}
                       </td>
                       <td className="px-4 py-3">
                         {formBadge(r?.formStatus)}
