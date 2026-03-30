@@ -63,12 +63,14 @@ export default function RundownTab() {
 
       {venues.map((venue) => (
         <div key={venue.id} className="batik-border rounded-xl overflow-hidden">
-          <div className="bg-primary px-5 py-3 flex items-center gap-3">
-            <span className="text-2xl">{venue.icon}</span>
+          <div className="bg-primary px-5 py-3 flex items-center flex-wrap gap-3">
             <span className="text-tradisional text-lg font-bold text-primary-foreground">
               {venue.name}
             </span>
-            <span className="ml-auto text-sm text-primary-foreground/70">
+            <span className="text-xs font-bold bg-primary-foreground/20 text-primary-foreground px-2 py-0.5 rounded-full">
+              {venue.festivalName}
+            </span>
+            <span className="ml-auto text-sm text-primary-foreground/80 font-medium">
               {venue.slots.filter((s) => s.isBooked).length} / {venue.slots.length} terisi
             </span>
           </div>

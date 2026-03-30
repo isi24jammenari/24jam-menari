@@ -81,12 +81,16 @@ export default function OverviewTab() {
             <CardContent className="p-5 space-y-3">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl">{venue.icon}</span>
                   <div>
-                    <p className="text-tradisional text-lg font-bold text-primary">
-                      {venue.name}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="text-tradisional text-lg font-bold text-primary">
+                        {venue.name}
+                      </p>
+                      <span className="text-xs font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                        {venue.festivalName}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-0.5">
                       {bookedSlots} terisi · {emptySlots} kosong
                     </p>
                   </div>
@@ -102,9 +106,9 @@ export default function OverviewTab() {
               <div className="space-y-1">
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>Tingkat pengisian</span>
-                  <span>{fillPercent}%</span>
+                  <span>{fillPercent || 0}%</span>
                 </div>
-                <Progress value={fillPercent} className="h-3" />
+                <Progress value={fillPercent || 0} className="h-3" />
               </div>
 
               {/* Grid slot mini dengan nama */}

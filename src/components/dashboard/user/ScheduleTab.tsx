@@ -66,12 +66,14 @@ export default function ScheduleTab() {
           {venues.map((venue) => (
             <div key={venue.id} className="batik-border rounded-xl overflow-hidden">
               {/* Header venue */}
-              <div className="bg-card px-5 py-3 border-b border-border flex items-center gap-3">
-                <span className="text-2xl">{venue.icon}</span>
+              <div className="bg-card px-5 py-3 border-b border-border flex items-center flex-wrap gap-3">
                 <span className="text-tradisional text-lg font-bold text-primary">
                   {venue.name}
                 </span>
-                <span className="ml-auto text-sm text-muted-foreground">
+                <span className="text-xs font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                  {venue.festivalName}
+                </span>
+                <span className="ml-auto text-sm text-muted-foreground font-medium">
                   {venue.slots.filter((s) => !s.isBooked).length} slot tersedia
                 </span>
               </div>
@@ -180,7 +182,7 @@ export default function ScheduleTab() {
                   <option value="">— Pilih venue —</option>
                   {venues.map((v) => (
                     <option key={v.id} value={v.id}>
-                      {v.icon} {v.name}
+                      {v.name} ({v.festivalName})
                     </option>
                   ))}
                 </select>
