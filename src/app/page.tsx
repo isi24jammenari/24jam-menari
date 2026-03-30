@@ -14,9 +14,10 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 
-export default function HomePage() {
+// 1. Pindahkan seluruh isi halaman ke dalam komponen HomeContent
+function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { isLoggedIn, userName, paymentStatus, setUser, setPaymentStatus } =
@@ -59,7 +60,7 @@ export default function HomePage() {
   };
 
   return (
-    <PageWrapper>
+    <>
       {/* Hero */}
       <section className="text-center pt-4 pb-12 px-4">
         
@@ -186,7 +187,7 @@ export default function HomePage() {
       <section className="mt-6 max-w-5xl mx-auto pb-12">
         <SectionTitle
           title="Venue Penampilan"
-          subtitle="Pilih salah satu dari empat venue berikut untuk melihat ketersediaan jam show."
+          subtitle="Pilih salah satu dari venue berikut untuk melihat ketersediaan jam show."
           className="mb-8"
         />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -282,6 +283,17 @@ export default function HomePage() {
           </div>
         </DialogContent>
       </Dialog>
+    </>
+  );
+}
+
+// 2. Komponen Utama membungkus HomeContent dengan Suspense dan PageWrapper
+export default function HomePage() {
+  return (
+    <PageWrapper>
+      <Suspense fallback={<div className="min-h-[50vh] flex items-center justify-center text-primary font-medium">Memuat Halaman...</div>}>
+        <HomeContent />
+      </Suspense>
     </PageWrapper>
   );
 }
