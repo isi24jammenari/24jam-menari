@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect, Suspense } from "react";
+import Image from "next/image";
 
 // 1. Pindahkan seluruh isi halaman ke dalam komponen HomeContent
 function HomeContent() {
@@ -64,22 +65,29 @@ function HomeContent() {
       {/* Hero */}
       <section className="text-center pt-4 pb-12 px-4">
         
-        {/* 1. Jejeran Logo Penyelenggara (Poin 3) */}
+        {/* Jejeran Logo Penyelenggara (Optimized WebP & 2 Baris di Mobile) */}
         <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-14 max-w-fit mx-auto py-4 px-6 rounded-2xl border border-primary/30 bg-primary/5 shadow-sm">
           {/* Baris 1: Logo Utama & Sekat */}
           <div className="flex items-center gap-4">
-            <img src="/24jammenari.png" alt="24jam" className="h-8 md:h-10 w-auto object-contain" />
+            <Image 
+              src="/24jammenari.webp" 
+              alt="Logo 24 Jam Menari" 
+              width={160} 
+              height={40} 
+              priority 
+              className="h-8 md:h-10 w-auto object-contain"
+            />
             <div className="w-px h-8 bg-primary/30 mx-1 hidden md:block" />
           </div>
           
           {/* Baris 2 (Mobile) / Lanjutan (Desktop): 6 Logo dalam Grid 3x2 di Mobile */}
           <div className="grid grid-cols-3 md:flex items-center gap-4 sm:gap-6">
-            <img src="/tutwuri.png" alt="tutwuri" className="h-6 md:h-8 w-auto object-contain mx-auto" />
-            <img src="/kemendisintek.png" alt="kemendisintek" className="h-6 md:h-8 w-auto object-contain mx-auto" />
-            <img src="/isi.png" alt="isi" className="h-6 md:h-8 w-auto object-contain mx-auto" />
-            <img src="/himaswariska.png" alt="himaswariska" className="h-6 md:h-8 w-auto object-contain mx-auto" />
-            <img src="/himakorin.png" alt="himakorin" className="h-6 md:h-8 w-auto object-contain mx-auto" />
-            <img src="/sjs.png" alt="sjs" className="h-6 md:h-8 w-auto object-contain mx-auto" />
+            <Image src="/tutwuri.webp" alt="Tut Wuri Handayani" width={40} height={40} priority className="h-6 md:h-8 w-auto object-contain mx-auto" />
+            <Image src="/kemendisintek.webp" alt="Kemendisintek" width={40} height={40} priority className="h-6 md:h-8 w-auto object-contain mx-auto" />
+            <Image src="/isi.webp" alt="ISI Surakarta" width={40} height={40} priority className="h-6 md:h-8 w-auto object-contain mx-auto" />
+            <Image src="/himaswariska.webp" alt="Himaswariska" width={40} height={40} priority className="h-6 md:h-8 w-auto object-contain mx-auto" />
+            <Image src="/himakorin.webp" alt="Himakorin" width={40} height={40} priority className="h-6 md:h-8 w-auto object-contain mx-auto" />
+            <Image src="/sjs.webp" alt="Solo Java Solo" width={40} height={40} priority className="h-6 md:h-8 w-auto object-contain mx-auto" />
           </div>
         </div>
 
