@@ -11,14 +11,8 @@ export default function Navbar() {
     <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border shadow-sm">
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <img src="/24jammenari.png" alt="Logo" className="h-10 w-auto object-contain" />
-          <div className="hidden sm:block">
-            <p className="text-tradisional font-bold text-lg text-primary leading-none">
-              24 Jam Menari
-            </p>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">Pendaftaran Penampilan</p>
-          </div>
+        <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
+          <img src="/24jammenari.png" alt="Logo" className="h-10 md:h-12 w-auto object-contain" />
         </Link>
 
         {/* Instagram Link (Placeholder) */}

@@ -53,10 +53,10 @@ export default function HomePage() {
       {/* Hero */}
       <section className="text-center pt-4 pb-12 px-4">
         
-        {/* Jejeran Logo Penyelenggara (Sangat Kecil & Bersih) */}
-        <div className="flex items-center justify-center gap-3 sm:gap-4 mb-12 opacity-80 max-w-fit mx-auto overflow-x-auto py-2 border-b border-border/50">
-          <img src="/24jammenari.png" alt="24jam" className="h-6 w-auto grayscale hover:grayscale-0 transition" />
-          <div className="w-px h-4 bg-border" />
+        {/* Jejeran Logo Penyelenggara (Di-highlight Oranye/Primary) */}
+        <div className="flex items-center justify-center gap-3 sm:gap-4 mb-14 max-w-fit mx-auto overflow-x-auto py-3 px-6 rounded-2xl border border-primary/50 bg-primary/10 shadow-[0_0_15px_rgba(194,118,55,0.15)]">
+          <img src="/24jammenari.png" alt="24jam" className="h-6 w-auto hover:scale-105 transition-transform" />
+          <div className="w-px h-6 bg-primary/30 mx-1" />
           <img src="/tutwuri.png" alt="tutwuri" className="h-6 w-auto" />
           <img src="/kemendisintek.png" alt="kemendisintek" className="h-6 w-auto" />
           <img src="/isi.png" alt="isi" className="h-6 w-auto" />
@@ -65,15 +65,15 @@ export default function HomePage() {
           <img src="/sjs.png" alt="sjs" className="h-6 w-auto" />
         </div>
 
-        {/* Teks Utama (Tanpa Logo Besar) */}
-        <div className="space-y-2 mb-10">
-          <h1 className="text-tradisional text-6xl md:text-8xl font-bold text-primary tracking-tight">
-            24 JAM MENARI
-          </h1>
-          <p className="text-lg md:text-xl font-medium tracking-[0.2em] text-accent uppercase">
+        {/* Teks Utama (Urutan Direvisi) */}
+        <div className="space-y-3 mb-10">
+          <p className="text-lg md:text-xl font-semibold tracking-[0.2em] text-accent uppercase">
             HARI TARI DUNIA KE - 20
           </p>
-          <p className="text-xl md:text-2xl font-light text-muted-foreground italic">
+          <h1 className="text-tradisional text-5xl md:text-7xl lg:text-8xl font-bold text-primary tracking-tight">
+            24 JAM MENARI SURAKARTA
+          </h1>
+          <p className="text-xl md:text-2xl font-light text-muted-foreground italic pt-2">
             "Tanpa Batas : Menembus Medan Budaya"
           </p>
         </div>
@@ -86,7 +86,7 @@ export default function HomePage() {
         </div>
 
         {/* Tombol Akses (Tengah) */}
-        <div className="flex justify-center mb-16">
+        <div className="flex justify-center mb-10">
           <button
             onClick={() => setShowLoginDialog(true)}
             className="group relative flex items-center gap-3 bg-primary text-primary-foreground text-xl font-bold px-10 py-5 rounded-full hover:scale-105 transition-all shadow-xl shadow-primary/20"
@@ -95,34 +95,31 @@ export default function HomePage() {
             <div className="absolute inset-0 rounded-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
         </div>
-
-        {/* Info Ringkas */}
-        <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground border border-border/40 w-fit mx-auto px-8 py-3 rounded-full bg-card/30">
-          <span className="flex items-center gap-2">📅 1 slot</span>
-          <span className="flex items-center gap-2">⌛ 15 menit</span>
-          <span className="flex items-center gap-2">✨ eksklusif</span>
-        </div>
       </section>
 
-      {/* Panduan Pendaftaran (Di atas Venue) */}
-      <section className="mb-20">
+      {/* Divider Panduan Pendaftaran */}
+      <div className="flex items-center gap-6 mb-10 max-w-5xl mx-auto px-6">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent to-border" />
+        <h3 className="text-accent tracking-widest uppercase text-sm font-bold">Panduan Pendaftaran</h3>
+        <div className="flex-1 h-px bg-gradient-to-l from-transparent to-border" />
+      </div>
+
+      {/* Panduan Pendaftaran */}
+      <section className="mb-20 px-4">
         <div className="bg-card/50 border border-border/60 rounded-3xl p-8 md:p-12 max-w-4xl mx-auto">
-          <SectionTitle
-            title="Panduan Pendaftaran"
-            subtitle="Pahami alur sebelum memilih jadwal"
-            className="mb-10 text-left"
-          />
+          {/* SectionTitle dihapus karena fungsinya sudah digantikan oleh Divider di atasnya, 
+              kita biarkan isinya fokus ke grid langkah-langkah */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { n: "1", t: "Pilih Venue", d: "Cari panggung pendaftaran" },
-              { n: "2", t: "Pembayaran", d: "Selesaikan buat akun" },
-              { n: "3", t: "Konfirmasi", d: "Mendapat bukti pendaftaran" },
+              { n: "1", t: "Pilih Venue", d: "Cari panggung pendaftaran yang tersedia." },
+              { n: "2", t: "Pembayaran", d: "Selesaikan transaksi dan buat akun." },
+              { n: "3", t: "Konfirmasi", d: "Mendapat bukti pendaftaran resmi." },
             ].map((step) => (
               <div key={step.n} className="space-y-3">
                 <span className="inline-flex w-10 h-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
                   {step.n}
                 </span>
-                <p className="font-bold text-lg">{step.t}</p>
+                <p className="font-bold text-lg text-foreground">{step.t}</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">{step.d}</p>
               </div>
             ))}
