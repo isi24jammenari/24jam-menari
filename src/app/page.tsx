@@ -51,29 +51,30 @@ export default function HomePage() {
   return (
     <PageWrapper>
       {/* Hero */}
-      <section className="text-center py-8 md:py-12 px-4">
-        {/* 1. Jejeran Logo Penyelenggara */}
-        <div className="flex items-center justify-start md:justify-center gap-3 sm:gap-5 md:gap-6 mb-10 opacity-90 bg-card/40 p-3 sm:p-4 rounded-2xl border border-border max-w-4xl mx-auto overflow-x-auto scrollbar-hide">
-          <img src="/24jammenari.png" alt="24 Jam Menari" className="h-8 sm:h-10 md:h-12 w-auto object-contain flex-shrink-0" />
-          <div className="w-px h-8 sm:h-10 bg-border mx-1 flex-shrink-0" />
-          <img src="/tutwuri.png" alt="Tut Wuri Handayani" className="h-8 sm:h-10 md:h-12 w-auto object-contain flex-shrink-0" />
-          <img src="/kemendisintek.png" alt="Kemendikbudristek" className="h-8 sm:h-10 md:h-12 w-auto object-contain flex-shrink-0" />
-          <img src="/isi.png" alt="ISI Surakarta" className="h-8 sm:h-10 md:h-12 w-auto object-contain flex-shrink-0" />
-          <img src="/himaswariska.png" alt="HIMASWARISKA" className="h-8 sm:h-10 md:h-12 w-auto object-contain flex-shrink-0" />
-          <img src="/himakorin.png" alt="HIMAKORIN" className="h-8 sm:h-10 md:h-12 w-auto object-contain flex-shrink-0" />
-          <img src="/sjs.png" alt="SJS" className="h-8 sm:h-10 md:h-12 w-auto object-contain flex-shrink-0" />
+      <section className="text-center pt-2 pb-12 px-4">
+        
+        {/* 1. Jejeran Logo Penyelenggara (Diperkecil dan ditarik ke atas) */}
+        <div className="flex items-center justify-start md:justify-center gap-3 sm:gap-4 md:gap-5 mb-8 opacity-90 bg-card/60 py-2.5 px-4 rounded-2xl border border-border max-w-fit mx-auto overflow-x-auto scrollbar-hide">
+          <img src="/24jammenari.png" alt="24 Jam Menari" className="h-6 sm:h-7 md:h-9 w-auto object-contain flex-shrink-0" />
+          <div className="w-px h-6 sm:h-7 md:h-9 bg-border mx-1 flex-shrink-0" />
+          <img src="/tutwuri.png" alt="Tut Wuri Handayani" className="h-6 sm:h-7 md:h-9 w-auto object-contain flex-shrink-0" />
+          <img src="/kemendisintek.png" alt="Kemendikbudristek" className="h-6 sm:h-7 md:h-9 w-auto object-contain flex-shrink-0" />
+          <img src="/isi.png" alt="ISI Surakarta" className="h-6 sm:h-7 md:h-9 w-auto object-contain flex-shrink-0" />
+          <img src="/himaswariska.png" alt="HIMASWARISKA" className="h-6 sm:h-7 md:h-9 w-auto object-contain flex-shrink-0" />
+          <img src="/himakorin.png" alt="HIMAKORIN" className="h-6 sm:h-7 md:h-9 w-auto object-contain flex-shrink-0" />
+          <img src="/sjs.png" alt="SJS" className="h-6 sm:h-7 md:h-9 w-auto object-contain flex-shrink-0" />
         </div>
 
         {/* 2. Logo Utama Besar */}
-        <div className="inline-block mb-6">
-          <img src="/24jammenari.png" alt="Logo Utama 24 Jam Menari" className="w-32 h-32 md:w-44 md:h-44 object-contain mx-auto drop-shadow-[0_0_20px_rgba(236,72,153,0.3)]" />
+        <div className="inline-block mb-4">
+          <img src="/24jammenari.png" alt="Logo Utama 24 Jam Menari" className="w-28 h-28 md:w-36 md:h-36 object-contain mx-auto drop-shadow-md" />
         </div>
 
-        {/* 3. Teks Utama */}
+        {/* 3. Teks Utama (Warna dikembalikan ke text-primary bawaan) */}
         <h2 className="text-lg md:text-xl font-medium tracking-widest text-muted-foreground uppercase mb-2">
           HARI TARI DUNIA KE - 20
         </h2>
-        <h1 className="text-tradisional text-5xl md:text-7xl font-bold text-pink-500 leading-tight drop-shadow-md">
+        <h1 className="text-tradisional text-5xl md:text-7xl font-bold text-primary leading-tight drop-shadow-sm">
           24JAM MENARI SURAKARTA
         </h1>
         <p className="mt-4 text-xl md:text-2xl font-light text-foreground max-w-2xl mx-auto leading-relaxed italic">
@@ -82,24 +83,24 @@ export default function HomePage() {
 
         {/* Ornamen */}
         <div className="flex items-center justify-center gap-3 mt-8">
-          <div className="h-px w-16 bg-pink-500 opacity-60" />
-          <span className="text-pink-500 text-xl">✦</span>
-          <div className="h-px w-16 bg-pink-500 opacity-60" />
+          <div className="h-px w-16 bg-accent opacity-60" />
+          <span className="text-accent text-xl">✦</span>
+          <div className="h-px w-16 bg-accent opacity-60" />
         </div>
 
-        {/* 4. Tombol Akses (Tengah, tanpa Admin) */}
+        {/* 4. Tombol Akses (Warna dikembalikan ke bg-primary bawaan) */}
         <div className="mt-8 flex justify-center w-full">
           {isLoggedIn ? (
             <button
               onClick={() => router.push("/dashboard/user")}
-              className="flex items-center justify-center gap-2 bg-pink-500 text-white text-lg font-semibold px-8 py-4 rounded-xl hover:bg-pink-600 transition shadow-[0_0_20px_rgba(236,72,153,0.3)] w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 bg-primary text-primary-foreground text-lg font-semibold px-8 py-4 rounded-xl hover:opacity-90 transition shadow-md w-full sm:w-auto"
             >
               📅 Cek Dashboard Saya
             </button>
           ) : (
             <button
               onClick={() => setShowLoginDialog(true)}
-              className="flex items-center justify-center gap-2 bg-pink-500 text-white text-lg font-semibold px-8 py-4 rounded-xl hover:bg-pink-600 transition shadow-[0_0_20px_rgba(236,72,153,0.3)] w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 bg-primary text-primary-foreground text-lg font-semibold px-8 py-4 rounded-xl hover:opacity-90 transition shadow-md w-full sm:w-auto"
             >
               🔐 Masuk ke Dashboard
             </button>
@@ -130,8 +131,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. Panduan Pendaftaran (Dipindah ke atas Venue) */}
-      <section className="mt-12 mb-16 bg-card/50 batik-border rounded-xl p-8 max-w-4xl mx-auto shadow-sm">
+      {/* 5. Panduan Pendaftaran */}
+      <section className="mt-8 mb-16 bg-card/50 batik-border rounded-xl p-8 max-w-4xl mx-auto shadow-sm">
         <SectionTitle
           title="Panduan Pendaftaran"
           subtitle="Ikuti langkah berikut untuk mendaftarkan penampilan Anda."
@@ -145,7 +146,7 @@ export default function HomePage() {
             { step: "4", title: "Buat Akun & Isi Formulir", desc: "Setelah pembayaran berhasil, buat akun untuk mengakses dashboard dan isi data penampilan Anda." },
           ].map((item) => (
             <li key={item.step} className="flex gap-4 items-start">
-              <span className="flex-shrink-0 w-10 h-10 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold text-lg shadow-md">
+              <span className="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg shadow-sm">
                 {item.step}
               </span>
               <div>

@@ -18,7 +18,7 @@ export default function Navbar() {
     pathname.startsWith("/dashboard/admin");
 
   return (
-    <header className="sticky top-0 z-50 bg-[#1A0F0A] border-b border-[#3D2B1F] shadow-md">
+    <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm">
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
         {/* Logo Only */}
         <Link href="/" className="hover:opacity-80 transition-opacity">
