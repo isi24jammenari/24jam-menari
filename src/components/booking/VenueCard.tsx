@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useBookingStore } from "@/lib/store/bookingStore";
 import { Venue, formatPrice } from "@/lib/data/venues";
@@ -17,10 +16,9 @@ export default function VenueCard({ venue }: VenueCardProps) {
 
   const availableSlots = venue.slots.filter((s) => !s.isBooked).length;
   const totalSlots = venue.slots.length;
-  const prices = [...new Set(venue.slots.map((s) => s.price))].sort(
-    (a, b) => a - b
-  );
   const isFull = availableSlots === 0;
+  // Ambil harga dari slot pertama sebagai representasi harga paket
+  const price = venue.slots[0]?.price || 0;
 
   const handlePilih = () => {
     selectVenue(venue.id, venue.name);
@@ -31,39 +29,37 @@ export default function VenueCard({ venue }: VenueCardProps) {
     <div className="batik-border rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <Card className="border-0 bg-card h-full">
         <CardContent className="p-6 flex flex-col gap-4 h-full">
-          {/* Icon & Nama */}
-          <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3">
-              <span className="text-5xl">{venue.icon}</span>
-              <div>
-                <h3 className="text-tradisional text-2xl font-bold text-primary">
-                  {venue.name}
-                </h3>
-                <p className="text-sm text-muted-foreground mt-0.5">
-                  {venue.description}
-                </p>
-              </div>
-            </div>
+          {/* Nama Venue & Festival */}
+          <div>
+            <h3 className="text-tradisional text-xl md:text-2xl font-bold text-foreground">
+              {venue.name}
+            </h3>
+            <p className="text-lg font-bold text-primary tracking-widest mt-1">
+              {venue.festivalName}
+            </p>
           </div>
 
           {/* Harga */}
-          <div className="flex flex-wrap gap-2">
-            {prices.map((price) => (
-              <Badge
-                key={price}
-                variant="outline"
-                className="text-sm px-3 py-1 border-accent text-accent font-semibold"
-              >
-                {formatPrice(price)}
-              </Badge>
-            ))}
+          <div className="text-2xl font-bold text-accent">
+            {formatPrice(price)}
           </div>
 
+          {/* Fasilitas Venue (Ringkas) */}
+          <ul className="text-sm text-muted-foreground space-y-1.5 flex-1 mt-2">
+            {venue.venueFacilities.slice(0, 4).map((fasilitas, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <span className="text-primary mt-0.5">•</span>
+                <span className="leading-tight">{fasilitas}</span>
+              </li>
+            ))}
+            {venue.venueFacilities.length > 4 && (
+              <li className="text-xs italic mt-1">+ fasilitas lainnya...</li>
+            )}
+          </ul>
+
           {/* Ketersediaan slot */}
-          <div className="flex items-center justify-between bg-muted rounded-lg px-4 py-3">
-            <span className="text-sm text-muted-foreground">
-              Slot tersedia
-            </span>
+          <div className="flex items-center justify-between bg-muted rounded-lg px-4 py-3 mt-4">
+            <span className="text-sm text-muted-foreground">Slot tersedia</span>
             <span
               className={`text-lg font-bold ${
                 isFull ? "text-destructive" : "text-primary"
@@ -71,13 +67,13 @@ export default function VenueCard({ venue }: VenueCardProps) {
             >
               {availableSlots}{" "}
               <span className="text-sm font-normal text-muted-foreground">
-                / {totalSlots} jam
+                / {totalSlots}
               </span>
             </span>
           </div>
 
           {/* Tombol */}
-          <div className="mt-auto pt-2">
+          <div className="mt-2 pt-2">
             <Button
               onClick={handlePilih}
               disabled={isFull}

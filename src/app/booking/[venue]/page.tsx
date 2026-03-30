@@ -4,7 +4,6 @@ import { use, useState } from "react";
 import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import PageWrapper from "@/components/layout/PageWrapper";
-import SectionTitle from "@/components/shared/SectionTitle";
 import TimeSlotGrid from "@/components/booking/TimeSlotGrid";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -41,25 +40,60 @@ export default function VenuePage({ params }: Props) {
       {/* Back */}
       <button
         onClick={() => router.push("/")}
-        className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-6 text-lg"
+        className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-8 text-lg font-medium"
       >
         ← Kembali ke Pilih Venue
       </button>
 
-      {/* Header venue */}
-      <div className="flex items-center gap-4 mb-8">
-        <span className="text-6xl">{venue.icon}</span>
-        <div>
-          <SectionTitle
-            title={venue.name}
-            subtitle={venue.description}
-          />
-        </div>
+      {/* Header venue tanpa icon */}
+      <div className="mb-10">
+        <h1 className="text-tradisional text-4xl md:text-5xl font-bold text-foreground">
+          {venue.name}
+        </h1>
+        <p className="text-xl font-bold text-primary tracking-widest mt-2">
+          {venue.festivalName}
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Grid slot — kiri */}
-        <div className="lg:col-span-2">
+        
+        {/* Kolom Kiri: Fasilitas & Jam */}
+        <div className="lg:col-span-2 space-y-10">
+          
+          {/* Kotak Fasilitas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Fasilitas Venue */}
+            <div className="bg-card/50 border border-border rounded-2xl p-6">
+              <h3 className="text-lg font-bold text-foreground mb-4 border-b border-border/50 pb-2">
+                🏛️ Fasilitas Venue
+              </h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                {venue.venueFacilities.map((item, idx) => (
+                  <li key={idx} className="flex gap-2 items-start">
+                    <span className="text-primary mt-0.5">•</span>
+                    <span className="leading-relaxed">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Fasilitas Festival */}
+            <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6">
+              <h3 className="text-lg font-bold text-primary mb-4 border-b border-primary/20 pb-2">
+                ✨ Benefit {venue.festivalName}
+              </h3>
+              <ul className="space-y-2 text-sm text-foreground">
+                {venue.festivalFacilities.map((item, idx) => (
+                  <li key={idx} className="flex gap-2 items-start">
+                    <span className="text-accent mt-0.5">✓</span>
+                    <span className="leading-relaxed font-medium">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Grid slot */}
           <TimeSlotGrid
             slots={venue.slots}
             selectedSlotId={localSelected?.id ?? null}
@@ -77,12 +111,13 @@ export default function VenuePage({ params }: Props) {
                 </h3>
 
                 <div className="space-y-3 text-base">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Venue</span>
-                    <span className="font-semibold">{venue.name}</span>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-muted-foreground text-sm">Venue</span>
+                    <span className="font-semibold leading-tight">{venue.name}</span>
+                    <span className="text-primary text-sm font-bold">{venue.festivalName}</span>
                   </div>
 
-                  <div className="flex justify-between">
+                  <div className="flex justify-between mt-4">
                     <span className="text-muted-foreground">Jam Show</span>
                     <span className="font-semibold">
                       {localSelected ? localSelected.time : (
@@ -95,9 +130,9 @@ export default function VenuePage({ params }: Props) {
 
                   {localSelected && (
                     <>
-                      <div className="border-t border-border pt-3 flex justify-between">
-                        <span className="text-muted-foreground">Total</span>
-                        <span className="text-xl font-bold text-primary">
+                      <div className="border-t border-border pt-4 mt-2 flex justify-between items-center">
+                        <span className="text-muted-foreground">Total Harga</span>
+                        <span className="text-2xl font-bold text-accent">
                           {formatPrice(localSelected.price)}
                         </span>
                       </div>
@@ -108,7 +143,7 @@ export default function VenuePage({ params }: Props) {
                 <Button
                   onClick={handleLanjut}
                   disabled={!localSelected}
-                  className="w-full text-lg py-6 font-semibold mt-2"
+                  className="w-full text-lg py-6 font-semibold mt-4"
                   size="lg"
                 >
                   Lanjut ke Pembayaran →
