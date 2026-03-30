@@ -104,27 +104,60 @@ export default function HomePage() {
         <div className="flex-1 h-px bg-gradient-to-l from-transparent to-border" />
       </div>
 
-      {/* Panduan Pendaftaran */}
-      <section className="mb-20 px-4">
-        <div className="bg-card/50 border border-border/60 rounded-3xl p-8 md:p-12 max-w-4xl mx-auto">
-          {/* SectionTitle dihapus karena fungsinya sudah digantikan oleh Divider di atasnya, 
-              kita biarkan isinya fokus ke grid langkah-langkah */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {/* Panduan Pendaftaran & Video */}
+      <section className="mb-20 px-4 max-w-4xl mx-auto space-y-12">
+        
+        {/* Box Teks Panduan (Vertikal untuk aksesibilitas lansia) */}
+        <div className="bg-card/50 border border-border/60 rounded-3xl p-8 md:p-12">
+          <p className="text-center text-muted-foreground mb-8">
+            Ikuti langkah-langkah mudah berikut untuk memastikan Anda atau kelompok Anda terdaftar resmi.
+          </p>
+          <div className="space-y-8">
             {[
-              { n: "1", t: "Pilih Venue", d: "Cari panggung pendaftaran yang tersedia." },
-              { n: "2", t: "Pembayaran", d: "Selesaikan transaksi dan buat akun." },
-              { n: "3", t: "Konfirmasi", d: "Mendapat bukti pendaftaran resmi." },
+              { n: "1", t: "Pilih Venue & Waktu", d: "Gulir ke bawah ke bagian 'Pilih Venue'. Klik venue yang Anda inginkan, lalu pilih jam kosong (slot) untuk penampilan Anda." },
+              { n: "2", t: "Selesaikan Pembayaran", d: "Setelah memilih jam, Anda memiliki waktu 15 menit untuk melakukan transfer agar jadwal tersebut tidak diambil orang lain." },
+              { n: "3", t: "Buat Akun Anda", d: "Setelah pembayaran berhasil, Anda akan diminta memasukkan Email dan Password untuk membuat akun pendaftaran." },
+              { n: "4", t: "Isi Formulir Penampilan", d: "Masuk ke Dashboard menggunakan akun yang baru dibuat. Lengkapi data diri, judul tarian, dan kebutuhan panggung." },
+              { n: "5", t: "Selesai & Cek Status", d: "Data Anda tersimpan. Anda dapat kembali masuk ke Dashboard kapan saja untuk mengecek jadwal dan status." },
             ].map((step) => (
-              <div key={step.n} className="space-y-3">
-                <span className="inline-flex w-10 h-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
+              <div key={step.n} className="flex gap-5 md:gap-6 items-start">
+                <span className="flex-shrink-0 inline-flex w-12 h-12 md:w-14 md:h-14 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold text-xl shadow-md border-4 border-background">
                   {step.n}
                 </span>
-                <p className="font-bold text-lg text-foreground">{step.t}</p>
-                <p className="text-sm text-muted-foreground leading-relaxed">{step.d}</p>
+                <div className="pt-1 md:pt-2">
+                  <p className="font-bold text-xl text-foreground">{step.t}</p>
+                  <p className="text-base text-muted-foreground leading-relaxed mt-1 md:mt-2">{step.d}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
+
+        {/* Video Tutorial Placeholder */}
+        <div className="space-y-4">
+          <h4 className="text-center font-semibold text-lg text-foreground">
+            Masih Bingung? Tonton Video Panduan Berikut:
+          </h4>
+          <div className="relative w-full aspect-video bg-black/60 border border-border rounded-2xl overflow-hidden shadow-lg group flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors">
+            {/* Thumbnail Image Placeholder (Opsional) */}
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1547153760-18fc86324498?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-luminosity" />
+            
+            {/* Play Button */}
+            <div className="relative z-10 w-20 h-20 bg-primary/90 rounded-full flex items-center justify-center text-primary-foreground shadow-xl group-hover:scale-110 group-hover:bg-primary transition-all">
+              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="currentColor" className="ml-2">
+                <path d="M5 3l14 9-14 9V3z" />
+              </svg>
+            </div>
+            
+            {/* Teks Bawah Video */}
+            <div className="absolute bottom-4 left-0 right-0 text-center z-10">
+              <span className="bg-background/80 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-medium text-foreground">
+                Klik untuk memutar video tutorial
+              </span>
+            </div>
+          </div>
+        </div>
+
       </section>
 
       {/* Divider Venue */}
