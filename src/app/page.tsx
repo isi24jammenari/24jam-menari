@@ -51,63 +51,71 @@ export default function HomePage() {
   return (
     <PageWrapper>
       {/* Hero */}
-      <section className="text-center py-12 px-4">
-        <div className="inline-block mb-4">
-          <span className="text-6xl">🎭</span>
+      <section className="text-center py-8 md:py-12 px-4">
+        {/* 1. Jejeran Logo Penyelenggara */}
+        <div className="flex items-center justify-start md:justify-center gap-3 sm:gap-5 md:gap-6 mb-10 opacity-90 bg-card/40 p-3 sm:p-4 rounded-2xl border border-border max-w-4xl mx-auto overflow-x-auto scrollbar-hide">
+          <img src="/24jammenari.png" alt="24 Jam Menari" className="h-8 sm:h-10 md:h-12 w-auto object-contain flex-shrink-0" />
+          <div className="w-px h-8 sm:h-10 bg-border mx-1 flex-shrink-0" />
+          <img src="/tutwuri.png" alt="Tut Wuri Handayani" className="h-8 sm:h-10 md:h-12 w-auto object-contain flex-shrink-0" />
+          <img src="/kemendisintek.png" alt="Kemendikbudristek" className="h-8 sm:h-10 md:h-12 w-auto object-contain flex-shrink-0" />
+          <img src="/isi.png" alt="ISI Surakarta" className="h-8 sm:h-10 md:h-12 w-auto object-contain flex-shrink-0" />
+          <img src="/himaswariska.png" alt="HIMASWARISKA" className="h-8 sm:h-10 md:h-12 w-auto object-contain flex-shrink-0" />
+          <img src="/himakorin.png" alt="HIMAKORIN" className="h-8 sm:h-10 md:h-12 w-auto object-contain flex-shrink-0" />
+          <img src="/sjs.png" alt="SJS" className="h-8 sm:h-10 md:h-12 w-auto object-contain flex-shrink-0" />
         </div>
-        <h1 className="text-tradisional text-5xl md:text-6xl font-bold text-primary leading-tight">
-          24 Jam Menari
+
+        {/* 2. Logo Utama Besar */}
+        <div className="inline-block mb-6">
+          <img src="/24jammenari.png" alt="Logo Utama 24 Jam Menari" className="w-32 h-32 md:w-44 md:h-44 object-contain mx-auto drop-shadow-[0_0_20px_rgba(236,72,153,0.3)]" />
+        </div>
+
+        {/* 3. Teks Utama */}
+        <h2 className="text-lg md:text-xl font-medium tracking-widest text-muted-foreground uppercase mb-2">
+          HARI TARI DUNIA KE - 20
+        </h2>
+        <h1 className="text-tradisional text-5xl md:text-7xl font-bold text-pink-500 leading-tight drop-shadow-md">
+          24JAM MENARI SURAKARTA
         </h1>
-        <p className="mt-4 text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Platform pendaftaran resmi slot penampilan seni.<br />
-          Pilih venue dan waktu tampil Anda.
+        <p className="mt-4 text-xl md:text-2xl font-light text-foreground max-w-2xl mx-auto leading-relaxed italic">
+          "Tanpa Batas : Menembus Medan Budaya"
         </p>
 
         {/* Ornamen */}
-        <div className="flex items-center justify-center gap-3 mt-6">
-          <div className="h-px w-16 bg-accent opacity-60" />
-          <span className="text-accent text-xl">✦</span>
-          <div className="h-px w-16 bg-accent opacity-60" />
+        <div className="flex items-center justify-center gap-3 mt-8">
+          <div className="h-px w-16 bg-pink-500 opacity-60" />
+          <span className="text-pink-500 text-xl">✦</span>
+          <div className="h-px w-16 bg-pink-500 opacity-60" />
         </div>
 
-        {/* ── Tombol Akses ── */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-          {/* Tombol User */}
+        {/* 4. Tombol Akses (Tengah, tanpa Admin) */}
+        <div className="mt-8 flex justify-center w-full">
           {isLoggedIn ? (
             <button
               onClick={() => router.push("/dashboard/user")}
-              className="flex items-center gap-2 bg-primary text-primary-foreground text-lg font-semibold px-8 py-4 rounded-xl hover:opacity-90 transition shadow-md"
+              className="flex items-center justify-center gap-2 bg-pink-500 text-white text-lg font-semibold px-8 py-4 rounded-xl hover:bg-pink-600 transition shadow-[0_0_20px_rgba(236,72,153,0.3)] w-full sm:w-auto"
             >
               📅 Cek Dashboard Saya
             </button>
           ) : (
             <button
               onClick={() => setShowLoginDialog(true)}
-              className="flex items-center gap-2 bg-primary text-primary-foreground text-lg font-semibold px-8 py-4 rounded-xl hover:opacity-90 transition shadow-md"
+              className="flex items-center justify-center gap-2 bg-pink-500 text-white text-lg font-semibold px-8 py-4 rounded-xl hover:bg-pink-600 transition shadow-[0_0_20px_rgba(236,72,153,0.3)] w-full sm:w-auto"
             >
               🔐 Masuk ke Dashboard
             </button>
           )}
-
-          {/* Tombol Admin — sementara untuk tester */}
-          <button
-            onClick={() => router.push("/dashboard/admin")}
-            className="flex items-center gap-2 bg-secondary text-secondary-foreground text-lg font-semibold px-8 py-4 rounded-xl hover:opacity-90 transition shadow-md"
-          >
-            ⚙️ Admin (Tester)
-          </button>
         </div>
 
         {/* Greeting jika sudah login */}
         {isLoggedIn && userName && (
-          <p className="mt-3 text-base text-muted-foreground">
+          <p className="mt-3 text-base text-muted-foreground text-center">
             Masuk sebagai{" "}
             <span className="font-semibold text-foreground">{userName}</span>
           </p>
         )}
 
-        {/* Info */}
-        <div className="mt-8 inline-flex flex-col sm:flex-row gap-4 text-sm">
+        {/* Info Box */}
+        <div className="mt-8 inline-flex flex-col sm:flex-row gap-4 text-sm justify-center">
           <div className="bg-card batik-border rounded-lg px-5 py-3 text-muted-foreground">
             🕐 <span className="font-semibold text-foreground">1 slot</span> per kelompok/perorangan
           </div>
@@ -122,31 +130,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Divider */}
-      <div className="flex items-center gap-4 my-4">
-        <div className="flex-1 h-px bg-border" />
-        <span className="text-muted-foreground text-sm tracking-widest uppercase">
-          Pilih Venue
-        </span>
-        <div className="flex-1 h-px bg-border" />
-      </div>
-
-      {/* Venue Cards */}
-      <section className="mt-6">
-        <SectionTitle
-          title="Venue Penampilan"
-          subtitle="Pilih salah satu dari empat venue berikut untuk melihat ketersediaan jam show."
-          className="mb-8"
-        />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {venues.map((venue) => (
-            <VenueCard key={venue.id} venue={venue} />
-          ))}
-        </div>
-      </section>
-
-      {/* Panduan */}
-      <section className="mt-16 bg-card batik-border rounded-xl p-8">
+      {/* 5. Panduan Pendaftaran (Dipindah ke atas Venue) */}
+      <section className="mt-12 mb-16 bg-card/50 batik-border rounded-xl p-8 max-w-4xl mx-auto shadow-sm">
         <SectionTitle
           title="Panduan Pendaftaran"
           subtitle="Ikuti langkah berikut untuk mendaftarkan penampilan Anda."
@@ -160,7 +145,7 @@ export default function HomePage() {
             { step: "4", title: "Buat Akun & Isi Formulir", desc: "Setelah pembayaran berhasil, buat akun untuk mengakses dashboard dan isi data penampilan Anda." },
           ].map((item) => (
             <li key={item.step} className="flex gap-4 items-start">
-              <span className="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg">
+              <span className="flex-shrink-0 w-10 h-10 rounded-full bg-pink-500 text-white flex items-center justify-center font-bold text-lg shadow-md">
                 {item.step}
               </span>
               <div>
@@ -170,6 +155,29 @@ export default function HomePage() {
             </li>
           ))}
         </ol>
+      </section>
+
+      {/* Divider Venue */}
+      <div className="flex items-center gap-4 my-4 max-w-5xl mx-auto">
+        <div className="flex-1 h-px bg-border" />
+        <span className="text-muted-foreground text-sm tracking-widest uppercase">
+          Pilih Venue
+        </span>
+        <div className="flex-1 h-px bg-border" />
+      </div>
+
+      {/* Venue Cards */}
+      <section className="mt-6 max-w-5xl mx-auto pb-12">
+        <SectionTitle
+          title="Venue Penampilan"
+          subtitle="Pilih salah satu dari empat venue berikut untuk melihat ketersediaan jam show."
+          className="mb-8"
+        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {venues.map((venue) => (
+            <VenueCard key={venue.id} venue={venue} />
+          ))}
+        </div>
       </section>
 
       {/* Dialog Login */}

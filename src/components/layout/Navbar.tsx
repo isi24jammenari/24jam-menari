@@ -18,17 +18,15 @@ export default function Navbar() {
     pathname.startsWith("/dashboard/admin");
 
   return (
-    <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm">
+    <header className="sticky top-0 z-50 bg-[#1A0F0A] border-b border-[#3D2B1F] shadow-md">
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo / Brand */}
-        <Link href="/" className="flex items-center gap-3">
-          <span className="text-3xl">🎭</span>
-          <div>
-            <p className="text-tradisional font-bold text-xl text-primary leading-none">
-              24 Jam Menari
-            </p>
-            <p className="text-xs text-muted-foreground">Pendaftaran Penampilan</p>
-          </div>
+        {/* Logo Only */}
+        <Link href="/" className="hover:opacity-80 transition-opacity">
+          <img 
+            src="/24jammenari.png" 
+            alt="24 Jam Menari" 
+            className="h-10 md:h-12 w-auto object-contain" 
+          />
         </Link>
 
         {/* Breadcrumb step — hanya tampil di alur booking */}
