@@ -15,7 +15,6 @@ export type TimeSlot = {
   registrant?: SlotRegistrant;
 };
 
-// Tipe data tetap dipertahankan agar tidak merusak halaman Admin Dashboard
 export type SlotRegistrant = {
   nama: string;
   kota: string;
@@ -26,7 +25,6 @@ export type SlotRegistrant = {
   formStatus: "lengkap" | "sebagian" | "kosong";
 };
 
-// ─── HELPER ──────────────────────────────────────────────────────────
 export const formatPrice = (price: number): string =>
   new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -34,7 +32,6 @@ export const formatPrice = (price: number): string =>
     minimumFractionDigits: 0,
   }).format(price);
 
-// ─── DATA VENUES (5 ENTITAS - BERSIH) ─────────────────────────────────
 export const venues: Venue[] = [
   {
     id: "teater-besar-fest1",
@@ -58,10 +55,14 @@ export const venues: Venue[] = [
       "Blocking tanggal 28 April 2026"
     ],
     slots: [
-      { id: "tb-2000", time: "20.00 – 20.30", price: 1350000, isBooked: false },
-      { id: "tb-2030", time: "20.30 – 21.00", price: 1350000, isBooked: false },
-      { id: "tb-2100", time: "21.00 – 21.30", price: 1350000, isBooked: false },
-      { id: "tb-2130", time: "21.30 – 22.00", price: 1350000, isBooked: false },
+      { id: "tb-1", time: "20.00 - 20.30", price: 1250000, isBooked: false },
+      { id: "tb-2", time: "20.30 - 21.00", price: 1250000, isBooked: false },
+      { id: "tb-3", time: "21.00 - 21.30", price: 1250000, isBooked: false },
+      { id: "tb-4", time: "21.30 - 22.00", price: 1250000, isBooked: false },
+      { id: "tb-5", time: "22.00 - 22.30", price: 1250000, isBooked: false },
+      { id: "tb-6", time: "22.30 - 23.00", price: 1250000, isBooked: false },
+      { id: "tb-7", time: "23.00 - 23.30", price: 1250000, isBooked: false },
+      { id: "tb-8", time: "23.30 - 24.00", price: 1250000, isBooked: false },
     ],
   },
   {
@@ -83,9 +84,12 @@ export const venues: Venue[] = [
       "Dokumentasi Video (link Drive)"
     ],
     slots: [
-      { id: "tk-1000", time: "10.00 – 10.20", price: 1100000, isBooked: false },
-      { id: "tk-1020", time: "10.20 – 10.40", price: 1100000, isBooked: false },
-      { id: "tk-1040", time: "10.40 – 11.00", price: 1100000, isBooked: false },
+      { id: "tk2-1", time: "22.00 - 22.20", price: 1000000, isBooked: false },
+      { id: "tk2-2", time: "22.20 - 22.40", price: 1000000, isBooked: false },
+      { id: "tk2-3", time: "22.40 - 23.00", price: 1000000, isBooked: false },
+      { id: "tk2-4", time: "23.00 - 23.20", price: 1000000, isBooked: false },
+      { id: "tk2-5", time: "23.20 - 23.40", price: 1000000, isBooked: false },
+      { id: "tk2-6", time: "23.40 - 24.00", price: 1000000, isBooked: false },
     ],
   },
   {
@@ -106,9 +110,12 @@ export const venues: Venue[] = [
       "Dokumentasi video (YouTube ISI Surakarta)"
     ],
     slots: [
-      { id: "tk3-2200", time: "22.00 – 22.20", price: 800000, isBooked: false },
-      { id: "tk3-2220", time: "22.20 – 22.40", price: 800000, isBooked: false },
-      { id: "tk3-2240", time: "22.40 – 23.00", price: 800000, isBooked: false },
+      { id: "tk3-1", time: "10.00 - 10.20", price: 750000, isBooked: false },
+      { id: "tk3-2", time: "10.20 - 10.40", price: 750000, isBooked: false },
+      { id: "tk3-3", time: "10.40 - 11.00", price: 750000, isBooked: false },
+      { id: "tk3-4", time: "11.00 - 11.20", price: 750000, isBooked: false },
+      { id: "tk3-5", time: "11.20 - 11.40", price: 750000, isBooked: false },
+      { id: "tk3-6", time: "11.40 - 12.00", price: 750000, isBooked: false },
     ],
   },
   {
@@ -129,10 +136,27 @@ export const venues: Venue[] = [
       "Dokumentasi video (YouTube ISI Surakarta)"
     ],
     slots: [
-      { id: "pendopo-0900", time: "09.00 – 09.20", price: 800000, isBooked: false },
-      { id: "pendopo-0920", time: "09.20 – 09.40", price: 800000, isBooked: false },
-      { id: "pendopo-0940", time: "09.40 – 10.00", price: 800000, isBooked: false },
-      { id: "pendopo-1000", time: "10.00 – 10.20", price: 800000, isBooked: false },
+      { id: "p-1", time: "09.00 - 09.20", price: 750000, isBooked: false },
+      { id: "p-2", time: "09.20 - 09.40", price: 750000, isBooked: false },
+      { id: "p-3", time: "09.40 - 10.00", price: 750000, isBooked: false },
+      { id: "p-4", time: "10.00 - 10.20", price: 750000, isBooked: false },
+      { id: "p-5", time: "10.20 - 10.40", price: 750000, isBooked: false },
+      { id: "p-6", time: "10.40 - 11.00", price: 750000, isBooked: false },
+      { id: "p-7", time: "11.00 - 11.20", price: 750000, isBooked: false },
+      { id: "p-8", time: "11.20 - 11.40", price: 750000, isBooked: false },
+      { id: "p-9", time: "11.40 - 12.00", price: 750000, isBooked: false },
+      { id: "p-10", time: "13.00 - 13.20", price: 750000, isBooked: false },
+      { id: "p-11", time: "13.20 - 13.40", price: 750000, isBooked: false },
+      { id: "p-12", time: "13.40 - 14.00", price: 750000, isBooked: false },
+      { id: "p-13", time: "14.00 - 14.20", price: 750000, isBooked: false },
+      { id: "p-14", time: "14.20 - 14.40", price: 750000, isBooked: false },
+      { id: "p-15", time: "14.40 - 15.00", price: 750000, isBooked: false },
+      { id: "p-16", time: "15.00 - 15.20", price: 750000, isBooked: false },
+      { id: "p-17", time: "15.20 - 15.40", price: 750000, isBooked: false },
+      { id: "p-18", time: "15.40 - 16.00", price: 750000, isBooked: false },
+      { id: "p-19", time: "16.00 - 16.20", price: 750000, isBooked: false },
+      { id: "p-20", time: "16.20 - 16.40", price: 750000, isBooked: false },
+      { id: "p-21", time: "16.40 - 17.00", price: 750000, isBooked: false },
     ],
   },
   {
@@ -152,9 +176,11 @@ export const venues: Venue[] = [
       "Dokumentasi video (YouTube ISI Surakarta)"
     ],
     slots: [
-      { id: "tkapal-1600", time: "16.00 – 16.20", price: 800000, isBooked: false },
-      { id: "tkapal-1620", time: "16.20 – 16.40", price: 800000, isBooked: false },
-      { id: "tkapal-1640", time: "16.40 – 17.00", price: 800000, isBooked: false },
+      { id: "tkapal-1", time: "16.00 - 16.20", price: 750000, isBooked: false },
+      { id: "tkapal-2", time: "16.20 - 16.40", price: 750000, isBooked: false },
+      { id: "tkapal-3", time: "16.40 - 17.00", price: 750000, isBooked: false },
+      { id: "tkapal-4", time: "17.00 - 17.20", price: 750000, isBooked: false },
+      { id: "tkapal-5", time: "17.20 - 17.40", price: 750000, isBooked: false },
     ],
   },
 ];
