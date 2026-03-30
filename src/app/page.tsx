@@ -51,120 +51,90 @@ export default function HomePage() {
   return (
     <PageWrapper>
       {/* Hero */}
-      <section className="text-center pt-2 pb-12 px-4">
+      <section className="text-center pt-4 pb-12 px-4">
         
-        {/* 1. Jejeran Logo Penyelenggara (Diperkecil dan ditarik ke atas) */}
-        <div className="flex items-center justify-start md:justify-center gap-3 sm:gap-4 md:gap-5 mb-8 opacity-90 bg-card/60 py-2.5 px-4 rounded-2xl border border-border max-w-fit mx-auto overflow-x-auto scrollbar-hide">
-          <img src="/24jammenari.png" alt="24 Jam Menari" className="h-6 sm:h-7 md:h-9 w-auto object-contain flex-shrink-0" />
-          <div className="w-px h-6 sm:h-7 md:h-9 bg-border mx-1 flex-shrink-0" />
-          <img src="/tutwuri.png" alt="Tut Wuri Handayani" className="h-6 sm:h-7 md:h-9 w-auto object-contain flex-shrink-0" />
-          <img src="/kemendisintek.png" alt="Kemendikbudristek" className="h-6 sm:h-7 md:h-9 w-auto object-contain flex-shrink-0" />
-          <img src="/isi.png" alt="ISI Surakarta" className="h-6 sm:h-7 md:h-9 w-auto object-contain flex-shrink-0" />
-          <img src="/himaswariska.png" alt="HIMASWARISKA" className="h-6 sm:h-7 md:h-9 w-auto object-contain flex-shrink-0" />
-          <img src="/himakorin.png" alt="HIMAKORIN" className="h-6 sm:h-7 md:h-9 w-auto object-contain flex-shrink-0" />
-          <img src="/sjs.png" alt="SJS" className="h-6 sm:h-7 md:h-9 w-auto object-contain flex-shrink-0" />
+        {/* Jejeran Logo Penyelenggara (Sangat Kecil & Bersih) */}
+        <div className="flex items-center justify-center gap-3 sm:gap-4 mb-12 opacity-80 max-w-fit mx-auto overflow-x-auto py-2 border-b border-border/50">
+          <img src="/24jammenari.png" alt="24jam" className="h-6 w-auto grayscale hover:grayscale-0 transition" />
+          <div className="w-px h-4 bg-border" />
+          <img src="/tutwuri.png" alt="tutwuri" className="h-6 w-auto" />
+          <img src="/kemendisintek.png" alt="kemendisintek" className="h-6 w-auto" />
+          <img src="/isi.png" alt="isi" className="h-6 w-auto" />
+          <img src="/himaswariska.png" alt="himaswariska" className="h-6 w-auto" />
+          <img src="/himakorin.png" alt="himakorin" className="h-6 w-auto" />
+          <img src="/sjs.png" alt="sjs" className="h-6 w-auto" />
         </div>
 
-        {/* 2. Logo Utama Besar */}
-        <div className="inline-block mb-4">
-          <img src="/24jammenari.png" alt="Logo Utama 24 Jam Menari" className="w-28 h-28 md:w-36 md:h-36 object-contain mx-auto drop-shadow-md" />
-        </div>
-
-        {/* 3. Teks Utama (Warna dikembalikan ke text-primary bawaan) */}
-        <h2 className="text-lg md:text-xl font-medium tracking-widest text-muted-foreground uppercase mb-2">
-          HARI TARI DUNIA KE - 20
-        </h2>
-        <h1 className="text-tradisional text-5xl md:text-7xl font-bold text-primary leading-tight drop-shadow-sm">
-          24JAM MENARI SURAKARTA
-        </h1>
-        <p className="mt-4 text-xl md:text-2xl font-light text-foreground max-w-2xl mx-auto leading-relaxed italic">
-          "Tanpa Batas : Menembus Medan Budaya"
-        </p>
-
-        {/* Ornamen */}
-        <div className="flex items-center justify-center gap-3 mt-8">
-          <div className="h-px w-16 bg-accent opacity-60" />
-          <span className="text-accent text-xl">✦</span>
-          <div className="h-px w-16 bg-accent opacity-60" />
-        </div>
-
-        {/* 4. Tombol Akses (Warna dikembalikan ke bg-primary bawaan) */}
-        <div className="mt-8 flex justify-center w-full">
-          {isLoggedIn ? (
-            <button
-              onClick={() => router.push("/dashboard/user")}
-              className="flex items-center justify-center gap-2 bg-primary text-primary-foreground text-lg font-semibold px-8 py-4 rounded-xl hover:opacity-90 transition shadow-md w-full sm:w-auto"
-            >
-              📅 Cek Dashboard Saya
-            </button>
-          ) : (
-            <button
-              onClick={() => setShowLoginDialog(true)}
-              className="flex items-center justify-center gap-2 bg-primary text-primary-foreground text-lg font-semibold px-8 py-4 rounded-xl hover:opacity-90 transition shadow-md w-full sm:w-auto"
-            >
-              🔐 Masuk ke Dashboard
-            </button>
-          )}
-        </div>
-
-        {/* Greeting jika sudah login */}
-        {isLoggedIn && userName && (
-          <p className="mt-3 text-base text-muted-foreground text-center">
-            Masuk sebagai{" "}
-            <span className="font-semibold text-foreground">{userName}</span>
+        {/* Teks Utama (Tanpa Logo Besar) */}
+        <div className="space-y-2 mb-10">
+          <h1 className="text-tradisional text-6xl md:text-8xl font-bold text-primary tracking-tight">
+            24 JAM MENARI
+          </h1>
+          <p className="text-lg md:text-xl font-medium tracking-[0.2em] text-accent uppercase">
+            HARI TARI DUNIA KE - 20
           </p>
-        )}
+          <p className="text-xl md:text-2xl font-light text-muted-foreground italic">
+            "Tanpa Batas : Menembus Medan Budaya"
+          </p>
+        </div>
 
-        {/* Info Box */}
-        <div className="mt-8 inline-flex flex-col sm:flex-row gap-4 text-sm justify-center">
-          <div className="bg-card batik-border rounded-lg px-5 py-3 text-muted-foreground">
-            🕐 <span className="font-semibold text-foreground">1 slot</span> per kelompok/perorangan
-          </div>
-          <div className="bg-card batik-border rounded-lg px-5 py-3 text-muted-foreground">
-            ⏳ Waktu pembayaran{" "}
-            <span className="font-semibold text-foreground">15 menit</span> setelah memilih
-          </div>
-          <div className="bg-card batik-border rounded-lg px-5 py-3 text-muted-foreground">
-            🎫 Slot bersifat{" "}
-            <span className="font-semibold text-foreground">eksklusif</span> per penampil
-          </div>
+        {/* Ornamen Pembatas */}
+        <div className="flex items-center justify-center gap-4 mb-10">
+          <div className="h-px w-24 bg-gradient-to-r from-transparent to-accent/50" />
+          <span className="text-accent text-xl">❦</span>
+          <div className="h-px w-24 bg-gradient-to-l from-transparent to-accent/50" />
+        </div>
+
+        {/* Tombol Akses (Tengah) */}
+        <div className="flex justify-center mb-16">
+          <button
+            onClick={() => setShowLoginDialog(true)}
+            className="group relative flex items-center gap-3 bg-primary text-primary-foreground text-xl font-bold px-10 py-5 rounded-full hover:scale-105 transition-all shadow-xl shadow-primary/20"
+          >
+            <span className="relative z-10">Mulai Mendaftar</span>
+            <div className="absolute inset-0 rounded-full bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </button>
+        </div>
+
+        {/* Info Ringkas */}
+        <div className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground border border-border/40 w-fit mx-auto px-8 py-3 rounded-full bg-card/30">
+          <span className="flex items-center gap-2">📅 1 slot</span>
+          <span className="flex items-center gap-2">⌛ 15 menit</span>
+          <span className="flex items-center gap-2">✨ eksklusif</span>
         </div>
       </section>
 
-      {/* 5. Panduan Pendaftaran */}
-      <section className="mt-8 mb-16 bg-card/50 batik-border rounded-xl p-8 max-w-4xl mx-auto shadow-sm">
-        <SectionTitle
-          title="Panduan Pendaftaran"
-          subtitle="Ikuti langkah berikut untuk mendaftarkan penampilan Anda."
-          className="mb-6"
-        />
-        <ol className="space-y-4">
-          {[
-            { step: "1", title: "Pilih Venue", desc: "Pilih salah satu dari empat venue yang tersedia sesuai kebutuhan penampilan Anda." },
-            { step: "2", title: "Pilih Jam Show", desc: "Lihat ketersediaan slot dan pilih jam yang sesuai. Setiap slot hanya untuk satu penampil." },
-            { step: "3", title: "Lakukan Pembayaran", desc: "Selesaikan pembayaran dalam 15 menit. Slot akan dikunci sementara selama proses ini." },
-            { step: "4", title: "Buat Akun & Isi Formulir", desc: "Setelah pembayaran berhasil, buat akun untuk mengakses dashboard dan isi data penampilan Anda." },
-          ].map((item) => (
-            <li key={item.step} className="flex gap-4 items-start">
-              <span className="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold text-lg shadow-sm">
-                {item.step}
-              </span>
-              <div>
-                <p className="font-semibold text-lg text-foreground">{item.title}</p>
-                <p className="text-muted-foreground mt-0.5">{item.desc}</p>
+      {/* Panduan Pendaftaran (Di atas Venue) */}
+      <section className="mb-20">
+        <div className="bg-card/50 border border-border/60 rounded-3xl p-8 md:p-12 max-w-4xl mx-auto">
+          <SectionTitle
+            title="Panduan Pendaftaran"
+            subtitle="Pahami alur sebelum memilih jadwal"
+            className="mb-10 text-left"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { n: "1", t: "Pilih Venue", d: "Cari panggung pendaftaran" },
+              { n: "2", t: "Pembayaran", d: "Selesaikan buat akun" },
+              { n: "3", t: "Konfirmasi", d: "Mendapat bukti pendaftaran" },
+            ].map((step) => (
+              <div key={step.n} className="space-y-3">
+                <span className="inline-flex w-10 h-10 items-center justify-center rounded-full bg-primary text-primary-foreground font-bold">
+                  {step.n}
+                </span>
+                <p className="font-bold text-lg">{step.t}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{step.d}</p>
               </div>
-            </li>
-          ))}
-        </ol>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* Divider Venue */}
-      <div className="flex items-center gap-4 my-4 max-w-5xl mx-auto">
-        <div className="flex-1 h-px bg-border" />
-        <span className="text-muted-foreground text-sm tracking-widest uppercase">
-          Pilih Venue
-        </span>
-        <div className="flex-1 h-px bg-border" />
+      <div className="flex items-center gap-6 mb-12">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent to-border" />
+        <h3 className="text-accent tracking-widest uppercase text-sm font-bold">Pilih Venue</h3>
+        <div className="flex-1 h-px bg-gradient-to-l from-transparent to-border" />
       </div>
 
       {/* Venue Cards */}

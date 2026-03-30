@@ -2,77 +2,36 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const steps = [
-  { label: "Pilih Venue", href: "/" },
-  { label: "Pilih Jam", href: "/booking" },
-  { label: "Pembayaran", href: "/booking/payment" },
-  { label: "Buat Akun", href: "/booking/register" },
-];
+import { Instagram } from "lucide-react"; // Pastikan sudah install lucide-react atau gunakan SVG biasa
 
 export default function Navbar() {
   const pathname = usePathname();
 
-  const isDashboard =
-    pathname.startsWith("/dashboard/user") ||
-    pathname.startsWith("/dashboard/admin");
-
   return (
-    <header className="sticky top-0 z-50 bg-card border-b border-border shadow-sm">
+    <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border shadow-sm">
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo Only */}
-        <Link href="/" className="hover:opacity-80 transition-opacity">
-          <img 
-            src="/24jammenari.png" 
-            alt="24 Jam Menari" 
-            className="h-10 md:h-12 w-auto object-contain" 
-          />
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <img src="/24jammenari.png" alt="Logo" className="h-10 w-auto object-contain" />
+          <div className="hidden sm:block">
+            <p className="text-tradisional font-bold text-lg text-primary leading-none">
+              24 Jam Menari
+            </p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">Pendaftaran Penampilan</p>
+          </div>
         </Link>
 
-        {/* Breadcrumb step — hanya tampil di alur booking */}
-        {!isDashboard && (
-          <nav className="hidden md:flex items-center gap-1">
-            {steps.map((step, i) => {
-              const isActive = pathname === step.href;
-              const isPast =
-                steps.findIndex((s) => s.href === pathname) > i;
-              return (
-                <div key={step.href} className="flex items-center gap-1">
-                  <span
-                    className={`text-sm px-3 py-1 rounded-full transition-colors ${
-                      isActive
-                        ? "bg-primary text-primary-foreground font-semibold"
-                        : isPast
-                        ? "text-accent font-medium"
-                        : "text-muted-foreground"
-                    }`}
-                  >
-                    {i + 1}. {step.label}
-                  </span>
-                  {i < steps.length - 1 && (
-                    <span className="text-muted-foreground text-xs">›</span>
-                  )}
-                </div>
-              );
-            })}
-          </nav>
-        )}
-
-        {/* Dashboard badge */}
-        {isDashboard && (
-          <div className="flex items-center gap-3">
-            {pathname.startsWith("/dashboard/admin") && (
-              <span className="text-sm bg-secondary text-secondary-foreground px-3 py-1 rounded-full font-medium">
-                Admin
-              </span>
-            )}
-            {pathname.startsWith("/dashboard/user") && (
-              <span className="text-sm bg-accent text-accent-foreground px-3 py-1 rounded-full font-medium">
-                Dashboard Penari
-              </span>
-            )}
-          </div>
-        )}
+        {/* Instagram Link (Placeholder) */}
+        <div className="flex items-center gap-4">
+          <a 
+            href="https://instagram.com/placeholder" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-primary transition-colors p-2 rounded-full hover:bg-primary/10"
+          >
+            <Instagram size={22} />
+          </a>
+        </div>
       </div>
     </header>
   );
