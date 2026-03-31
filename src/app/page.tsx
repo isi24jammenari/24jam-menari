@@ -65,12 +65,12 @@ function HomeContent() {
             {[
               { src: "/tutwuri.webp", alt: "Tut Wuri Handayani" },
               { src: "/isi.webp", alt: "ISI" },
-              { src: "/blu.webp", alt: "BLU" },
-              { src: "/isisolo.webp", alt: "ISI Solo" },
-              { src: "/artistik.webp", alt: "Artistik" },
-              { src: "/berdampak.webp", alt: "Berdampak" },
               { src: "/himaswariska.webp", alt: "Himaswariska" },
               { src: "/himakorin.webp", alt: "Himakorin" },
+              { src: "/isisolo.webp", alt: "ISI Solo" },
+              { src: "/artistik.webp", alt: "Artistik" },
+              { src: "/blu.webp", alt: "BLU" },
+              { src: "/berdampak.webp", alt: "Berdampak" },
               { src: "/sjs.webp", alt: "Solo Java Solo" },
             ].map((logo) => (
               <Image
