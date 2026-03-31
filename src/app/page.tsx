@@ -65,7 +65,7 @@ function HomeContent() {
       {/* Hero */}
       <section className="text-center pt-4 pb-12 px-4">
         
-        {/* Jejeran Logo Penyelenggara (Dinamis: 1 Baris di layar lebar, Grid 3x2 di layar sempit) */}
+        {/* Jejeran Logo Penyelenggara (Dinamis: 1 Baris di layar lebar, Grid di layar sempit) */}
         <div className="flex items-center justify-center gap-3 sm:gap-5 mb-14 max-w-fit mx-auto py-3 px-4 sm:px-6 rounded-2xl border border-primary/30 bg-primary/5 shadow-sm">
           
           {/* Bagian Kiri: Logo Utama */}
@@ -80,14 +80,11 @@ function HomeContent() {
             />
           </div>
           
-          {/* Bagian Tengah: Sekat Vertikal */}
-          <div className="w-px h-12 sm:h-16 md:h-20 bg-primary/30 flex-shrink-0" />
-          
           {/* Bagian Kanan: Dinamis (Grid di HP, Flex Baris di PC/Tablet) */}
           <div className="grid grid-cols-3 lg:flex lg:flex-nowrap gap-x-3 gap-y-3 sm:gap-4 md:gap-5 items-center justify-items-center">
             <Image src="/tutwuri.webp" alt="Tut Wuri Handayani" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
             <Image src="/kemendisintek.webp" alt="Kemendisintek" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
-            <Image src="/isi.webp" alt="ISI Surakarta" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
+            {/* Logo ISI Dihapus */}
             <Image src="/himaswariska.webp" alt="Himaswariska" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
             <Image src="/himakorin.webp" alt="Himakorin" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
             <Image src="/sjs.webp" alt="Solo Java Solo" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
