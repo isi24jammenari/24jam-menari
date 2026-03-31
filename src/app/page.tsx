@@ -65,31 +65,39 @@ function HomeContent() {
       {/* Hero */}
       <section className="text-center pt-4 pb-12 px-4">
         
-        {/* Jejeran Logo Penyelenggara (Dinamis: 1 Baris di layar lebar, Grid di layar sempit) */}
-        <div className="flex items-center justify-center gap-3 sm:gap-5 mb-14 max-w-fit mx-auto py-3 px-4 sm:px-6 rounded-2xl border border-primary/30 bg-primary/5 shadow-sm">
+        {/* Jejeran Logo Penyelenggara (9 Logo) */}
+        <div className="flex items-center justify-center mb-14 max-w-fit mx-auto py-3 px-5 sm:px-6 rounded-2xl border border-primary/30 bg-primary/5 shadow-sm">
           
-          {/* Bagian Kiri: Logo Utama */}
-          <div className="flex-shrink-0">
-            <Image 
-              src="/24jammenari.webp" 
-              alt="Logo 24 Jam Menari" 
-              width={100} 
-              height={100} 
-              priority 
-              className="h-12 sm:h-16 md:h-20 w-auto object-contain"
-            />
-          </div>
-          
-          {/* Bagian Kanan: Dinamis (Grid di HP, Flex Baris di PC/Tablet) */}
-          <div className="grid grid-cols-3 lg:flex lg:flex-nowrap gap-x-3 gap-y-3 sm:gap-4 md:gap-5 items-center justify-items-center">
+          {/* Dinamis: Grid 3x3 di HP, Flex Wrap Horizontal di PC/Tablet */}
+          <div className="grid grid-cols-3 lg:flex lg:flex-wrap gap-x-4 gap-y-4 sm:gap-5 md:gap-6 items-center justify-center justify-items-center">
+            {/* 1. Tut Wuri */}
             <Image src="/tutwuri.webp" alt="Tut Wuri Handayani" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
-            <Image src="/kemendisintek.webp" alt="Kemendisintek" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
-            {/* Logo ISI Dihapus */}
+            
+            {/* 2. ISI */}
+            <Image src="/isi.webp" alt="ISI" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
+            
+            {/* 3. BLU */}
+            <Image src="/blu.webp" alt="BLU" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
+            
+            {/* 4. ISI Solo */}
+            <Image src="/isisolo.webp" alt="ISI Solo" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
+            
+            {/* 5. Artistik */}
+            <Image src="/artistik.webp" alt="Artistik" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
+            
+            {/* 6. Berdampak */}
+            <Image src="/berdampak.webp" alt="Berdampak" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
+            
+            {/* 7. Himaswariska */}
             <Image src="/himaswariska.webp" alt="Himaswariska" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
+            
+            {/* 8. Himakorin */}
             <Image src="/himakorin.webp" alt="Himakorin" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
+            
+            {/* 9. SJS */}
             <Image src="/sjs.webp" alt="Solo Java Solo" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
           </div>
-          
+
         </div>
 
         {/* Teks Utama (Urutan Direvisi) */}
@@ -98,7 +106,7 @@ function HomeContent() {
             HARI TARI DUNIA KE - 20
           </p>
           <h1 className="text-tradisional text-5xl md:text-7xl lg:text-8xl font-bold text-primary tracking-tight">
-            24 JAM MENARI SURAKARTA
+            24 JAM MENARI ISI SURAKARTA
           </h1>
           <p className="text-xl md:text-2xl font-light text-muted-foreground italic pt-2">
             "Tanpa Batas : Menembus Medan Budaya"
