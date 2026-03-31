@@ -60,36 +60,55 @@ export default function VenuePage({ params }: Props) {
         {/* Kolom Kiri: Fasilitas & Jam */}
         <div className="lg:col-span-2 space-y-10">
           
-          {/* Kotak Fasilitas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Fasilitas Venue */}
-            <div className="bg-card/50 border border-border rounded-2xl p-6">
-              <h3 className="text-lg font-bold text-foreground mb-4 border-b border-border/50 pb-2">
-                🏛️ Fasilitas Venue
-              </h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                {venue.venueFacilities.map((item, idx) => (
-                  <li key={idx} className="flex gap-2 items-start">
-                    <span className="text-primary mt-0.5">•</span>
-                    <span className="leading-relaxed">{item}</span>
-                  </li>
-                ))}
-              </ul>
+          <div className="space-y-6">
+            {/* Kotak Fasilitas */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Fasilitas Venue */}
+              <div className="bg-card/50 border border-border rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-foreground mb-4 border-b border-border/50 pb-2">
+                  🏛️ Fasilitas Venue
+                </h3>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  {venue.venueFacilities.map((item, idx) => (
+                    <li key={idx} className="flex gap-2 items-start">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span className="leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Fasilitas Festival */}
+              <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6">
+                <h3 className="text-lg font-bold text-primary mb-4 border-b border-primary/20 pb-2">
+                  ✨ Benefit {venue.festivalName}
+                </h3>
+                <ul className="space-y-2 text-sm text-foreground">
+                  {venue.festivalFacilities.map((item, idx) => (
+                    <li key={idx} className="flex gap-2 items-start">
+                      <span className="text-accent mt-0.5">✓</span>
+                      <span className="leading-relaxed font-medium">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
 
-            {/* Fasilitas Festival */}
-            <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6">
-              <h3 className="text-lg font-bold text-primary mb-4 border-b border-primary/20 pb-2">
-                ✨ Benefit {venue.festivalName}
+            {/* Kotak Syarat dan Ketentuan Baru */}
+            <div className="bg-background border border-border/80 rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1.5 h-full bg-accent"></div>
+              <h3 className="text-lg font-bold text-foreground mb-4 border-b border-border/50 pb-2 flex items-center gap-2">
+                <span>📋</span> Syarat dan Ketentuan
               </h3>
-              <ul className="space-y-2 text-sm text-foreground">
-                {venue.festivalFacilities.map((item, idx) => (
-                  <li key={idx} className="flex gap-2 items-start">
-                    <span className="text-accent mt-0.5">✓</span>
-                    <span className="leading-relaxed font-medium">{item}</span>
-                  </li>
-                ))}
-              </ul>
+              <ol className="list-decimal list-inside space-y-3 text-sm text-muted-foreground leading-relaxed">
+                <li>Tidak bisa berpindah venue dan jam.</li>
+                <li>Apabila peserta mengundurkan diri, uang pendaftaran tidak dapat dikembalikan.</li>
+                <li>Peserta boleh menyajikan lebih dari satu karya dengan total durasi yang sudah ditentukan.</li>
+                <li>Peserta wajib hadir 60 menit sebelum waktu pementasan.</li>
+                <li>Ruang tunggu pementasan hanya digunakan untuk transit sebelum pementasan.</li>
+                <li>Bagi peserta yang membutuhkan surat pengantar untuk instansi tertentu bisa menghubungi <a href="https://wa.me/6282123239004" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-pink-500 underline font-bold transition-colors">CP. 0821-2323-9004 (PANITIA 24JAM MENARI ISI SURAKARTA)</a>.</li>
+                <li>Peserta wajib mengirim revisi data maksimal 15 April 2026 pukul:22.00 WIB.</li>
+              </ol>
             </div>
           </div>
 

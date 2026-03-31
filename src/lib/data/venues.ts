@@ -43,10 +43,10 @@ export const venues: Venue[] = [
       "Backdrop Belakang hitam",
       "Lighting General & Sound",
       "Mic 10 chanel standby",
-      "Bancik Level 3"
+      "BANCIK / LEVEL 3 BUAH (p 200cm x L 100cm x t 40cm)"
     ],
     festivalFacilities: [
-      "Durasi 30'",
+      "Durasi 30 menit",
       "Ruang tunggu pentas (1 jam sebelum pementasan)",
       "E-sertifikat (peserta dan sanggar)",
       "Figura sertifikat A3 sanggar",
@@ -66,7 +66,7 @@ export const venues: Venue[] = [
     ],
   },
   
-  // 2. TEATER BESAR GENDHON HUMARDANI (FESTIVAL 2) - VENUE BARU
+  // 2. TEATER BESAR GENDHON HUMARDANI (FESTIVAL 2)
   {
     id: "teater-besar-fest2",
     name: "TEATER BESAR GENDHON HUMARDANI",
@@ -77,10 +77,10 @@ export const venues: Venue[] = [
       "Backdrop Belakang hitam",
       "Lighting General & Sound",
       "Mic 10 chanel standby",
-      "Bancik Level 3"
+      "BANCIK / LEVEL 2 BUAH (p 200cm x L 100cm x t 40cm)"
     ],
     festivalFacilities: [
-      "Durasi 20'",
+      "Durasi 20 menit",
       "Ruang tunggu pentas (1 jam sebelum pementasan)",
       "E-sertifikat (peserta dan sanggar)",
       "Figura Sertifikat A3 sanggar",
@@ -106,10 +106,10 @@ export const venues: Venue[] = [
       "Backdrop Belakang hitam",
       "Lighting General & Sound",
       "Mic 10 chanel standby",
-      "Bancik Level 2"
+      "BANCIK / LEVEL 2 BUAH (p 200cm x L 100cm x t 40cm)"
     ],
     festivalFacilities: [
-      "Durasi 20'",
+      "Durasi 20 menit",
       "Ruang tunggu pentas (1 jam sebelum pementasan)",
       "E-sertifikat (peserta dan sanggar)",
       "Figura Sertifikat A3 sanggar",
@@ -135,10 +135,10 @@ export const venues: Venue[] = [
       "Backdrop Belakang hitam",
       "Lighting General & Sound",
       "Mic 10 chanel standby",
-      "Bancik Level 2"
+      "BANCIK / LEVEL 2 BUAH (p 200cm x L 100cm x t 40cm)"
     ],
     festivalFacilities: [
-      "Durasi 20'",
+      "Durasi 20 menit",
       "E-sertifikat (peserta dan sanggar)",
       "Ruang tunggu pementasan (1 jam sebelum pementasan)",
       "Dokumentasi video (YouTube ISI Surakarta)"
@@ -163,10 +163,10 @@ export const venues: Venue[] = [
       "Gamelan Slendro Pelog & Mic",
       "Lighting General & Sound",
       "Mic 10 chanel standby",
-      "Bancik Level 2"
+      "BANCIK / LEVEL 2 BUAH (p 200cm x L 100cm x t 40cm)"
     ],
     festivalFacilities: [
-      "Durasi 20'",
+      "Durasi 20 menit",
       "E-sertifikat (peserta dan sanggar)",
       "Ruang tunggu pementasan (1 jam sebelum pementasan)",
       "Dokumentasi video (YouTube ISI Surakarta)"
@@ -205,10 +205,10 @@ export const venues: Venue[] = [
       "Ukuran Panggung L 11 X P 14 (setengah lingkaran)",
       "Lighting General & Sound",
       "Mic 10 Chanel standby",
-      "Bancik Level 2"
+      "BANCIK / LEVEL 2 BUAH (p 200cm x L 100cm x t 40cm)"
     ],
     festivalFacilities: [
-      "Durasi 20'",
+      "Durasi 20 menit",
       "E-sertifikat (peserta dan sanggar)",
       "Ruang tunggu pementasan (1 jam sebelum pementasan)",
       "Dokumentasi video (YouTube ISI Surakarta)"
