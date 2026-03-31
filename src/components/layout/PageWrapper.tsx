@@ -58,7 +58,7 @@ export default function PageWrapper({ children, className, narrow = false }: Pag
                 className="h-12 sm:h-14 w-auto object-contain opacity-90"
               />
               <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-sm">
-                Jl. Ki Hadjar Dewantara No. 19, Kentingan, Jebres, Surakarta 57126
+                Jl. Ki Hadjar Dewantara No. 19, Jebres, Surakarta 57126
               </p>
             </div>
 
