@@ -202,7 +202,7 @@ export const venues: Venue[] = [
     name: "TEATER KAPAL",
     festivalName: "FESTIVAL 3",
     venueFacilities: [
-      "Ukuran Panggung L 11 X P 14 (setengah lingkaran)",
+      "Ukuran Panggung L 11 X P 14 (bentuk panggung setengah lingkaran)",
       "Lighting General & Sound",
       "Mic 10 Chanel standby",
       "Bancik / Level 2 Buah (p 200cm x L 100cm x t 40cm)"
