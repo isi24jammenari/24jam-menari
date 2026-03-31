@@ -76,13 +76,20 @@ export default function RegisterPage() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
     setIsSubmitting(true);
-    // Simulasi loading (demo statis)
+
+    // TODO: [BACKEND] Panggil API Registrasi Akun (Laravel API / NextAuth) di sini
+    // try {
+    //   await fetch('/api/auth/register', { method: 'POST', body: JSON.stringify(form) });
+    // } catch (error) { console.error(error); setIsSubmitting(false); return; }
+
+    // Simulasi loading (hapus saat API sudah siap)
     setTimeout(() => {
       setUser(form.email, form.name);
+      setIsSubmitting(false);
       router.push("/booking/form");
     }, 1200);
   };

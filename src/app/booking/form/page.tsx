@@ -10,8 +10,6 @@ import { useBookingStore } from "@/lib/store/bookingStore";
 
 export default function BookingFormPage() {
   const router = useRouter();
-  
-  // Ambil fungsi setRegistrant dari store (bukan setRegistrantData)
   const { selectedVenueName, selectedSlotTime, setRegistrant } = useBookingStore();
 
   const [formData, setFormData] = useState({
@@ -22,7 +20,8 @@ export default function BookingFormPage() {
     judulTari: "",
   });
 
-  // Validasi: Semua field wajib diisi (Poin 2)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const isFormValid = 
     formData.nama.trim() !== "" && 
     formData.kota.trim() !== "" && 
@@ -30,17 +29,26 @@ export default function BookingFormPage() {
     formData.cp.trim() !== "" && 
     formData.judulTari.trim() !== "";
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!isFormValid) return;
+    setIsSubmitting(true);
 
-    // Simpan ke store dengan status lengkap
-    setRegistrant({
-      ...formData,
-      formStatus: "lengkap",
-    });
+    // TODO: [BACKEND] Integrasikan API Endpoint untuk menyimpan form pementasan di sini
+    // try {
+    //   await fetch('/api/booking', { method: 'POST', body: JSON.stringify(formData) });
+    // } catch (error) { console.error(error); return; }
 
-    // Lanjut ke tahap berikutnya
-    router.push("/booking/register");
+    // Simulasi delay jaringan (hapus setTimeout ini saat backend sudah siap)
+    setTimeout(() => {
+      setRegistrant({
+        ...formData,
+        formStatus: "lengkap",
+      });
+      setIsSubmitting(false);
+
+      // FIX ARSITEKTUR: Setelah form lengkap, arahkan ke Dashboard User, bukan kembali ke Register
+      router.push("/dashboard/user");
+    }, 1000);
   };
 
   return (
@@ -134,11 +142,20 @@ export default function BookingFormPage() {
           <div className="pt-4">
             <Button
               onClick={handleSave}
-              disabled={!isFormValid}
+              disabled={!isFormValid || isSubmitting}
               className="w-full text-lg py-7 font-bold shadow-lg shadow-primary/20"
               size="lg"
             >
-              {isFormValid ? "Selesaikan Pendaftaran →" : "Harap Lengkapi Seluruh Data"}
+              {isSubmitting ? (
+                <span className="flex items-center gap-2">
+                  <span className="animate-spin text-lg">⏳</span>
+                  Menyimpan Data...
+                </span>
+              ) : isFormValid ? (
+                "Selesaikan Pendaftaran →"
+              ) : (
+                "Harap Lengkapi Seluruh Data"
+              )}
             </Button>
             <p className="text-center text-xs text-muted-foreground mt-4 italic">
               * Seluruh data wajib diisi untuk melanjutkan pendaftaran.

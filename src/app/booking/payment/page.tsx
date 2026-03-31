@@ -19,6 +19,15 @@ import { formatPrice } from "@/lib/data/venues";
 
 type PaymentMethod = "bca" | "bni" | "bri" | "mandiri" | "qris" | null;
 
+// OPTIMASI: Tarik array statis keluar dari komponen agar tidak di-recreate di setiap render
+const PAYMENT_METHODS = [
+  { id: "bca", label: "BCA Virtual Account", icon: "🏦" },
+  { id: "bni", label: "BNI Virtual Account", icon: "🏦" },
+  { id: "bri", label: "BRI Virtual Account", icon: "🏦" },
+  { id: "mandiri", label: "Mandiri Virtual Account", icon: "🏦" },
+  { id: "qris", label: "QRIS", icon: "📱" },
+] as const;
+
 export default function PaymentPage() {
   const router = useRouter();
   const {
@@ -35,6 +44,7 @@ export default function PaymentPage() {
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>(null);
   const [showExpiredDialog, setShowExpiredDialog] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Guard: redirect jika tidak ada pilihan
   useEffect(() => {
@@ -61,25 +71,29 @@ export default function PaymentPage() {
     router.replace("/");
   };
 
-  const handleBayar = () => {
+  const handleBayar = async () => {
     if (!selectedMethod) return;
-    // Simulasi pembayaran sukses (demo statis)
-    setPaymentStatus("success");
-    setShowSuccessDialog(true);
+    setIsProcessing(true);
+
+    // TODO: [BACKEND] Panggil API Payment Gateway (Midtrans) di sini
+    // try {
+    //   const response = await fetch('/api/payment', { method: 'POST', body: JSON.stringify({ method: selectedMethod }) });
+    //   const snapToken = await response.json();
+    //   window.snap.pay(snapToken);
+    // } catch (error) { console.error(error); setIsProcessing(false); return; }
+
+    // Simulasi delay gateway (hapus saat API siap)
+    setTimeout(() => {
+      setPaymentStatus("success");
+      setIsProcessing(false);
+      setShowSuccessDialog(true);
+    }, 1500);
   };
 
   const handleSuccessClose = () => {
     setShowSuccessDialog(false);
     router.push("/booking/register");
   };
-
-  const paymentMethods = [
-    { id: "bca", label: "BCA Virtual Account", icon: "🏦" },
-    { id: "bni", label: "BNI Virtual Account", icon: "🏦" },
-    { id: "bri", label: "BRI Virtual Account", icon: "🏦" },
-    { id: "mandiri", label: "Mandiri Virtual Account", icon: "🏦" },
-    { id: "qris", label: "QRIS", icon: "📱" },
-  ] as const;
 
   if (!selectedVenueName || !selectedSlotTime || !selectedSlotPrice) {
     return null;
@@ -149,10 +163,10 @@ export default function PaymentPage() {
           </h2>
           <Separator />
           <div className="space-y-3">
-            {paymentMethods.map((method) => (
+            {PAYMENT_METHODS.map((method) => (
               <button
                 key={method.id}
-                onClick={() => setSelectedMethod(method.id)}
+                onClick={() => setSelectedMethod(method.id as PaymentMethod)}
                 className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all duration-200 ${
                   selectedMethod === method.id
                     ? "border-primary bg-primary/5"
@@ -173,13 +187,20 @@ export default function PaymentPage() {
       {/* Tombol Bayar */}
       <Button
         onClick={handleBayar}
-        disabled={!selectedMethod || paymentStatus !== "pending"}
+        disabled={!selectedMethod || paymentStatus !== "pending" || isProcessing}
         className="w-full text-xl py-7 font-semibold"
         size="lg"
       >
-        {selectedMethod
-          ? `Bayar ${formatPrice(selectedSlotPrice)} →`
-          : "Pilih Metode Pembayaran Dulu"}
+        {isProcessing ? (
+          <span className="flex items-center gap-2">
+            <span className="animate-spin text-lg">⏳</span>
+            Memproses Pembayaran...
+          </span>
+        ) : selectedMethod ? (
+          `Bayar ${formatPrice(selectedSlotPrice)} →`
+        ) : (
+          "Pilih Metode Pembayaran Dulu"
+        )}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground mt-4">
