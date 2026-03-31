@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image"; // Tambahkan import ini
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Instagram } from "lucide-react";
 
@@ -33,10 +33,11 @@ export default function Navbar() {
         {/* Action Bar Kanan */}
         <div className="flex items-center gap-3 sm:gap-6">
           <a 
-            href="https://instagram.com/placeholder" 
+            href="https://www.instagram.com/24jammenari_official/" 
             target="_blank" 
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-primary transition-colors p-2 rounded-full hover:bg-primary/10"
+            title="Instagram 24 Jam Menari"
           >
             <Instagram size={22} />
           </a>
