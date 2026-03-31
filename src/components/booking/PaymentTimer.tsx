@@ -37,12 +37,12 @@ export default function PaymentTimer({
   const isWarning = secondsLeft <= 300; // 5 menit
   const isDanger = secondsLeft <= 60;   // 1 menit
 
-  // Warna arc SVG
-  const arcColor = isDanger
-    ? "#C0392B"
+  // REFAKTOR: Menggunakan CSS Variables / Tailwind Semantic Colors alih-alih Hex hardcode
+  const strokeColor = isDanger
+    ? "var(--destructive)"
     : isWarning
-    ? "#D4820A"
-    : "#B5451B";
+    ? "var(--accent)"
+    : "var(--primary)";
 
   // SVG circle arc
   const radius = 54;
@@ -57,18 +57,18 @@ export default function PaymentTimer({
           className="w-full h-full -rotate-90"
           viewBox="0 0 120 120"
         >
-          {/* Track */}
+          {/* Track (Menggunakan warna border dari globals.css) */}
           <circle
             cx="60" cy="60" r={radius}
             fill="none"
-            stroke="#EDE0C4"
+            stroke="var(--border)"
             strokeWidth="8"
           />
           {/* Progress */}
           <circle
             cx="60" cy="60" r={radius}
             fill="none"
-            stroke={arcColor}
+            stroke={strokeColor}
             strokeWidth="8"
             strokeLinecap="round"
             strokeDasharray={circumference}
@@ -81,7 +81,7 @@ export default function PaymentTimer({
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span
             className="text-3xl font-bold tabular-nums"
-            style={{ color: arcColor }}
+            style={{ color: strokeColor }}
           >
             {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
           </span>
@@ -92,7 +92,7 @@ export default function PaymentTimer({
       {/* Label status */}
       <p
         className="text-sm font-medium text-center"
-        style={{ color: arcColor }}
+        style={{ color: strokeColor }}
       >
         {isDanger
           ? "⚠️ Segera selesaikan pembayaran!"
