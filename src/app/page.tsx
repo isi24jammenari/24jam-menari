@@ -17,28 +17,23 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
 
-// 1. Pindahkan seluruh isi halaman ke dalam komponen HomeContent
 function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { isLoggedIn, userName, paymentStatus, setUser, setPaymentStatus } =
-    useBookingStore();
+  const { setUser, setPaymentStatus } = useBookingStore();
 
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [loginError, setLoginError] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  // Logika deteksi tombol "Masuk Akun" dari Navbar via URL Query
   useEffect(() => {
     if (searchParams.get("login") === "true") {
       setShowLoginDialog(true);
-      // Bersihkan URL agar dialog tidak terbuka otomatis saat di-refresh
       router.replace("/", { scroll: false });
     }
   }, [searchParams, router]);
 
-  // Simulasi login — demo statis
   const handleLogin = () => {
     if (!loginForm.email || !loginForm.password) {
       setLoginError("Email dan password tidak boleh kosong.");
@@ -46,7 +41,6 @@ function HomeContent() {
     }
     setIsLoggingIn(true);
     setTimeout(() => {
-      // Simulasi: ambil nama dari email
       const name = loginForm.email.split("@")[0];
       setUser(loginForm.email, name);
       setPaymentStatus("success");
@@ -63,50 +57,42 @@ function HomeContent() {
   return (
     <>
       {/* Hero */}
-      <section className="text-center pt-4 pb-12 px-4">
-        
-        {/* Jejeran Logo Penyelenggara (9 Logo) */}
+      <section className="text-center pt-4 pb-12 px-4 relative">
+        {/* Jejeran Logo Penyelenggara */}
         <div className="flex items-center justify-center mb-14 max-w-fit mx-auto py-3 px-5 sm:px-6 rounded-2xl border border-primary/30 bg-primary/5 shadow-sm">
-          
-          {/* Dinamis: Grid 3x3 di HP, Flex Wrap Horizontal di PC/Tablet */}
+          {/* Dinamis: Grid HP, Flex Wrap PC */}
           <div className="grid grid-cols-3 lg:flex lg:flex-wrap gap-x-4 gap-y-4 sm:gap-5 md:gap-6 items-center justify-center justify-items-center">
-            {/* 1. Tut Wuri */}
-            <Image src="/tutwuri.webp" alt="Tut Wuri Handayani" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
-            
-            {/* 2. ISI */}
-            <Image src="/isi.webp" alt="ISI" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
-            
-            {/* 3. BLU */}
-            <Image src="/blu.webp" alt="BLU" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
-            
-            {/* 4. ISI Solo */}
-            <Image src="/isisolo.webp" alt="ISI Solo" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
-            
-            {/* 5. Artistik */}
-            <Image src="/artistik.webp" alt="Artistik" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
-            
-            {/* 6. Berdampak */}
-            <Image src="/berdampak.webp" alt="Berdampak" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
-            
-            {/* 7. Himaswariska */}
-            <Image src="/himaswariska.webp" alt="Himaswariska" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
-            
-            {/* 8. Himakorin */}
-            <Image src="/himakorin.webp" alt="Himakorin" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
-            
-            {/* 9. SJS */}
-            <Image src="/sjs.webp" alt="Solo Java Solo" width={40} height={40} priority className="h-5 sm:h-7 md:h-8 w-auto object-contain" />
+            {[
+              { src: "/tutwuri.webp", alt: "Tut Wuri Handayani" },
+              { src: "/isi.webp", alt: "ISI" },
+              { src: "/blu.webp", alt: "BLU" },
+              { src: "/isisolo.webp", alt: "ISI Solo" },
+              { src: "/artistik.webp", alt: "Artistik" },
+              { src: "/berdampak.webp", alt: "Berdampak" },
+              { src: "/himaswariska.webp", alt: "Himaswariska" },
+              { src: "/himakorin.webp", alt: "Himakorin" },
+              { src: "/sjs.webp", alt: "Solo Java Solo" },
+            ].map((logo) => (
+              <Image
+                key={logo.src}
+                src={logo.src}
+                alt={logo.alt}
+                width={40}
+                height={40}
+                priority
+                className="h-5 sm:h-7 md:h-8 w-auto object-contain"
+              />
+            ))}
           </div>
-
         </div>
 
-        {/* Teks Utama (Urutan Direvisi) */}
+        {/* Teks Utama Hero */}
         <div className="space-y-3 mb-10">
           <p className="text-lg md:text-xl font-semibold tracking-[0.2em] text-accent uppercase">
             HARI TARI DUNIA KE - 20
           </p>
           <h1 className="text-tradisional text-5xl md:text-7xl lg:text-8xl font-bold text-primary tracking-tight">
-            24 JAM MENARI ISI SURAKARTA
+            24 JAM MENARI SURAKARTA
           </h1>
           <p className="text-xl md:text-2xl font-light text-muted-foreground italic pt-2">
             "Tanpa Batas : Menembus Medan Budaya"
@@ -120,14 +106,12 @@ function HomeContent() {
           <div className="h-px w-24 bg-gradient-to-l from-transparent to-accent/50" />
         </div>
 
-        {/* Tombol Akses (Tengah - Scroll ke Venue) */}
+        {/* Tombol Akses */}
         <div className="flex justify-center mb-10">
           <button
             onClick={() => {
               const venueSection = document.getElementById("venue-section");
-              if (venueSection) {
-                venueSection.scrollIntoView({ behavior: "smooth" });
-              }
+              venueSection?.scrollIntoView({ behavior: "smooth" });
             }}
             className="group relative flex items-center gap-3 bg-primary text-primary-foreground text-xl font-bold px-10 py-5 rounded-full hover:scale-105 transition-all shadow-xl shadow-primary/20"
           >
@@ -145,14 +129,12 @@ function HomeContent() {
       </div>
 
       {/* Panduan Pendaftaran & Video */}
-      <section className="mb-20 px-4 max-w-4xl mx-auto space-y-12">
-        
-        {/* Box Teks Panduan (Vertikal untuk aksesibilitas lansia) */}
-        <div className="bg-card/50 border border-border/60 rounded-3xl p-8 md:p-12">
+      <section className="mb-20 px-4 max-w-4xl mx-auto space-y-12 relative z-10">
+        <div className="bg-card/50 border border-border/60 rounded-3xl p-8 md:p-12 relative overflow-hidden batik-border">
           <p className="text-center text-muted-foreground mb-8">
-            Ikuti langkah-langkah mudah berikut untuk memastikan Anda atau kelompok Anda terdaftar resmi.
+            Ikuti langkah-langkah mudah berikut untuk memastikan pendaftaran pementasan Anda berhasil.
           </p>
-          <div className="space-y-8">
+          <div className="space-y-8 relative z-10">
             {[
               { n: "1", t: "Pilih Venue & Waktu", d: "Gulir ke bawah ke bagian 'Pilih Venue'. Klik venue yang Anda inginkan, lalu pilih jam kosong (slot) untuk penampilan Anda." },
               { n: "2", t: "Selesaikan Pembayaran", d: "Setelah memilih jam, Anda memiliki waktu 15 menit untuk melakukan transfer agar jadwal tersebut tidak diambil orang lain." },
@@ -173,23 +155,20 @@ function HomeContent() {
           </div>
         </div>
 
-        {/* Video Tutorial Placeholder */}
+        {/* Video Tutorial */}
         <div className="space-y-4">
           <h4 className="text-center font-semibold text-lg text-foreground">
             Masih Bingung? Tonton Video Panduan Berikut:
           </h4>
           <div className="relative w-full aspect-video bg-black/60 border border-border rounded-2xl overflow-hidden shadow-lg group flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors">
-            {/* Thumbnail Image Placeholder (Opsional) */}
             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1547153760-18fc86324498?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-luminosity" />
             
-            {/* Play Button */}
             <div className="relative z-10 w-20 h-20 bg-primary/90 rounded-full flex items-center justify-center text-primary-foreground shadow-xl group-hover:scale-110 group-hover:bg-primary transition-all">
               <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="currentColor" className="ml-2">
                 <path d="M5 3l14 9-14 9V3z" />
               </svg>
             </div>
             
-            {/* Teks Bawah Video */}
             <div className="absolute bottom-4 left-0 right-0 text-center z-10">
               <span className="bg-background/80 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-medium text-foreground">
                 Klik untuk memutar video tutorial
@@ -197,10 +176,9 @@ function HomeContent() {
             </div>
           </div>
         </div>
-
       </section>
 
-      {/* Divider Venue Diberi ID venue-section & scroll-mt agar scroll pas */}
+      {/* Divider Venue */}
       <div id="venue-section" className="flex items-center gap-6 mb-12 scroll-mt-24">
         <div className="flex-1 h-px bg-gradient-to-r from-transparent to-border" />
         <h3 className="text-accent tracking-widest uppercase text-sm font-bold">Pilih Venue</h3>
@@ -221,9 +199,11 @@ function HomeContent() {
         </div>
       </section>
 
+      {/* REDUNDANT FOOTER TEXT HAS BEEN REMOVED FROM HERE */}
+
       {/* Dialog Login */}
       <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md batik-border border-0">
           <DialogHeader>
             <DialogTitle className="text-tradisional text-2xl text-primary">
               🔐 Masuk ke Dashboard
@@ -234,9 +214,8 @@ function HomeContent() {
           </DialogHeader>
 
           <div className="space-y-4 mt-2">
-            {/* Email */}
             <div className="space-y-2">
-              <label className="text-base font-semibold text-foreground block">
+              <label className="text-sm font-semibold text-foreground block">
                 Email
               </label>
               <input
@@ -251,9 +230,8 @@ function HomeContent() {
               />
             </div>
 
-            {/* Password */}
             <div className="space-y-2">
-              <label className="text-base font-semibold text-foreground block">
+              <label className="text-sm font-semibold text-foreground block">
                 Password
               </label>
               <input
@@ -268,12 +246,10 @@ function HomeContent() {
               />
             </div>
 
-            {/* Error */}
             {loginError && (
-              <p className="text-sm text-destructive">{loginError}</p>
+              <p className="text-sm text-destructive font-medium">{loginError}</p>
             )}
 
-            {/* Info demo */}
             <div className="bg-accent/10 border border-accent/30 rounded-xl p-3 text-sm text-foreground">
               💡 <span className="font-semibold">Mode Demo:</span> Isi email
               dan password apapun untuk masuk.
@@ -311,7 +287,6 @@ function HomeContent() {
   );
 }
 
-// 2. Komponen Utama membungkus HomeContent dengan Suspense dan PageWrapper
 export default function HomePage() {
   return (
     <PageWrapper>
