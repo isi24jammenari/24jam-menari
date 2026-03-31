@@ -1,8 +1,9 @@
 import Navbar from "./Navbar";
 import Image from "next/image";
 import { Instagram, Mail, MessageCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-// SVG Kustom untuk Icon TikTok (karena Lucide standar tidak punya icon TikTok spesifik)
+// SVG Kustom untuk Icon TikTok
 const TikTokIcon = ({ size = 20, className = "" }: { size?: number, className?: string }) => (
   <svg 
     width={size} 
@@ -19,18 +20,29 @@ const TikTokIcon = ({ size = 20, className = "" }: { size?: number, className?: 
   </svg>
 );
 
-export default function PageWrapper({ children }: { children: React.ReactNode }) {
+// MENGEMBALIKAN INTERFACE PROPS AGAR TIDAK ERROR DI HALAMAN LAIN
+interface PageWrapperProps {
+  children: React.ReactNode;
+  className?: string;
+  narrow?: boolean;
+}
+
+export default function PageWrapper({ children, className, narrow = false }: PageWrapperProps) {
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col font-sans">
       {/* Header / Navbar Global */}
       <Navbar />
 
-      {/* Konten Utama Halaman */}
-      <main className="flex-1 w-full max-w-5xl mx-auto px-6 py-8 md:py-12">
+      {/* Konten Utama Halaman (Dengan dukungan properti narrow dan className) */}
+      <main className={cn(
+        "flex-1 w-full mx-auto px-6 py-8 md:py-12",
+        narrow ? "max-w-2xl" : "max-w-5xl",
+        className
+      )}>
         {children}
       </main>
 
-      {/* Footer Baru (Poin 1 & 2) */}
+      {/* Footer */}
       <footer className="border-t border-border mt-auto bg-card/20 relative overflow-hidden">
         <div className="max-w-5xl mx-auto px-6 py-12">
           
