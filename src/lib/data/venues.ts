@@ -43,7 +43,7 @@ export const venues: Venue[] = [
       "Backdrop Belakang hitam",
       "Lighting General & Sound",
       "Mic 10 chanel standby",
-      "BANCIK / LEVEL 3 BUAH (p 200cm x L 100cm x t 40cm)"
+      "Bancik / Level 3 Buah (p 200cm x L 100cm x t 40cm)"
     ],
     festivalFacilities: [
       "Durasi 30 menit",
@@ -77,11 +77,11 @@ export const venues: Venue[] = [
       "Backdrop Belakang hitam",
       "Lighting General & Sound",
       "Mic 10 chanel standby",
-      "BANCIK / LEVEL 2 BUAH (p 200cm x L 100cm x t 40cm)"
+      "Bancik / Level 3 Buah (p 200cm x L 100cm x t 40cm)"
     ],
     festivalFacilities: [
       "Durasi 20 menit",
-      "Ruang tunggu pentas VIP (1 jam sebelum pementasan)",
+      "Ruang tunggu pentas (1 jam sebelum pementasan)",
       "E-sertifikat (peserta dan sanggar)",
       "Figura Sertifikat A3 sanggar",
       "Dokumentasi Video (link Drive)"
@@ -106,7 +106,7 @@ export const venues: Venue[] = [
       "Backdrop Belakang hitam",
       "Lighting General & Sound",
       "Mic 10 chanel standby",
-      "BANCIK / LEVEL 2 BUAH (p 200cm x L 100cm x t 40cm)"
+      "Bancik / Level 2 Buah (p 200cm x L 100cm x t 40cm)"
     ],
     festivalFacilities: [
       "Durasi 20 menit",
@@ -135,7 +135,7 @@ export const venues: Venue[] = [
       "Backdrop Belakang hitam",
       "Lighting General & Sound",
       "Mic 10 chanel standby",
-      "BANCIK / LEVEL 2 BUAH (p 200cm x L 100cm x t 40cm)"
+      "Bancik / Level 2 Buah (p 200cm x L 100cm x t 40cm)"
     ],
     festivalFacilities: [
       "Durasi 20 menit",
@@ -163,7 +163,7 @@ export const venues: Venue[] = [
       "Gamelan Slendro Pelog & Mic",
       "Lighting General & Sound",
       "Mic 10 chanel standby",
-      "BANCIK / LEVEL 2 BUAH (p 200cm x L 100cm x t 40cm)"
+      "Bancik / Level 2 Buah (p 200cm x L 100cm x t 40cm)"
     ],
     festivalFacilities: [
       "Durasi 20 menit",
@@ -205,7 +205,7 @@ export const venues: Venue[] = [
       "Ukuran Panggung L 11 X P 14 (setengah lingkaran)",
       "Lighting General & Sound",
       "Mic 10 Chanel standby",
-      "BANCIK / LEVEL 2 BUAH (p 200cm x L 100cm x t 40cm)"
+      "Bancik / Level 2 Buah (p 200cm x L 100cm x t 40cm)"
     ],
     festivalFacilities: [
       "Durasi 20 menit",
