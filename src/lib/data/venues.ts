@@ -47,7 +47,7 @@ export const venues: Venue[] = [
     ],
     festivalFacilities: [
       "Durasi 30 menit",
-      "Ruang tunggu pentas (1 jam sebelum pementasan)",
+      "Ruang tunggu pentas VIP (1 jam sebelum pementasan)",
       "E-sertifikat (peserta dan sanggar)",
       "Figura sertifikat A3 sanggar",
       "Dokumentasi Video (link drive)",
@@ -81,7 +81,7 @@ export const venues: Venue[] = [
     ],
     festivalFacilities: [
       "Durasi 20 menit",
-      "Ruang tunggu pentas (1 jam sebelum pementasan)",
+      "Ruang tunggu pentas VIP (1 jam sebelum pementasan)",
       "E-sertifikat (peserta dan sanggar)",
       "Figura Sertifikat A3 sanggar",
       "Dokumentasi Video (link Drive)"
