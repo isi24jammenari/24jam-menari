@@ -18,6 +18,16 @@ type FormState = {
 
 type FieldError = Partial<Record<keyof FormState, string>>;
 
+// Helper: baca bookingId dari sessionStorage sebagai fallback
+function getBookingIdFromSession(): string | null {
+  try {
+    const raw = sessionStorage.getItem("pending_payment");
+    return raw ? JSON.parse(raw).bookingId : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function RegisterPage() {
   const router = useRouter();
   const {
@@ -25,7 +35,6 @@ export default function RegisterPage() {
     selectedSlotTime,
     selectedSlotPrice,
     paymentStatus,
-    // ✅ FIX 5: Tarik bookingId dari store
     bookingId,
     setUser,
     setLoggedIn,
@@ -41,11 +50,19 @@ export default function RegisterPage() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // ✅ FIX 2: Flag agar guard tidak redirect sebelum sessionStorage dicek
+  const [isRestored, setIsRestored] = useState(false);
 
-  // Guard: harus sudah bayar dan harus ada bookingId
+  // ✅ FIX 2: Cek store ATAU sessionStorage — jangan redirect jika session masih ada
   useEffect(() => {
-    if (paymentStatus !== "success" || !bookingId) {
+    const sessionBookingId = getBookingIdFromSession();
+    const hasStore = paymentStatus === "success" && !!bookingId;
+    const hasSession = !!sessionBookingId;
+
+    if (!hasStore && !hasSession) {
       router.replace("/");
+    } else {
+      setIsRestored(true);
     }
   }, [paymentStatus, bookingId, router]);
 
@@ -83,58 +100,65 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    if (!bookingId) return; // extra safety guard
+
+    // ✅ FIX 2: Ambil bookingId dari store, fallback ke sessionStorage
+    const activeBookingId = bookingId ?? getBookingIdFromSession();
+    if (!activeBookingId) return;
+
     setIsSubmitting(true);
     setServerError(null);
 
     try {
-      // ✅ FIX 5: Panggil API register yang sesungguhnya dengan booking_id
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json",
-        },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          password: form.password,
-          password_confirmation: form.confirmPassword,
-          booking_id: bookingId,
-        }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            name: form.name,
+            email: form.email,
+            password: form.password,
+            password_confirmation: form.confirmPassword,
+            booking_id: activeBookingId,
+          }),
+        }
+      );
 
       const resData = await response.json();
 
       if (!response.ok) {
-        // Tangani error validasi Laravel (422) atau error lain
-        const firstError =
-          resData.errors
-            ? Object.values(resData.errors as Record<string, string[]>)[0]?.[0]
-            : resData.message;
+        const firstError = resData.errors
+          ? Object.values(resData.errors as Record<string, string[]>)[0]?.[0]
+          : resData.message;
         throw new Error(firstError || "Gagal membuat akun.");
       }
 
-      // ✅ Simpan token ke localStorage agar bisa dipakai di dashboard
+      // ✅ FIX 1: Key "access_token" — konsisten dengan yang dibaca di dashboard
       if (resData.data?.access_token) {
-        localStorage.setItem("auth_token", resData.data.access_token);
+        localStorage.setItem("access_token", resData.data.access_token);
       }
+
+      // Bersihkan session pembayaran karena sudah selesai dipakai
+      try { sessionStorage.removeItem("pending_payment"); } catch (_) {}
 
       // Update store
       setUser(form.email, form.name);
       setLoggedIn(true);
       setIsSubmitting(false);
 
-      // Arahkan ke form pementasan
-      router.push("/booking/form");
-
+      // ✅ FIX 3: Arahkan ke dashboard/user — bukan /booking/form yang tidak ada
+      router.push("/dashboard/user");
     } catch (error: any) {
       setServerError(error.message || "Terjadi kesalahan. Coba lagi.");
       setIsSubmitting(false);
     }
   };
 
-  if (paymentStatus !== "success" || !bookingId) return null;
+  // Tunggu hasil cek guard sebelum render
+  if (!isRestored) return null;
 
   return (
     <PageWrapper narrow>
@@ -186,7 +210,6 @@ export default function RegisterPage() {
           </h2>
           <Separator className="mb-6" />
 
-          {/* ✅ FIX 5: Tampilkan server error jika ada */}
           {serverError && (
             <div className="mb-4 p-4 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive text-sm font-medium">
               ⚠️ {serverError}
@@ -246,7 +269,7 @@ export default function RegisterPage() {
                   value={form.password}
                   onChange={handleChange}
                   placeholder="Minimal 8 karakter"
-                  className={`w-full text-lg px-4 py-3 rounded-xl border-2 bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors pr-14 ${
+                  className={`w-full text-lg px-4 py-3 rounded-xl border-2 bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors pr-36 ${
                     errors.password ? "border-destructive" : "border-input"
                   }`}
                 />
@@ -300,7 +323,7 @@ export default function RegisterPage() {
                   Membuat akun...
                 </span>
               ) : (
-                "Buat Akun & Lanjut Isi Formulir →"
+                "Buat Akun & Masuk ke Dashboard →"
               )}
             </Button>
 
