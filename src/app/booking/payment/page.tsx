@@ -2,7 +2,6 @@
 
 import { useEffect, useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import Script from "next/script";
 import PageWrapper from "@/components/layout/PageWrapper";
 import PaymentTimer from "@/components/booking/PaymentTimer";
 import { Button } from "@/components/ui/button";
@@ -47,6 +46,29 @@ export default function PaymentPage() {
   const [showExpiredDialog, setShowExpiredDialog] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // INJEKSI SCRIPT MIDTRANS MANUAL (Bypass bug Next.js <Script>)
+  useEffect(() => {
+    const scriptUrl = "https://app.sandbox.midtrans.com/snap/snap.js";
+    const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
+
+    // Cegah duplikasi script jika komponen re-render
+    if (document.querySelector(`script[src="${scriptUrl}"]`)) return;
+
+    const script = document.createElement("script");
+    script.src = scriptUrl;
+    script.setAttribute("data-client-key", clientKey || "");
+    script.async = true;
+
+    document.body.appendChild(script);
+
+    return () => {
+      // Cleanup saat user pindah/keluar dari halaman payment
+      if (document.body.contains(script)) {
+        document.body.removeChild(script);
+      }
+    };
+  }, []);
 
   // Guard: redirect jika tidak ada pilihan venue/waktu
   useEffect(() => {
@@ -106,10 +128,10 @@ export default function PaymentPage() {
       // Token dari response API
       const snapToken = resData.data.snap_token;
 
-      // Validasi brutal: Cek apakah object snap sudah ter-load oleh browser
+      // VALIDASI MUTLAK: Jangan panggil .pay() jika script belum selesai diunduh browser!
       // @ts-ignore
-      if (typeof window === "undefined" || !window.snap) {
-        alert("Sistem pembayaran sedang memuat, silakan tunggu beberapa detik dan coba klik Bayar lagi.");
+      if (typeof window === "undefined" || typeof window.snap === "undefined") {
+        alert("Sistem pembayaran sedang menyambung ke Midtrans. Silakan tunggu 3 detik dan klik Bayar lagi.");
         setIsProcessing(false);
         return;
       }
@@ -152,14 +174,6 @@ export default function PaymentPage() {
 
   return (
     <>
-      {/* Script Midtrans. 
-        Menggunakan beforeInteractive agar snap.js siap sebelum tombol Bayar ditekan 
-      */}
-      <Script
-        src="https://app.sandbox.midtrans.com/snap/snap.js"
-        data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
-      />
-
       <PageWrapper narrow>
         {/* Header */}
         <div className="text-center mb-8">
