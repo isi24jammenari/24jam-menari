@@ -47,7 +47,8 @@ function VenueLoader() {
 function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setUser, setPaymentStatus } = useBookingStore();
+  // ✅ FIX 2: Hapus setPaymentStatus dari destructure — login tidak boleh set payment status
+  const { setUser } = useBookingStore();
 
   const [showLoginDialog, setShowLoginDialog] = useState(false);
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
@@ -61,20 +62,53 @@ function HomeContent() {
     }
   }, [searchParams, router]);
 
-  const handleLogin = () => {
+  // ✅ FIX 2: handleLogin real — fetch ke /auth/login, simpan token, redirect dashboard
+  const handleLogin = async () => {
     if (!loginForm.email || !loginForm.password) {
       setLoginError("Email dan password tidak boleh kosong.");
       return;
     }
+
     setIsLoggingIn(true);
-    setTimeout(() => {
-      const name = loginForm.email.split("@")[0];
-      setUser(loginForm.email, name);
-      setPaymentStatus("success");
+    setLoginError("");
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          email: loginForm.email,
+          password: loginForm.password,
+        }),
+      });
+
+      const resData = await res.json();
+
+      if (!res.ok) {
+        // Ambil pesan error dari backend (401: email/password salah, dll)
+        throw new Error(resData.message || "Email atau password salah.");
+      }
+
+      // ✅ Simpan token dengan key "access_token" — konsisten dengan Navbar & dashboard
+      localStorage.setItem("access_token", resData.data.access_token);
+
+      // Update store agar nama user langsung tersedia di UI sementara
+      setUser(resData.data.user.email, resData.data.user.name);
+
       setIsLoggingIn(false);
       setShowLoginDialog(false);
-      setLoginError("");
-    }, 1000);
+      setLoginForm({ email: "", password: "" });
+
+      // ✅ FIX 2: Redirect ke dashboard setelah login berhasil
+      router.push("/dashboard/user");
+
+    } catch (error: any) {
+      setLoginError(error.message || "Terjadi kesalahan. Coba lagi.");
+      setIsLoggingIn(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -87,7 +121,6 @@ function HomeContent() {
       <section className="text-center pt-4 pb-12 px-4 relative">
         {/* Jejeran Logo Penyelenggara */}
         <div className="flex items-center justify-center mb-14 max-w-fit mx-auto py-3 px-5 sm:px-6 rounded-2xl border border-primary/30 bg-primary/5 shadow-sm">
-          {/* Dinamis: Grid HP (5 kolom = 2 baris), Flex Wrap PC */}
           <div className="grid grid-cols-5 lg:flex lg:flex-wrap gap-x-2 sm:gap-x-4 gap-y-4 sm:gap-5 md:gap-6 items-center justify-center justify-items-center">
             {[
               { src: "/tutwuri.webp", alt: "Tut Wuri Handayani" },
@@ -190,13 +223,11 @@ function HomeContent() {
           </h4>
           <div className="relative w-full aspect-video bg-black/60 border border-border rounded-2xl overflow-hidden shadow-lg group flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors">
             <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1547153760-18fc86324498?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-luminosity" />
-            
             <div className="relative z-10 w-20 h-20 bg-primary/90 rounded-full flex items-center justify-center text-primary-foreground shadow-xl group-hover:scale-110 group-hover:bg-primary transition-all">
               <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="currentColor" className="ml-2">
                 <path d="M5 3l14 9-14 9V3z" />
               </svg>
             </div>
-            
             <div className="absolute bottom-4 left-0 right-0 text-center z-10">
               <span className="bg-background/80 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-medium text-foreground">
                 Klik untuk memutar video tutorial
@@ -213,23 +244,24 @@ function HomeContent() {
         <div className="flex-1 h-px bg-gradient-to-l from-transparent to-border" />
       </div>
 
-      {/* Venue Cards (Dinamis dari Database) */}
+      {/* Venue Cards */}
       <section className="mt-6 max-w-5xl mx-auto pb-12 min-h-[400px]">
         <SectionTitle
           title="Venue Penampilan"
           subtitle="Pilih salah satu dari venue berikut untuk melihat ketersediaan jam show."
           className="mb-8"
         />
-        
-        {/* Panggil fungsi fetch jika belum ada data */}
         <VenueLoader />
-
       </section>
 
-      {/* REDUNDANT FOOTER TEXT HAS BEEN REMOVED FROM HERE */}
-
       {/* Dialog Login */}
-      <Dialog open={showLoginDialog} onOpenChange={setShowLoginDialog}>
+      <Dialog open={showLoginDialog} onOpenChange={(open) => {
+        setShowLoginDialog(open);
+        if (!open) {
+          setLoginError("");
+          setLoginForm({ email: "", password: "" });
+        }
+      }}>
         <DialogContent className="max-w-md batik-border border-0">
           <DialogHeader>
             <DialogTitle className="text-tradisional text-2xl text-primary">
@@ -274,12 +306,15 @@ function HomeContent() {
             </div>
 
             {loginError && (
-              <p className="text-sm text-destructive font-medium">{loginError}</p>
+              <p className="text-sm text-destructive font-medium">⚠️ {loginError}</p>
             )}
 
-            <div className="bg-accent/10 border border-accent/30 rounded-xl p-3 text-sm text-foreground">
-              💡 <span className="font-semibold">Mode Demo:</span> Isi email
-              dan password apapun untuk masuk.
+            {/* ✅ FIX 3: Hapus banner "Mode Demo" — ganti info yang relevan */}
+            <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 text-sm text-foreground">
+              💡 Akun dibuat otomatis setelah pembayaran slot berhasil.{" "}
+              <span className="text-muted-foreground">
+                Belum punya akun? Pilih venue dan selesaikan pembayaran terlebih dahulu.
+              </span>
             </div>
 
             <div className="flex gap-3 pt-1">
@@ -288,6 +323,7 @@ function HomeContent() {
                 onClick={() => {
                   setShowLoginDialog(false);
                   setLoginError("");
+                  setLoginForm({ email: "", password: "" });
                 }}
                 className="flex-1 text-lg py-6"
               >
