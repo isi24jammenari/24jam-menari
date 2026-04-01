@@ -124,7 +124,7 @@ export default function PageWrapper({ children, className, narrow = false }: Pag
             </div>
             
             <p className="text-center text-muted-foreground text-xs sm:text-sm tracking-wide">
-              &copy; {new Date().getFullYear()} 24 Jam Menari Surakarta. Hak Cipta Dilindungi.
+              &copy; {new Date().getFullYear()} 24Jam Menari ISI Surakarta. Hak Cipta Dilindungi.
             </p>
           </div>
 
