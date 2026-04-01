@@ -1,3 +1,4 @@
+// src/app/dashboard/user/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,20 +13,18 @@ export default function UserDashboardPage() {
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState<Tab>("jadwal");
-  // ✅ State untuk user data dari API
-  const [user, setUser] = useState<{ name: string } | null>(null);
+  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // ✅ FIX GUARD: Cek token dari localStorage, bukan dari Zustand store
-  // Zustand store reset saat refresh — tidak bisa jadi sumber kebenaran untuk auth
   useEffect(() => {
     const token = localStorage.getItem("access_token");
+
     if (!token) {
-      router.replace("/login");
+      // ✅ FIX 4: Redirect ke /?login=true — bukan /login yang tidak ada
+      router.replace("/?login=true");
       return;
     }
 
-    // Fetch user data untuk dapat nama & validasi token masih valid
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -34,29 +33,27 @@ export default function UserDashboardPage() {
     })
       .then((res) => {
         if (!res.ok) {
-          // Token invalid/expired — paksa login ulang
+          // Token invalid/expired — hapus token lama, arahkan ke dialog login
           localStorage.removeItem("access_token");
-          router.replace("/login");
+          // ✅ FIX 4: Sama — redirect ke homepage dengan dialog login terbuka
+          router.replace("/?login=true");
           return null;
         }
         return res.json();
       })
       .then((data) => {
+        if (!data) return;
         if (data?.data) {
           setUser(data.data);
         }
         setIsLoading(false);
       })
       .catch(() => {
-        router.replace("/login");
+        // Network error — redirect ke login juga
+        localStorage.removeItem("access_token");
+        router.replace("/?login=true");
       });
   }, [router]);
-
-  // ✅ FIX: HAPUS semua kode MOCK_REJECTION — fitur ini tidak ada
-  // const MOCK_REJECTION = true;         ← HAPUS
-  // const [showRejectionPopup, ...]      ← HAPUS
-  // useEffect MOCK_REJECTION             ← HAPUS
-  // <Dialog> rejection popup             ← HAPUS
 
   if (isLoading) {
     return (
