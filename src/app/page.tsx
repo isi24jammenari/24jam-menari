@@ -87,8 +87,8 @@ function HomeContent() {
       <section className="text-center pt-4 pb-12 px-4 relative">
         {/* Jejeran Logo Penyelenggara */}
         <div className="flex items-center justify-center mb-14 max-w-fit mx-auto py-3 px-5 sm:px-6 rounded-2xl border border-primary/30 bg-primary/5 shadow-sm">
-          {/* Dinamis: Grid HP, Flex Wrap PC */}
-          <div className="grid grid-cols-3 lg:flex lg:flex-wrap gap-x-4 gap-y-4 sm:gap-5 md:gap-6 items-center justify-center justify-items-center">
+          {/* Dinamis: Grid HP (5 kolom = 2 baris), Flex Wrap PC */}
+          <div className="grid grid-cols-5 lg:flex lg:flex-wrap gap-x-2 sm:gap-x-4 gap-y-4 sm:gap-5 md:gap-6 items-center justify-center justify-items-center">
             {[
               { src: "/tutwuri.webp", alt: "Tut Wuri Handayani" },
               { src: "/kemenkebud.webp", alt: "Kemenkebud" },
