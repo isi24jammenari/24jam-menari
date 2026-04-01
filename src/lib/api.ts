@@ -14,28 +14,39 @@ const api = axios.create({
   withCredentials: true, 
 });
 
-// Interceptor untuk menangani error global (misal: token expired / belum login)
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      // Jika butuh aksi spesifik saat user tidak terautentikasi, tangani di sini
-      console.warn("Unauthorized access - harap login kembali.");
+// ==========================================
+// ✅ REQUEST INTERCEPTOR (YANG SEBELUMNYA HILANG)
+// Mengambil token dari localStorage dan menaruhnya di Headers
+// ==========================================
+api.interceptors.request.use((config) => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-    return Promise.reject(error);
   }
-);
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
 
-// Tambahkan/Ubah di bagian bawah file src/lib/api.ts
+// ==========================================
+// ✅ RESPONSE INTERCEPTOR
+// Menangani Error Global (misal: token expired / belum login)
+// ==========================================
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      console.warn("Unauthorized access - harap login kembali.");
-      // ✅ Redirect paksa ke halaman login baru
+      console.warn("Unauthorized access - token tidak valid atau expired.");
+      
+      // Redirect paksa ke halaman login baru & hapus token usang
       if (typeof window !== 'undefined') {
-        localStorage.removeItem("access_token");
-        window.location.href = '/auth/login';
+        // Cek apakah sedang di halaman login/register agar tidak infinite loop
+        if (!window.location.pathname.includes('/auth/login') && !window.location.pathname.includes('/booking/register')) {
+            localStorage.removeItem("access_token");
+            window.location.href = '/auth/login';
+        }
       }
     }
     return Promise.reject(error);
