@@ -155,7 +155,7 @@ export default function FormTab() {
         <span className="text-xl">⏰</span>
         <div>
           <p className="font-bold text-destructive">Batas Akhir Pengisian Formulir</p>
-          <p className="text-sm text-destructive mt-0.5">Semua data pementasan (Submit Final) WAJIB diselesaikan paling lambat <strong>10 April 2025 Pukul 12:00 WIB</strong>.</p>
+          <p className="text-sm text-destructive mt-0.5">Semua data pementasan (Submit Final) WAJIB diselesaikan paling lambat <strong>10 April 2026 Pukul 12:00 WIB</strong>.</p>
         </div>
       </div>
 
