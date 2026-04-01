@@ -12,8 +12,9 @@ type Tab = "jadwal" | "formulir" | "dokumen";
 export default function UserDashboardPage() {
   const router = useRouter();
 
-  const [activeTab, setActiveTab] = useState<Tab>("jadwal");
+  const [activeTab, setActiveTab] = useState<Tab>("formulir"); // Default langsung ke formulir
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+  const [formStatus, setFormStatus] = useState<"empty" | "draft" | "completed">("empty");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -42,6 +43,20 @@ export default function UserDashboardPage() {
         if (!data) return;
         if (data?.data) {
           setUser(data.data);
+        }
+        // Chain fetch untuk cek status form (Gatekeeper)
+        return fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/schedule`, {
+          headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+        });
+      })
+      .then((res) => (res ? res.json() : null))
+      .then((scheduleData) => {
+        if (scheduleData?.data?.[0]) {
+          const status = scheduleData.data[0].performance?.status || "empty";
+          setFormStatus(status);
+          if (status === "completed") {
+            setActiveTab("jadwal"); // Jika sudah beres, default ke jadwal
+          }
         }
         setIsLoading(false);
       })
@@ -86,20 +101,29 @@ export default function UserDashboardPage() {
 
       {/* Tab Navigator */}
       <div className="flex gap-2 mb-8 border-b border-border pb-1 overflow-x-auto no-scrollbar">
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-5 py-3 rounded-t-xl text-lg font-semibold transition-all whitespace-nowrap ${
-              activeTab === tab.id
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:text-primary hover:bg-muted"
-            }`}
-          >
-            <span>{tab.icon}</span>
-            {tab.label}
-          </button>
-        ))}
+        {tabs.map((tab) => {
+          // Kunci tab dokumen jika form belum completed
+          const isLocked = tab.id === "dokumen" && formStatus !== "completed";
+
+          return (
+            <button
+              key={tab.id}
+              onClick={() => !isLocked && setActiveTab(tab.id)}
+              disabled={isLocked}
+              className={`flex items-center gap-2 px-5 py-3 rounded-t-xl text-lg font-semibold transition-all whitespace-nowrap ${
+                activeTab === tab.id
+                  ? "bg-primary text-primary-foreground"
+                  : isLocked
+                  ? "text-muted-foreground/40 cursor-not-allowed bg-muted/50"
+                  : "text-muted-foreground hover:text-primary hover:bg-muted"
+              }`}
+            >
+              {isLocked && <span className="text-sm">🔒</span>}
+              <span>{tab.icon}</span>
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Tab Content */}

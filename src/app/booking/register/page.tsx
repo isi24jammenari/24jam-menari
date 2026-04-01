@@ -9,13 +9,10 @@ import { Separator } from "@/components/ui/separator";
 import { useBookingStore } from "@/lib/store/bookingStore";
 import { formatPrice } from "@/lib/data/venues";
 
-// ✅ 1. Tambahkan field baru di FormState
+// ✅ 1. State disederhanakan (Hanya Nama, Email, Password)
 type FormState = {
   name: string;
   email: string;
-  phone_number: string;
-  institution_name: string;
-  address: string;
   password: string;
   confirmPassword: string;
 };
@@ -43,16 +40,14 @@ export default function RegisterPage() {
     setLoggedIn,
   } = useBookingStore();
 
-  // ✅ 2. Masukkan inisial state untuk field baru
+  // ✅ 2. Inisial state disederhanakan
   const [form, setForm] = useState<FormState>({
     name: "",
     email: "",
-    phone_number: "",
-    institution_name: "",
-    address: "",
     password: "",
     confirmPassword: "",
   });
+
   const [errors, setErrors] = useState<FieldError>({});
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -89,10 +84,6 @@ export default function RegisterPage() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       newErrors.email = "Format email tidak valid.";
     }
-    
-    if (!form.phone_number.trim()) newErrors.phone_number = "Nomor Telepon/WA tidak boleh kosong.";
-    if (!form.institution_name.trim()) newErrors.institution_name = "Nama Sanggar/Institusi tidak boleh kosong.";
-    if (!form.address.trim()) newErrors.address = "Alamat tidak boleh kosong.";
 
     if (!form.password) {
       newErrors.password = "Password tidak boleh kosong.";
@@ -131,9 +122,6 @@ export default function RegisterPage() {
           body: JSON.stringify({
             name: form.name,
             email: form.email,
-            phone_number: form.phone_number,
-            institution_name: form.institution_name,
-            address: form.address,
             password: form.password,
             password_confirmation: form.confirmPassword,
             booking_id: activeBookingId,
@@ -256,60 +244,6 @@ export default function RegisterPage() {
                 }`}
               />
               {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
-            </div>
-
-            {/* ✅ 5. UI Baru: Nomor WA */}
-            <div className="space-y-2">
-              <label className="text-base font-semibold text-foreground block">
-                Nomor Telepon / WhatsApp <span className="text-destructive">*</span>
-              </label>
-              <input
-                type="tel"
-                name="phone_number"
-                value={form.phone_number}
-                onChange={handleChange}
-                placeholder="08123456789"
-                className={`w-full text-lg px-4 py-3 rounded-xl border-2 bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
-                  errors.phone_number ? "border-destructive" : "border-input"
-                }`}
-              />
-              {errors.phone_number && <p className="text-sm text-destructive">{errors.phone_number}</p>}
-            </div>
-
-            {/* ✅ 5. UI Baru: Institusi */}
-            <div className="space-y-2">
-              <label className="text-base font-semibold text-foreground block">
-                Nama Sanggar / Institusi <span className="text-destructive">*</span>
-              </label>
-              <input
-                type="text"
-                name="institution_name"
-                value={form.institution_name}
-                onChange={handleChange}
-                placeholder="Contoh: Sanggar Tari Kinasih / ISI Surakarta"
-                className={`w-full text-lg px-4 py-3 rounded-xl border-2 bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
-                  errors.institution_name ? "border-destructive" : "border-input"
-                }`}
-              />
-              {errors.institution_name && <p className="text-sm text-destructive">{errors.institution_name}</p>}
-            </div>
-
-            {/* ✅ 5. UI Baru: Alamat */}
-            <div className="space-y-2">
-              <label className="text-base font-semibold text-foreground block">
-                Alamat Lengkap <span className="text-destructive">*</span>
-              </label>
-              <textarea
-                name="address"
-                value={form.address}
-                onChange={handleChange}
-                placeholder="Masukkan alamat lengkap (Jalan, Kota/Kabupaten, Provinsi)"
-                rows={3}
-                className={`w-full text-lg px-4 py-3 rounded-xl border-2 bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors resize-none ${
-                  errors.address ? "border-destructive" : "border-input"
-                }`}
-              />
-              {errors.address && <p className="text-sm text-destructive">{errors.address}</p>}
             </div>
 
             <Separator className="my-4" />
