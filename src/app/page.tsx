@@ -17,6 +17,34 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
 
+// Komponen Pemicu Fetching Venues
+function VenueLoader() {
+  const { venues, isLoadingVenues, fetchVenues } = useBookingStore();
+
+  useEffect(() => {
+    if (venues.length === 0) {
+      fetchVenues();
+    }
+  }, [venues.length, fetchVenues]);
+
+  if (isLoadingVenues) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-4">
+        <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-muted-foreground animate-pulse">Menghubungkan ke server pendaftaran...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {venues.map((venue) => (
+        <VenueCard key={venue.id} venue={venue} />
+      ))}
+    </div>
+  );
+}
+
 function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -186,18 +214,17 @@ function HomeContent() {
         <div className="flex-1 h-px bg-gradient-to-l from-transparent to-border" />
       </div>
 
-      {/* Venue Cards */}
-      <section className="mt-6 max-w-5xl mx-auto pb-12">
+      {/* Venue Cards (Dinamis dari Database) */}
+      <section className="mt-6 max-w-5xl mx-auto pb-12 min-h-[400px]">
         <SectionTitle
           title="Venue Penampilan"
           subtitle="Pilih salah satu dari venue berikut untuk melihat ketersediaan jam show."
           className="mb-8"
         />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {venues.map((venue) => (
-            <VenueCard key={venue.id} venue={venue} />
-          ))}
-        </div>
+        
+        {/* Panggil fungsi fetch jika belum ada data */}
+        <VenueLoader />
+
       </section>
 
       {/* REDUNDANT FOOTER TEXT HAS BEEN REMOVED FROM HERE */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useState } from "react";
+import { use, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import PageWrapper from "@/components/layout/PageWrapper";
@@ -8,7 +8,7 @@ import TimeSlotGrid from "@/components/booking/TimeSlotGrid";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useBookingStore } from "@/lib/store/bookingStore";
-import { getVenueById, TimeSlot, formatPrice } from "@/lib/data/venues";
+import { TimeSlot, formatPrice } from "@/lib/data/venues";
 
 interface Props {
   params: Promise<{ venue: string }>;
@@ -17,16 +17,22 @@ interface Props {
 export default function VenuePage({ params }: Props) {
   const { venue: venueId } = use(params);
   const router = useRouter();
-  const { selectVenue, selectSlot, selectedSlotId } = useBookingStore();
+  const { venues, fetchVenues, isLoadingVenues, selectVenue, selectSlot, selectedSlotId } = useBookingStore();
 
-  const venue = getVenueById(venueId);
-  if (!venue) notFound();
+  // Pastikan data venues tersedia
+  useEffect(() => {
+    if (venues.length === 0) {
+      fetchVenues();
+    }
+  }, [venues.length, fetchVenues]);
 
+  const venue = venues.find((v) => v.id === venueId);
   const [localSelected, setLocalSelected] = useState<TimeSlot | null>(null);
 
   const handleSelect = (slot: TimeSlot) => {
+    if (slot.isBooked) return; // Guard logic: Jangan bisa klik slot yang sudah laku
     setLocalSelected(slot);
-    selectVenue(venue.id, venue.name);
+    if (venue) selectVenue(venue.id, venue.name);
     selectSlot(slot.id, slot.time, slot.price);
   };
 
@@ -34,6 +40,21 @@ export default function VenuePage({ params }: Props) {
     if (!localSelected) return;
     router.push("/booking/payment");
   };
+
+  // State Memuat (Loading API)
+  if (isLoadingVenues) {
+    return (
+      <PageWrapper>
+        <div className="min-h-[60vh] flex flex-col items-center justify-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-muted-foreground font-medium">Memuat ketersediaan slot terbaru...</p>
+        </div>
+      </PageWrapper>
+    );
+  }
+
+  // Guard jika venue ID salah/tidak ditemukan di DB
+  if (!venue && !isLoadingVenues) return notFound();
 
   return (
     <PageWrapper>
@@ -45,13 +66,13 @@ export default function VenuePage({ params }: Props) {
         ← Kembali ke Pilih Venue
       </button>
 
-      {/* Header venue tanpa icon */}
+      {/* Header venue */}
       <div className="mb-10">
         <h1 className="text-tradisional text-4xl md:text-5xl font-bold text-foreground">
-          {venue.name}
+          {venue?.name}
         </h1>
         <p className="text-xl font-bold text-primary tracking-widest mt-2">
-          {venue.festivalName}
+          {venue?.festivalName}
         </p>
       </div>
 
@@ -59,9 +80,7 @@ export default function VenuePage({ params }: Props) {
         
         {/* Kolom Kiri: Fasilitas & Jam */}
         <div className="lg:col-span-2 space-y-10">
-          
           <div className="space-y-6">
-            {/* Kotak Fasilitas */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Fasilitas Venue */}
               <div className="bg-card/50 border border-border rounded-2xl p-6">
@@ -69,7 +88,7 @@ export default function VenuePage({ params }: Props) {
                   🏛️ Fasilitas Venue
                 </h3>
                 <ul className="space-y-2 text-sm text-muted-foreground">
-                  {venue.venueFacilities.map((item, idx) => (
+                  {venue?.venueFacilities.map((item, idx) => (
                     <li key={idx} className="flex gap-2 items-start">
                       <span className="text-primary mt-0.5">•</span>
                       <span className="leading-relaxed">{item}</span>
@@ -81,10 +100,10 @@ export default function VenuePage({ params }: Props) {
               {/* Fasilitas Festival */}
               <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6">
                 <h3 className="text-lg font-bold text-primary mb-4 border-b border-primary/20 pb-2">
-                  ✨ Benefit {venue.festivalName}
+                  ✨ Benefit {venue?.festivalName}
                 </h3>
                 <ul className="space-y-2 text-sm text-foreground">
-                  {venue.festivalFacilities.map((item, idx) => (
+                  {venue?.festivalFacilities.map((item, idx) => (
                     <li key={idx} className="flex gap-2 items-start">
                       <span className="text-accent mt-0.5">✓</span>
                       <span className="leading-relaxed font-medium">{item}</span>
@@ -94,7 +113,7 @@ export default function VenuePage({ params }: Props) {
               </div>
             </div>
 
-            {/* Kotak Syarat dan Ketentuan Baru */}
+            {/* Kotak Syarat dan Ketentuan */}
             <div className="bg-background border border-border/80 rounded-2xl p-6 sm:p-8 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-1.5 h-full bg-accent"></div>
               <h3 className="text-lg font-bold text-foreground mb-4 border-b border-border/50 pb-2 flex items-center gap-2">
@@ -112,12 +131,14 @@ export default function VenuePage({ params }: Props) {
             </div>
           </div>
 
-          {/* Grid slot */}
-          <TimeSlotGrid
-            slots={venue.slots}
-            selectedSlotId={localSelected?.id ?? null}
-            onSelect={handleSelect}
-          />
+          {/* Grid slot (Data dari Database) */}
+          {venue && (
+            <TimeSlotGrid
+              slots={venue.slots}
+              selectedSlotId={localSelected?.id ?? null}
+              onSelect={handleSelect}
+            />
+          )}
         </div>
 
         {/* Panel ringkasan — kanan sticky */}
@@ -132,8 +153,8 @@ export default function VenuePage({ params }: Props) {
                 <div className="space-y-3 text-base">
                   <div className="flex flex-col gap-1">
                     <span className="text-muted-foreground text-sm">Venue</span>
-                    <span className="font-semibold leading-tight">{venue.name}</span>
-                    <span className="text-primary text-sm font-bold">{venue.festivalName}</span>
+                    <span className="font-semibold leading-tight">{venue?.name}</span>
+                    <span className="text-primary text-sm font-bold">{venue?.festivalName}</span>
                   </div>
 
                   <div className="flex justify-between mt-4">
@@ -176,7 +197,6 @@ export default function VenuePage({ params }: Props) {
               </CardContent>
             </Card>
 
-            {/* Info timer */}
             <Card className="bg-accent/10 border-accent/30 border">
               <CardContent className="p-4">
                 <p className="text-sm text-foreground leading-relaxed">
