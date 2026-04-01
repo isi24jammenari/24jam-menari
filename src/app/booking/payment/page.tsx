@@ -106,6 +106,14 @@ export default function PaymentPage() {
       // Token dari response API
       const snapToken = resData.data.snap_token;
 
+      // Validasi brutal: Cek apakah object snap sudah ter-load oleh browser
+      // @ts-ignore
+      if (typeof window === "undefined" || !window.snap) {
+        alert("Sistem pembayaran sedang memuat, silakan tunggu beberapa detik dan coba klik Bayar lagi.");
+        setIsProcessing(false);
+        return;
+      }
+
       // Panggil popup Midtrans Snap
       // @ts-ignore - Bypass TS untuk objek global window.snap dari script Midtrans
       window.snap.pay(snapToken, {
@@ -150,7 +158,6 @@ export default function PaymentPage() {
       <Script
         src="https://app.sandbox.midtrans.com/snap/snap.js"
         data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
-        strategy="beforeInteractive"
       />
 
       <PageWrapper narrow>
