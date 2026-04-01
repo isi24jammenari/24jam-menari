@@ -173,7 +173,7 @@ export default function FormTab() {
         {/* Helper render untuk input */}
         {([
           { key: "group_name", label: "1. Nama Peserta / Grup", type: "text" },
-          { key: "contact_person", label: "2. Contact Person (Instansi/Kategori)", type: "text" },
+          { key: "contact_person", label: "2. Contact Person (Nomor WhatsApp / Telepon)", type: "tel", hint: "Contoh: 08123456789" },
           { key: "cp_name", label: "3. Nama CP (Narahubung)", type: "text" },
           { key: "category", label: "4. Kategori Peserta", type: "select", options: ["Anak-anak", "Remaja", "Dewasa", "Disabilitas"] },
           { key: "supporters", label: "5. Pendukung Karya", type: "textarea", hint: "Sebutkan jumlah dan rincian penari/pemusik." },
