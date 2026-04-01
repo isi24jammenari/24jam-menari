@@ -48,12 +48,6 @@ export default function Navbar() {
           />
         </Link>
 
-        <div className="hidden lg:block absolute left-1/2 -translate-x-1/2">
-          <p className="text-sm font-medium tracking-widest text-muted-foreground uppercase italic">
-            Portal Pendaftaran Penampil 24 Jam Menari Surakarta
-          </p>
-        </div>
-
         <div className="flex items-center gap-3 sm:gap-6">
           <a
             href="https://www.instagram.com/24jammenari_official/"
