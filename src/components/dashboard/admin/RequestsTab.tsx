@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { venues, formatPrice } from "@/lib/data/venues";
+import { formatPrice } from "@/lib/data/venues";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
