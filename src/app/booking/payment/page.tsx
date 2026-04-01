@@ -29,6 +29,40 @@ const PAYMENT_METHODS = [
   { id: "qris", label: "QRIS", icon: "📱" },
 ] as const;
 
+// ─── Session persistence ───────────────────────────────────────────────────
+// Menyimpan data pembayaran ke sessionStorage agar tidak hilang saat refresh.
+// Menggunakan sessionStorage (bukan localStorage) sehingga data otomatis
+// bersih saat tab/browser ditutup.
+const SESSION_KEY = "pending_payment";
+
+type PendingPayment = {
+  bookingId: string;
+  paymentInstructions: any;
+  timerExpiry: number; // Unix ms, hasil Date.now() + 15 menit
+};
+
+function savePendingPayment(data: PendingPayment) {
+  try {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(data));
+  } catch (_) {}
+}
+
+function loadPendingPayment(): PendingPayment | null {
+  try {
+    const raw = sessionStorage.getItem(SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function clearPendingPayment() {
+  try {
+    sessionStorage.removeItem(SESSION_KEY);
+  } catch (_) {}
+}
+// ──────────────────────────────────────────────────────────────────────────
+
 export default function PaymentPage() {
   const router = useRouter();
   const {
@@ -55,17 +89,8 @@ export default function PaymentPage() {
   // ✅ FIX 3: Ref untuk interval polling agar bisa di-clear dengan aman
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Guard: redirect jika tidak ada pilihan venue/waktu
-  useEffect(() => {
-    if (!selectedVenueName || !selectedSlotTime) {
-      router.replace("/");
-    }
-  }, [selectedVenueName, selectedSlotTime, router]);
-
-  // ✅ FIX 2: HAPUS useEffect startPaymentTimer yang lama.
-  // Timer sekarang hanya dipanggil di dalam handleBayar() setelah API sukses.
-
   // ✅ FIX 3: Polling logic — cek status booking ke backend setiap 5 detik
+  // Didefinisikan lebih awal (sebelum useEffect restore) agar bisa dipanggil di sana
   const startPolling = useCallback((id: string) => {
     // Jangan dobel polling jika sudah jalan
     if (pollingRef.current) return;
@@ -104,6 +129,46 @@ export default function PaymentPage() {
     }, 5000); // Cek setiap 5 detik
   }, [setPaymentStatus]);
 
+  // ✅ RESTORE: Pulihkan state dari sessionStorage jika halaman di-refresh
+  // Harus setelah startPolling didefinisikan karena useEffect ini memanggilnya
+  useEffect(() => {
+    const saved = loadPendingPayment();
+    if (!saved) return;
+
+    // Hanya restore jika timer belum habis
+    if (Date.now() < saved.timerExpiry) {
+      setBookingId(saved.bookingId);
+      setPaymentInstructions(saved.paymentInstructions);
+      // Sync timer dan status ke store agar PaymentTimer lanjut dari sisa waktu
+      useBookingStore.setState({
+        timerExpiry: saved.timerExpiry,
+        paymentStatus: "pending",
+      });
+      // Lanjutkan polling dari booking_id yang tersimpan
+      startPolling(saved.bookingId);
+    } else {
+      // Timer sudah habis saat offline/refresh — bersihkan session
+      clearPendingPayment();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Guard: redirect jika tidak ada pilihan venue/waktu DAN tidak ada sesi tersimpan
+  useEffect(() => {
+    if (!selectedVenueName || !selectedSlotTime) {
+      // Beri sedikit jeda agar useEffect restore di atas sempat jalan lebih dulu
+      const timeout = setTimeout(() => {
+        if (!useBookingStore.getState().selectedVenueName) {
+          router.replace("/");
+        }
+      }, 100);
+      return () => clearTimeout(timeout);
+    }
+  }, [selectedVenueName, selectedSlotTime, router]);
+
+  // ✅ FIX 2: HAPUS useEffect startPaymentTimer yang lama.
+  // Timer sekarang hanya dipanggil di dalam handleBayar() setelah API sukses.
+
   // Bersihkan polling saat komponen unmount
   useEffect(() => {
     return () => {
@@ -124,12 +189,14 @@ export default function PaymentPage() {
   }, [setPaymentStatus]);
 
   const handleExpiredClose = () => {
+    clearPendingPayment(); // ✅ RESTORE: Bersihkan session saat expired
     setShowExpiredDialog(false);
     resetBooking();
     router.replace("/");
   };
 
   const handleSuccessClose = () => {
+    clearPendingPayment(); // ✅ RESTORE: Bersihkan session saat sukses
     setShowSuccessDialog(false);
     // ✅ FIX 5: bookingId sudah ada di store, halaman register bisa membacanya langsung
     router.push("/booking/register");
@@ -173,6 +240,15 @@ export default function PaymentPage() {
       // ✅ FIX 3: Mulai polling status pembayaran ke backend
       if (resData.data?.booking_id) {
         startPolling(resData.data.booking_id);
+      }
+
+      // ✅ RESTORE: Simpan ke sessionStorage agar tahan refresh
+      if (resData.data?.booking_id) {
+        savePendingPayment({
+          bookingId: resData.data.booking_id,
+          paymentInstructions: resData.data,
+          timerExpiry: Date.now() + 15 * 60 * 1000,
+        });
       }
 
     } catch (error: any) {
