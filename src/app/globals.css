@@ -33,39 +33,40 @@
 :root {
   --radius: 0.75rem;
 
-  /* Background & Surface — Kopi Tubruk Sangat Gelap (Bukan Hitam) */
-  --background: #17110E;
-  --foreground: #EADCD1; /* Krem redup agar tulisan tidak silau */
+  /* Background Utama — Hitam Solid (#000000) */
+  --background: #000000;
+  --foreground: #F5F5F5; /* Teks terang agar terbaca di background gelap */
 
-  /* Kartu dan Popover — Sedikit lebih terang dari background */
-  --card: #211915;
-  --card-foreground: #EADCD1;
+  /* Kartu dan Popover — Abu-abu sangat gelap (agar beda sedikit dengan background) */
+  --card: #111111;
+  --card-foreground: #F5F5F5;
 
-  --popover: #211915;
-  --popover-foreground: #EADCD1;
+  --popover: #111111;
+  --popover-foreground: #F5F5F5;
 
-  /* Primary — Tembaga / Coklat Terang (Sesuai nuansa logo Anda) */
-  --primary: #C27637;
-  --primary-foreground: #17110E; /* Teks gelap di atas tombol terang */
+  /* Primary — Ungu (#6849CF) */
+  --primary: #6849CF;
+  --primary-foreground: #FFFFFF; /* Teks putih di atas tombol ungu */
 
-  /* Secondary — Kayu Jati Gelap */
-  --secondary: #3B2A21;
-  --secondary-foreground: #EADCD1;
+  /* Secondary — Abu-abu gelap (untuk tombol sekunder/opsi) */
+  --secondary: #222222;
+  --secondary-foreground: #F5F5F5;
 
-  /* Muted — Elemen redup / abu-abu kecoklatan */
-  --muted: #2A1F1A;
-  --muted-foreground: #9E8877;
+  /* Muted — Elemen redup / abu-abu gelap */
+  --muted: #1A1A1A;
+  --muted-foreground: #A0A0A0;
 
-  /* Accent — Bata / Terakota */
-  --accent: #944024;
-  --accent-foreground: #FDF6E3;
+  /* Accent — Hijau Stabilo/Neon (#C6FF33) */
+  --accent: #C6FF33;
+  --accent-foreground: #000000; /* Teks hitam di atas hijau neon agar kontras */
 
   /* Border & Inputs */
-  --border: #3B2A21;
-  --input: #2A1F1A;
-  --ring: #C27637;
+  --border: #333333;
+  --input: #1A1A1A;
+  --ring: #6849CF; /* Fokus ring warna ungu */
 
-  --destructive: #992B22;
+  /* Destructive/Error — Merah (#FF00CC atau merah standar, di sini saya pakai warna Anda jika itu merah bata, tapi sepertinya salah ketik. Saya asumsikan ini merah error, atau Pink Neon) */
+  --destructive: #FF00CC; /* Menggunakan warna #F00cc yang di-normalize */
 }
 
 /* Ornamen batik — border dekoratif */

@@ -30,7 +30,7 @@ export default function AdminDashboardPage() {
           <div className="h-px w-10 bg-accent opacity-60" />
           <span className="text-accent text-sm">✦</span>
           <span className="text-muted-foreground text-sm">
-            24 Jam Menari
+            24Jam Menari
           </span>
         </div>
       </div>

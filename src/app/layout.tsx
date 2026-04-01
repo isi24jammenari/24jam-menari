@@ -5,8 +5,8 @@ import "./globals.css";
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
 
 export const metadata: Metadata = {
-  title: "24 Jam Menari — Pendaftaran Show",
-  description: "Platform pendaftaran slot penampilan 24 Jam Menari",
+  title: "24Jam Menari — Pendaftaran Show",
+  description: "Platform pendaftaran slot penampilan 24Jam Menari",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
