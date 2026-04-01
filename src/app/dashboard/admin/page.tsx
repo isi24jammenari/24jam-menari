@@ -3,16 +3,14 @@
 import { useState } from "react";
 import PageWrapper from "@/components/layout/PageWrapper";
 import OverviewTab from "@/components/dashboard/admin/OverviewTab";
-import RequestsTab from "@/components/dashboard/admin/RequestsTab";
 import RundownTab from "@/components/dashboard/admin/RundownTab";
 import ManagementTab from "@/components/dashboard/admin/ManagementTab";
 import { Badge } from "@/components/ui/badge";
 
-type Tab = "overview" | "permintaan" | "user" | "pengelolaan";
+type Tab = "overview" | "user" | "pengelolaan";
 
 const tabs: { id: Tab; label: string; icon: string; badge?: number }[] = [
   { id: "overview", label: "Overview", icon: "📊" },
-  { id: "permintaan", label: "Permintaan", icon: "📨", badge: 2 },
   { id: "user", label: "Rundown User", icon: "📋" },
   { id: "pengelolaan", label: "Pengelolaan", icon: "⚙️" },
 ];
@@ -63,7 +61,6 @@ export default function AdminDashboardPage() {
       {/* Tab Content */}
       <div>
         {activeTab === "overview" && <OverviewTab />}
-        {activeTab === "permintaan" && <RequestsTab />}
         {activeTab === "user" && <RundownTab />}
         {activeTab === "pengelolaan" && <ManagementTab />}
       </div>

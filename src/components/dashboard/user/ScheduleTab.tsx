@@ -3,15 +3,7 @@
 import { formatPrice } from "@/lib/data/venues";
 import { useBookingStore } from "@/lib/store/bookingStore";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 
 export default function ScheduleTab() {
   const { venues, fetchVenues, selectedVenueId, selectedSlotId, selectedVenueName, selectedSlotTime } =
@@ -20,21 +12,6 @@ export default function ScheduleTab() {
   useEffect(() => {
     if (venues.length === 0) fetchVenues();
   }, [venues.length, fetchVenues]);
-
-  const [showMoveDialog, setShowMoveDialog] = useState(false);
-  const [moveSubmitted, setMoveSubmitted] = useState(false);
-  const [moveForm, setMoveForm] = useState({
-    venueId: "",
-    slotId: "",
-    alasan: "",
-  });
-
-  const selectedMoveVenue = venues.find((v) => v.id === moveForm.venueId);
-
-  const handleSubmitMove = () => {
-    if (!moveForm.venueId || !moveForm.slotId) return;
-    setMoveSubmitted(true);
-  };
 
   return (
     <div className="space-y-8">
@@ -53,12 +30,6 @@ export default function ScheduleTab() {
             ✓ Terkunci
           </Badge>
         </div>
-        <button
-          onClick={() => { setShowMoveDialog(true); setMoveSubmitted(false); }}
-          className="mt-4 text-sm text-accent underline underline-offset-4 hover:text-primary transition-colors"
-        >
-          Ingin pindah jam/venue? Cek ketersediaan
-        </button>
       </div>
 
       {/* Jadwal seluruh venue */}
@@ -134,119 +105,6 @@ export default function ScheduleTab() {
           ))}
         </div>
       </div>
-
-      {/* Dialog Pindah Slot */}
-      <Dialog open={showMoveDialog} onOpenChange={setShowMoveDialog}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="text-tradisional text-2xl text-primary">
-              Permintaan Pindah Slot
-            </DialogTitle>
-            <DialogDescription className="text-base">
-              Pilih venue dan jam baru yang Anda inginkan. Permintaan akan
-              ditinjau oleh admin.
-            </DialogDescription>
-          </DialogHeader>
-
-          {moveSubmitted ? (
-            <div className="text-center py-6 space-y-3">
-              <span className="text-5xl">📨</span>
-              <p className="text-lg font-semibold text-primary">
-                Permintaan Terkirim!
-              </p>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                Permintaan pindah slot Anda sedang ditinjau oleh admin.
-                Anda akan mendapat notifikasi di dashboard jika sudah ada
-                keputusan.
-              </p>
-              <Button onClick={() => setShowMoveDialog(false)} className="w-full mt-2">
-                Tutup
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-4 mt-2">
-              <div className="bg-muted rounded-lg px-4 py-3 text-sm">
-                <span className="text-muted-foreground">Slot saat ini: </span>
-                <span className="font-semibold text-foreground">
-                  {selectedVenueName} — {selectedSlotTime}
-                </span>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-base font-semibold block">
-                  Venue Baru <span className="text-destructive">*</span>
-                </label>
-                <select
-                  value={moveForm.venueId}
-                  onChange={(e) =>
-                    setMoveForm((p) => ({ ...p, venueId: e.target.value, slotId: "" }))
-                  }
-                  className="w-full text-base px-4 py-3 rounded-xl border-2 border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="">— Pilih venue —</option>
-                  {venues.map((v) => (
-                    <option key={v.id} value={v.id}>
-                      {v.name} ({v.festivalName})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {selectedMoveVenue && (
-                <div className="space-y-2">
-                  <label className="text-base font-semibold block">
-                    Jam Baru <span className="text-destructive">*</span>
-                  </label>
-                  <select
-                    value={moveForm.slotId}
-                    onChange={(e) =>
-                      setMoveForm((p) => ({ ...p, slotId: e.target.value }))
-                    }
-                    className="w-full text-base px-4 py-3 rounded-xl border-2 border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    <option value="">— Pilih jam —</option>
-                    {selectedMoveVenue.slots
-                      .filter((s) => !s.isBooked && s.id !== selectedSlotId)
-                      .map((s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.time} — {formatPrice(s.price)}
-                        </option>
-                      ))}
-                  </select>
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <label className="text-base font-semibold block">
-                  Alasan Pindah
-                </label>
-                <textarea
-                  value={moveForm.alasan}
-                  onChange={(e) =>
-                    setMoveForm((p) => ({ ...p, alasan: e.target.value }))
-                  }
-                  placeholder="Tuliskan alasan Anda ingin pindah slot (opsional)"
-                  rows={3}
-                  className="w-full text-base px-4 py-3 rounded-xl border-2 border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                <Button variant="outline" onClick={() => setShowMoveDialog(false)} className="flex-1">
-                  Batal
-                </Button>
-                <Button
-                  onClick={handleSubmitMove}
-                  disabled={!moveForm.venueId || !moveForm.slotId}
-                  className="flex-1"
-                >
-                  Kirim Permintaan
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
