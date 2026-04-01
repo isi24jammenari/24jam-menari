@@ -46,29 +46,9 @@ export default function PaymentPage() {
   const [showExpiredDialog, setShowExpiredDialog] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-
-  // INJEKSI SCRIPT MIDTRANS MANUAL (Bypass bug Next.js <Script>)
-  useEffect(() => {
-    const scriptUrl = "https://app.sandbox.midtrans.com/snap/snap.js";
-    const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
-
-    // Cegah duplikasi script jika komponen re-render
-    if (document.querySelector(`script[src="${scriptUrl}"]`)) return;
-
-    const script = document.createElement("script");
-    script.src = scriptUrl;
-    script.setAttribute("data-client-key", clientKey || "");
-    script.async = true;
-
-    document.body.appendChild(script);
-
-    return () => {
-      // Cleanup saat user pindah/keluar dari halaman payment
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
-  }, []);
+  
+  // State untuk menampung data instruksi dari Midtrans Core API
+  const [paymentInstructions, setPaymentInstructions] = useState<any>(null);
 
   // Guard: redirect jika tidak ada pilihan venue/waktu
   useEffect(() => {
@@ -125,42 +105,12 @@ export default function PaymentPage() {
         throw new Error(resData.message || "Gagal membuat pesanan.");
       }
 
-      // Token dari response API
-      const snapToken = resData.data.snap_token;
-
-      // VALIDASI MUTLAK: Jangan panggil .pay() jika script belum selesai diunduh browser!
-      // @ts-ignore
-      if (typeof window === "undefined" || typeof window.snap === "undefined") {
-        alert("Sistem pembayaran sedang menyambung ke Midtrans. Silakan tunggu 3 detik dan klik Bayar lagi.");
-        setIsProcessing(false);
-        return;
-      }
-
-      // Panggil popup Midtrans Snap
-      // @ts-ignore - Bypass TS untuk objek global window.snap dari script Midtrans
-      window.snap.pay(snapToken, {
-        onSuccess: function (result: any) {
-          setPaymentStatus("success");
-          setShowSuccessDialog(true);
-          setIsProcessing(false);
-        },
-        onPending: function (result: any) {
-          // Dalam konteks VA/QRIS, onPending sering ter-trigger setelah user
-          // menutup popup sebelum bayar, atau saat kode pembayaran digenerate.
-          // Anggap ini sebagai instruksi untuk menunggu/mengecek status manual jika diperlukan,
-          // atau kita arahkan ke sukses untuk mockup alur pendaftaran sementara.
-          setPaymentStatus("success");
-          setShowSuccessDialog(true);
-          setIsProcessing(false);
-        },
-        onError: function (result: any) {
-          alert("Pembayaran ditolak atau gagal!");
-          setIsProcessing(false);
-        },
-        onClose: function () {
-          setIsProcessing(false);
-        },
-      });
+      // Simpan instruksi pembayaran murni dari Core API ke state
+      setPaymentInstructions(resData.data);
+      setIsProcessing(false);
+      
+      // Catatan: Jangan ubah paymentStatus jadi "success" di sini,
+      // biarkan tetap "pending" agar timer 15 menit berjalan saat user transfer.
     } catch (error: any) {
       console.error(error);
       alert(error.message || "Terjadi kesalahan sistem.");
@@ -229,57 +179,118 @@ export default function PaymentPage() {
           </CardContent>
         </Card>
 
-        {/* Metode Pembayaran */}
-        <Card className="batik-border border-0 mb-6">
-          <CardContent className="p-6 space-y-4">
-            <h2 className="text-tradisional text-xl font-bold text-primary">
-              Metode Pembayaran
-            </h2>
-            <Separator />
-            <div className="space-y-3">
-              {PAYMENT_METHODS.map((method) => (
-                <button
-                  key={method.id}
-                  onClick={() => setSelectedMethod(method.id as PaymentMethod)}
-                  className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all duration-200 ${
-                    selectedMethod === method.id
-                      ? "border-primary bg-primary/5"
-                      : "border-border bg-card hover:border-accent"
-                  }`}
-                >
-                  <span className="text-2xl">{method.icon}</span>
-                  <span className="text-lg font-medium">{method.label}</span>
-                  {selectedMethod === method.id && (
-                    <span className="ml-auto text-primary font-bold text-xl">✓</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Kontainer Dinamis: Pilih Metode vs Instruksi Pembayaran */}
+        {!paymentInstructions ? (
+          <>
+            {/* Metode Pembayaran */}
+            <Card className="batik-border border-0 mb-6">
+              <CardContent className="p-6 space-y-4">
+                <h2 className="text-tradisional text-xl font-bold text-primary">
+                  Metode Pembayaran
+                </h2>
+                <Separator />
+                <div className="space-y-3">
+                  {PAYMENT_METHODS.map((method) => (
+                    <button
+                      key={method.id}
+                      onClick={() => setSelectedMethod(method.id as PaymentMethod)}
+                      className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all duration-200 ${
+                        selectedMethod === method.id
+                          ? "border-primary bg-primary/5"
+                          : "border-border bg-card hover:border-accent"
+                      }`}
+                    >
+                      <span className="text-2xl">{method.icon}</span>
+                      <span className="text-lg font-medium">{method.label}</span>
+                      {selectedMethod === method.id && (
+                        <span className="ml-auto text-primary font-bold text-xl">✓</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
-        {/* Tombol Bayar */}
-        <Button
-          onClick={handleBayar}
-          disabled={!selectedMethod || paymentStatus !== "pending" || isProcessing}
-          className="w-full text-xl py-7 font-semibold"
-          size="lg"
-        >
-          {isProcessing ? (
-            <span className="flex items-center gap-2">
-              <span className="animate-spin text-lg">⏳</span>
-              Memproses Pembayaran...
-            </span>
-          ) : selectedMethod ? (
-            `Bayar ${formatPrice(selectedSlotPrice)} →`
-          ) : (
-            "Pilih Metode Pembayaran Dulu"
-          )}
-        </Button>
+            {/* Tombol Bayar */}
+            <Button
+              onClick={handleBayar}
+              disabled={!selectedMethod || paymentStatus !== "pending" || isProcessing}
+              className="w-full text-xl py-7 font-semibold"
+              size="lg"
+            >
+              {isProcessing ? (
+                <span className="flex items-center gap-2">
+                  <span className="animate-spin text-lg">⏳</span>
+                  Memproses Server...
+                </span>
+              ) : selectedMethod ? (
+                `Dapatkan Kode Pembayaran →`
+              ) : (
+                "Pilih Metode Pembayaran Dulu"
+              )}
+            </Button>
+            
+            <p className="text-center text-sm text-muted-foreground mt-4">
+              🔒 Transaksi aman menggunakan Midtrans Core API
+            </p>
+          </>
+        ) : (
+          <Card className="batik-border border-0 mb-6 bg-primary/5 border-primary/20">
+            <CardContent className="p-8 text-center space-y-4">
+              <h2 className="text-tradisional text-2xl font-bold text-primary">
+                Selesaikan Pembayaran Anda
+              </h2>
+              <Separator className="bg-primary/20" />
+              
+              <div className="py-4">
+                {paymentInstructions.payment_method === "qris" && paymentInstructions.qr_code_url && (
+                  <div className="flex flex-col items-center gap-4">
+                    <p className="text-sm text-muted-foreground uppercase font-bold tracking-wider">Scan QRIS Berikut</p>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={paymentInstructions.qr_code_url} alt="QRIS Code" className="w-64 h-64 border-4 border-white rounded-xl shadow-lg" />
+                  </div>
+                )}
 
-        <p className="text-center text-sm text-muted-foreground mt-4">
-          🔒 Pembayaran diproses dengan aman melalui Midtrans
-        </p>
+                {["bca", "bni", "bri"].includes(paymentInstructions.payment_method) && paymentInstructions.va_number && (
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground uppercase font-bold tracking-wider">
+                      Virtual Account {paymentInstructions.payment_method.toUpperCase()}
+                    </p>
+                    <p className="text-4xl font-black text-foreground tracking-widest bg-background p-4 rounded-xl border-2 border-primary/20 inline-block">
+                      {paymentInstructions.va_number}
+                    </p>
+                  </div>
+                )}
+
+                {paymentInstructions.payment_method === "mandiri" && paymentInstructions.biller_code && (
+                  <div className="space-y-4">
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground uppercase font-bold tracking-wider">Biller Code</p>
+                      <p className="text-2xl font-black text-foreground bg-background p-2 rounded-lg border-2 border-primary/20 inline-block">
+                        {paymentInstructions.biller_code}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm text-muted-foreground uppercase font-bold tracking-wider">Nomor VA (Bill Key)</p>
+                      <p className="text-3xl font-black text-foreground bg-background p-3 rounded-xl border-2 border-primary/20 inline-block">
+                        {paymentInstructions.bill_key}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <p className="text-muted-foreground text-sm">
+                Selesaikan pembayaran sebelum timer habis. Sistem akan otomatis memverifikasi pembayaran Anda melalui Webhook.
+              </p>
+
+              {/* Tombol Sementara untuk By-Pass Flow Simulasi */}
+              <Button onClick={() => { setShowSuccessDialog(true); setPaymentStatus("success"); }} className="w-full mt-4 text-lg py-6" variant="outline">
+                (Dev Mode) Paksa Lanjut Sukses
+              </Button>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Dialog: Waktu Habis */}
         <Dialog open={showExpiredDialog} onOpenChange={() => {}}>
