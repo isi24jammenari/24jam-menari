@@ -4,7 +4,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import PageWrapper from "@/components/layout/PageWrapper";
 import SectionTitle from "@/components/shared/SectionTitle";
 import VenueCard from "@/components/booking/VenueCard";
-import { venues } from "@/lib/data/venues";
 import { useBookingStore } from "@/lib/store/bookingStore";
 import {
   Dialog,

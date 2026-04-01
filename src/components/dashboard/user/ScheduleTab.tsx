@@ -1,10 +1,9 @@
 "use client";
 
-import { venues } from "@/lib/data/venues";
 import { formatPrice } from "@/lib/data/venues";
 import { useBookingStore } from "@/lib/store/bookingStore";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,8 +14,13 @@ import {
 import { Button } from "@/components/ui/button";
 
 export default function ScheduleTab() {
-  const { selectedVenueId, selectedSlotId, selectedVenueName, selectedSlotTime } =
+  const { venues, fetchVenues, selectedVenueId, selectedSlotId, selectedVenueName, selectedSlotTime } =
     useBookingStore();
+
+  useEffect(() => {
+    if (venues.length === 0) fetchVenues();
+  }, [venues.length, fetchVenues]);
+
   const [showMoveDialog, setShowMoveDialog] = useState(false);
   const [moveSubmitted, setMoveSubmitted] = useState(false);
   const [moveForm, setMoveForm] = useState({

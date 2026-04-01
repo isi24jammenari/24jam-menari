@@ -1,11 +1,19 @@
 "use client";
 
-import { venues, formatPrice } from "@/lib/data/venues";
+import { formatPrice } from "@/lib/data/venues";
+import { useBookingStore } from "@/lib/store/bookingStore";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import * as XLSX from "xlsx";
 
 export default function RundownTab() {
+  const { venues, fetchVenues } = useBookingStore();
+
+  useEffect(() => {
+    if (venues.length === 0) fetchVenues();
+  }, [venues.length, fetchVenues]);
+
   const handleDownload = () => {
     const wb = XLSX.utils.book_new();
     venues.forEach((venue) => {

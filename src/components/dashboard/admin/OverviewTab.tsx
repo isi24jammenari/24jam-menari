@@ -1,10 +1,18 @@
 "use client";
 
-import { venues, formatPrice } from "@/lib/data/venues";
+import { formatPrice } from "@/lib/data/venues";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useBookingStore } from "@/lib/store/bookingStore";
+import { useEffect } from "react";
 
 export default function OverviewTab() {
+  const { venues, fetchVenues } = useBookingStore();
+
+  useEffect(() => {
+    if (venues.length === 0) fetchVenues();
+  }, [venues.length, fetchVenues]);
+
   const venueStats = venues.map((venue) => {
     const totalSlots = venue.slots.length;
     const bookedSlots = venue.slots.filter((s) => s.isBooked).length;

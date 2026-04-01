@@ -43,13 +43,13 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       // 2. Mapping JSON Backend ke Format Frontend & Suntikkan Fasilitas
       // (Berdasarkan respon JSON standar dari Trait ApiResponse yang kita buat di Laravel)
       const mappedVenues: Venue[] = res.data.data.map((v: any) => ({
-        id: v.id,
+        id: String(v.id),   
         name: v.name,
         festivalName: v.festival_name,
-        venueFacilities: VENUE_FACILITIES[v.id]?.venue || [],
-        festivalFacilities: VENUE_FACILITIES[v.id]?.festival || [],
+        venueFacilities: VENUE_FACILITIES[String(v.id)]?.venue || [],
+        festivalFacilities: VENUE_FACILITIES[String(v.id)]?.festival || [],
         slots: v.time_slots.map((s: any) => ({
-          id: s.id,
+          id: String(s.id),
           time: s.time_range,
           price: s.price,
           isBooked: s.is_booked
