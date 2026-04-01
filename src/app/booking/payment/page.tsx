@@ -1,6 +1,7 @@
+// src/app/booking/payment/page.tsx
 "use client";
 
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import PageWrapper from "@/components/layout/PageWrapper";
 import PaymentTimer from "@/components/booking/PaymentTimer";
@@ -34,21 +35,25 @@ export default function PaymentPage() {
     selectedVenueName,
     selectedSlotTime,
     selectedSlotPrice,
-    selectedSlotId, // Ditarik untuk payload API
+    selectedSlotId,
     paymentStatus,
     timerExpiry,
     startPaymentTimer,
     setPaymentStatus,
     resetBooking,
+    // ✅ FIX 1 & 2: Tarik bookingId dan setBookingId dari store
+    bookingId,
+    setBookingId,
   } = useBookingStore();
 
   const [selectedMethod, setSelectedMethod] = useState<PaymentMethod>(null);
   const [showExpiredDialog, setShowExpiredDialog] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  
-  // State untuk menampung data instruksi dari Midtrans Core API
   const [paymentInstructions, setPaymentInstructions] = useState<any>(null);
+
+  // ✅ FIX 3: Ref untuk interval polling agar bisa di-clear dengan aman
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Guard: redirect jika tidak ada pilihan venue/waktu
   useEffect(() => {
@@ -57,16 +62,65 @@ export default function PaymentPage() {
     }
   }, [selectedVenueName, selectedSlotTime, router]);
 
-  // Mulai timer saat halaman dibuka
+  // ✅ FIX 2: HAPUS useEffect startPaymentTimer yang lama.
+  // Timer sekarang hanya dipanggil di dalam handleBayar() setelah API sukses.
+
+  // ✅ FIX 3: Polling logic — cek status booking ke backend setiap 5 detik
+  const startPolling = useCallback((id: string) => {
+    // Jangan dobel polling jika sudah jalan
+    if (pollingRef.current) return;
+
+    pollingRef.current = setInterval(async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/booking/status/${id}`,
+          {
+            headers: { Accept: "application/json" },
+          }
+        );
+        const data = await res.json();
+
+        if (data.data?.status === "success") {
+          // Hentikan polling, tampilkan dialog sukses
+          clearInterval(pollingRef.current!);
+          pollingRef.current = null;
+          setPaymentStatus("success");
+          setShowSuccessDialog(true);
+        } else if (
+          data.data?.status === "failed" ||
+          data.data?.status === "expired"
+        ) {
+          // Hentikan polling, tampilkan dialog expired
+          clearInterval(pollingRef.current!);
+          pollingRef.current = null;
+          setPaymentStatus("expired");
+          setShowExpiredDialog(true);
+        }
+        // Jika masih "pending", biarkan polling lanjut
+      } catch (err) {
+        // Jika network error, polling tetap lanjut sampai timer frontend habis
+        console.warn("Polling error:", err);
+      }
+    }, 5000); // Cek setiap 5 detik
+  }, [setPaymentStatus]);
+
+  // Bersihkan polling saat komponen unmount
   useEffect(() => {
-    if (paymentStatus === "idle") {
-      startPaymentTimer();
-    }
-  }, [paymentStatus, startPaymentTimer]);
+    return () => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+      }
+    };
+  }, []);
 
   const handleExpire = useCallback(() => {
     setPaymentStatus("expired");
     setShowExpiredDialog(true);
+    // Hentikan polling jika timer frontend habis duluan
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
   }, [setPaymentStatus]);
 
   const handleExpiredClose = () => {
@@ -77,8 +131,8 @@ export default function PaymentPage() {
 
   const handleSuccessClose = () => {
     setShowSuccessDialog(false);
-    // Arahkan user ke halaman registrasi setelah bayar
-    router.push("/booking/register"); 
+    // ✅ FIX 5: bookingId sudah ada di store, halaman register bisa membacanya langsung
+    router.push("/booking/register");
   };
 
   const handleBayar = async () => {
@@ -86,7 +140,6 @@ export default function PaymentPage() {
     setIsProcessing(true);
 
     try {
-      // Panggil API Backend Laravel
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/booking/hold`, {
         method: "POST",
         headers: {
@@ -105,12 +158,23 @@ export default function PaymentPage() {
         throw new Error(resData.message || "Gagal membuat pesanan.");
       }
 
-      // Simpan instruksi pembayaran murni dari Core API ke state
+      // ✅ FIX 1: Simpan booking_id ke store setelah API berhasil
+      if (resData.data?.booking_id) {
+        setBookingId(resData.data.booking_id);
+      }
+
+      // ✅ FIX 2: Start timer SETELAH API berhasil, bukan saat halaman dibuka
+      startPaymentTimer();
+
+      // Simpan instruksi pembayaran dari Core API ke state
       setPaymentInstructions(resData.data);
       setIsProcessing(false);
-      
-      // Catatan: Jangan ubah paymentStatus jadi "success" di sini,
-      // biarkan tetap "pending" agar timer 15 menit berjalan saat user transfer.
+
+      // ✅ FIX 3: Mulai polling status pembayaran ke backend
+      if (resData.data?.booking_id) {
+        startPolling(resData.data.booking_id);
+      }
+
     } catch (error: any) {
       console.error(error);
       alert(error.message || "Terjadi kesalahan sistem.");
@@ -140,7 +204,7 @@ export default function PaymentPage() {
           </div>
         </div>
 
-        {/* Timer */}
+        {/* Timer — hanya tampil setelah API hold berhasil (paymentStatus === "pending") */}
         {timerExpiry && paymentStatus === "pending" && (
           <div className="flex justify-center mb-8">
             <Card className="batik-border border-0 px-10 py-6">
@@ -214,7 +278,7 @@ export default function PaymentPage() {
             {/* Tombol Bayar */}
             <Button
               onClick={handleBayar}
-              disabled={!selectedMethod || paymentStatus !== "pending" || isProcessing}
+              disabled={!selectedMethod || isProcessing}
               className="w-full text-xl py-7 font-semibold"
               size="lg"
             >
@@ -280,14 +344,14 @@ export default function PaymentPage() {
                 )}
               </div>
 
+              {/* ✅ FIX 3 & 4: Indikator polling menggantikan Dev Mode Button */}
               <p className="text-muted-foreground text-sm">
-                Selesaikan pembayaran sebelum timer habis. Sistem akan otomatis memverifikasi pembayaran Anda melalui Webhook.
+                Sistem akan otomatis memverifikasi pembayaran Anda. Halaman ini akan berpindah sendiri setelah pembayaran terkonfirmasi.
               </p>
-
-              {/* Tombol Sementara untuk By-Pass Flow Simulasi */}
-              <Button onClick={() => { setShowSuccessDialog(true); setPaymentStatus("success"); }} className="w-full mt-4 text-lg py-6" variant="outline">
-                (Dev Mode) Paksa Lanjut Sukses
-              </Button>
+              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                Menunggu konfirmasi pembayaran...
+              </div>
             </CardContent>
           </Card>
         )}

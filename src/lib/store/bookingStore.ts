@@ -1,3 +1,4 @@
+// src/lib/store/bookingStore.ts
 import { create } from "zustand";
 import api from "../api";
 import { SlotRegistrant, Venue, VENUE_FACILITIES } from "../data/venues";
@@ -20,6 +21,9 @@ export type BookingState = {
   userName: string | null;
   isLoggedIn: boolean;
 
+  // ✅ FIX 1: Tambah field bookingId dari response /booking/hold
+  bookingId: string | null;
+
   selectVenue: (id: string, name: string) => void;
   selectSlot: (id: string, time: string, price: number) => void;
   setRegistrant: (data: SlotRegistrant) => void;
@@ -28,6 +32,9 @@ export type BookingState = {
   setUser: (email: string, name: string) => void;
   setLoggedIn: (val: boolean) => void;
   resetBooking: () => void;
+
+  // ✅ FIX 1: Tambah action untuk menyimpan bookingId
+  setBookingId: (id: string) => void;
 };
 
 export const useBookingStore = create<BookingState>((set, get) => ({
@@ -37,11 +44,8 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   fetchVenues: async () => {
     set({ isLoadingVenues: true });
     try {
-      // 1. Tembak API Laravel
       const res = await api.get('/venues');
       
-      // 2. Mapping JSON Backend ke Format Frontend & Suntikkan Fasilitas
-      // (Berdasarkan respon JSON standar dari Trait ApiResponse yang kita buat di Laravel)
       const mappedVenues: Venue[] = res.data.data.map((v: any) => ({
         id: String(v.id),   
         name: v.name,
@@ -75,6 +79,9 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   userName: null,
   isLoggedIn: false,
 
+  // ✅ FIX 1: Initial value bookingId
+  bookingId: null,
+
   selectVenue: (id, name) => set({ selectedVenueId: id, selectedVenueName: name, selectedSlotId: null }),
   selectSlot: (id, time, price) => set({ selectedSlotId: id, selectedSlotTime: time, selectedSlotPrice: price }),
   setRegistrant: (data) => set({ registrant: data }),
@@ -82,6 +89,10 @@ export const useBookingStore = create<BookingState>((set, get) => ({
   setPaymentStatus: (status) => set({ paymentStatus: status }),
   setUser: (email, name) => set({ userEmail: email, userName: name, isLoggedIn: true }),
   setLoggedIn: (val) => set({ isLoggedIn: val }),
+
+  // ✅ FIX 1: Action baru
+  setBookingId: (id) => set({ bookingId: id }),
+
   resetBooking: () =>
     set({
       selectedVenueId: null,
@@ -92,5 +103,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       registrant: null,
       paymentStatus: "idle",
       timerExpiry: null,
+      // ✅ FIX 1: Reset bookingId juga
+      bookingId: null,
     }),
 }));

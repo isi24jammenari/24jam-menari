@@ -25,7 +25,10 @@ export default function RegisterPage() {
     selectedSlotTime,
     selectedSlotPrice,
     paymentStatus,
+    // ✅ FIX 5: Tarik bookingId dari store
+    bookingId,
     setUser,
+    setLoggedIn,
   } = useBookingStore();
 
   const [form, setForm] = useState<FormState>({
@@ -35,20 +38,21 @@ export default function RegisterPage() {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState<FieldError>({});
+  const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Guard: harus sudah bayar
+  // Guard: harus sudah bayar dan harus ada bookingId
   useEffect(() => {
-    if (paymentStatus !== "success") {
+    if (paymentStatus !== "success" || !bookingId) {
       router.replace("/");
     }
-  }, [paymentStatus, router]);
+  }, [paymentStatus, bookingId, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    // Hapus error saat user mulai mengetik
+    setServerError(null);
     if (errors[name as keyof FormState]) {
       setErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -79,22 +83,58 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
+    if (!bookingId) return; // extra safety guard
     setIsSubmitting(true);
+    setServerError(null);
 
-    // TODO: [BACKEND] Panggil API Registrasi Akun (Laravel API / NextAuth) di sini
-    // try {
-    //   await fetch('/api/auth/register', { method: 'POST', body: JSON.stringify(form) });
-    // } catch (error) { console.error(error); setIsSubmitting(false); return; }
+    try {
+      // ✅ FIX 5: Panggil API register yang sesungguhnya dengan booking_id
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          password: form.password,
+          password_confirmation: form.confirmPassword,
+          booking_id: bookingId,
+        }),
+      });
 
-    // Simulasi loading (hapus saat API sudah siap)
-    setTimeout(() => {
+      const resData = await response.json();
+
+      if (!response.ok) {
+        // Tangani error validasi Laravel (422) atau error lain
+        const firstError =
+          resData.errors
+            ? Object.values(resData.errors as Record<string, string[]>)[0]?.[0]
+            : resData.message;
+        throw new Error(firstError || "Gagal membuat akun.");
+      }
+
+      // ✅ Simpan token ke localStorage agar bisa dipakai di dashboard
+      if (resData.data?.access_token) {
+        localStorage.setItem("auth_token", resData.data.access_token);
+      }
+
+      // Update store
       setUser(form.email, form.name);
+      setLoggedIn(true);
       setIsSubmitting(false);
+
+      // Arahkan ke form pementasan
       router.push("/booking/form");
-    }, 1200);
+
+    } catch (error: any) {
+      setServerError(error.message || "Terjadi kesalahan. Coba lagi.");
+      setIsSubmitting(false);
+    }
   };
 
-  if (paymentStatus !== "success") return null;
+  if (paymentStatus !== "success" || !bookingId) return null;
 
   return (
     <PageWrapper narrow>
@@ -145,6 +185,13 @@ export default function RegisterPage() {
             Data Akun
           </h2>
           <Separator className="mb-6" />
+
+          {/* ✅ FIX 5: Tampilkan server error jika ada */}
+          {serverError && (
+            <div className="mb-4 p-4 rounded-xl bg-destructive/10 border border-destructive/30 text-destructive text-sm font-medium">
+              ⚠️ {serverError}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-5" noValidate>
             {/* Nama */}
