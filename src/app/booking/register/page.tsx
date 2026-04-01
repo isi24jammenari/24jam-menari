@@ -9,16 +9,19 @@ import { Separator } from "@/components/ui/separator";
 import { useBookingStore } from "@/lib/store/bookingStore";
 import { formatPrice } from "@/lib/data/venues";
 
+// ✅ 1. Tambahkan field baru di FormState
 type FormState = {
   name: string;
   email: string;
+  phone_number: string;
+  institution_name: string;
+  address: string;
   password: string;
   confirmPassword: string;
 };
 
 type FieldError = Partial<Record<keyof FormState, string>>;
 
-// Helper: baca bookingId dari sessionStorage sebagai fallback
 function getBookingIdFromSession(): string | null {
   try {
     const raw = sessionStorage.getItem("pending_payment");
@@ -40,9 +43,13 @@ export default function RegisterPage() {
     setLoggedIn,
   } = useBookingStore();
 
+  // ✅ 2. Masukkan inisial state untuk field baru
   const [form, setForm] = useState<FormState>({
     name: "",
     email: "",
+    phone_number: "",
+    institution_name: "",
+    address: "",
     password: "",
     confirmPassword: "",
   });
@@ -50,10 +57,8 @@ export default function RegisterPage() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // ✅ FIX 2: Flag agar guard tidak redirect sebelum sessionStorage dicek
   const [isRestored, setIsRestored] = useState(false);
 
-  // ✅ FIX 2: Cek store ATAU sessionStorage — jangan redirect jika session masih ada
   useEffect(() => {
     const sessionBookingId = getBookingIdFromSession();
     const hasStore = paymentStatus === "success" && !!bookingId;
@@ -66,7 +71,7 @@ export default function RegisterPage() {
     }
   }, [paymentStatus, bookingId, router]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     setServerError(null);
@@ -75,6 +80,7 @@ export default function RegisterPage() {
     }
   };
 
+  // ✅ 3. Tambahkan validasi form untuk data diri baru
   const validate = (): boolean => {
     const newErrors: FieldError = {};
     if (!form.name.trim()) newErrors.name = "Nama tidak boleh kosong.";
@@ -83,6 +89,11 @@ export default function RegisterPage() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       newErrors.email = "Format email tidak valid.";
     }
+    
+    if (!form.phone_number.trim()) newErrors.phone_number = "Nomor Telepon/WA tidak boleh kosong.";
+    if (!form.institution_name.trim()) newErrors.institution_name = "Nama Sanggar/Institusi tidak boleh kosong.";
+    if (!form.address.trim()) newErrors.address = "Alamat tidak boleh kosong.";
+
     if (!form.password) {
       newErrors.password = "Password tidak boleh kosong.";
     } else if (form.password.length < 8) {
@@ -101,7 +112,6 @@ export default function RegisterPage() {
     e.preventDefault();
     if (!validate()) return;
 
-    // ✅ FIX 2: Ambil bookingId dari store, fallback ke sessionStorage
     const activeBookingId = bookingId ?? getBookingIdFromSession();
     if (!activeBookingId) return;
 
@@ -109,6 +119,7 @@ export default function RegisterPage() {
     setServerError(null);
 
     try {
+      // ✅ 4. Kirim data baru ke backend
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/register`,
         {
@@ -120,6 +131,9 @@ export default function RegisterPage() {
           body: JSON.stringify({
             name: form.name,
             email: form.email,
+            phone_number: form.phone_number,
+            institution_name: form.institution_name,
+            address: form.address,
             password: form.password,
             password_confirmation: form.confirmPassword,
             booking_id: activeBookingId,
@@ -136,20 +150,16 @@ export default function RegisterPage() {
         throw new Error(firstError || "Gagal membuat akun.");
       }
 
-      // ✅ FIX 1: Key "access_token" — konsisten dengan yang dibaca di dashboard
       if (resData.data?.access_token) {
         localStorage.setItem("access_token", resData.data.access_token);
       }
 
-      // Bersihkan session pembayaran karena sudah selesai dipakai
       try { sessionStorage.removeItem("pending_payment"); } catch (_) {}
 
-      // Update store
       setUser(form.email, form.name);
       setLoggedIn(true);
       setIsSubmitting(false);
 
-      // ✅ FIX 3: Arahkan ke dashboard/user — bukan /booking/form yang tidak ada
       router.push("/dashboard/user");
     } catch (error: any) {
       setServerError(error.message || "Terjadi kesalahan. Coba lagi.");
@@ -157,12 +167,10 @@ export default function RegisterPage() {
     }
   };
 
-  // Tunggu hasil cek guard sebelum render
   if (!isRestored) return null;
 
   return (
     <PageWrapper narrow>
-      {/* Header */}
       <div className="text-center mb-8">
         <div className="text-6xl mb-4">🎊</div>
         <h1 className="text-tradisional text-4xl font-bold text-primary">
@@ -179,7 +187,6 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* Ringkasan slot yang sudah dibeli */}
       <Card className="bg-primary/5 border-primary/20 border mb-6">
         <CardContent className="p-5">
           <p className="text-sm text-muted-foreground mb-3 font-medium uppercase tracking-wide">
@@ -202,11 +209,10 @@ export default function RegisterPage() {
         </CardContent>
       </Card>
 
-      {/* Form Buat Akun */}
       <Card className="batik-border border-0">
         <CardContent className="p-6">
           <h2 className="text-tradisional text-xl font-bold text-primary mb-4">
-            Data Akun
+            Data Diri & Akun
           </h2>
           <Separator className="mb-6" />
 
@@ -217,10 +223,10 @@ export default function RegisterPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-            {/* Nama */}
+            
             <div className="space-y-2">
               <label className="text-base font-semibold text-foreground block">
-                Nama Lengkap <span className="text-destructive">*</span>
+                Nama Lengkap Penanggung Jawab <span className="text-destructive">*</span>
               </label>
               <input
                 type="text"
@@ -232,15 +238,12 @@ export default function RegisterPage() {
                   errors.name ? "border-destructive" : "border-input"
                 }`}
               />
-              {errors.name && (
-                <p className="text-sm text-destructive">{errors.name}</p>
-              )}
+              {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
             </div>
 
-            {/* Email */}
             <div className="space-y-2">
               <label className="text-base font-semibold text-foreground block">
-                Email <span className="text-destructive">*</span>
+                Email Aktif <span className="text-destructive">*</span>
               </label>
               <input
                 type="email"
@@ -252,15 +255,68 @@ export default function RegisterPage() {
                   errors.email ? "border-destructive" : "border-input"
                 }`}
               />
-              {errors.email && (
-                <p className="text-sm text-destructive">{errors.email}</p>
-              )}
+              {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
             </div>
 
-            {/* Password */}
+            {/* ✅ 5. UI Baru: Nomor WA */}
             <div className="space-y-2">
               <label className="text-base font-semibold text-foreground block">
-                Password <span className="text-destructive">*</span>
+                Nomor Telepon / WhatsApp <span className="text-destructive">*</span>
+              </label>
+              <input
+                type="tel"
+                name="phone_number"
+                value={form.phone_number}
+                onChange={handleChange}
+                placeholder="08123456789"
+                className={`w-full text-lg px-4 py-3 rounded-xl border-2 bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
+                  errors.phone_number ? "border-destructive" : "border-input"
+                }`}
+              />
+              {errors.phone_number && <p className="text-sm text-destructive">{errors.phone_number}</p>}
+            </div>
+
+            {/* ✅ 5. UI Baru: Institusi */}
+            <div className="space-y-2">
+              <label className="text-base font-semibold text-foreground block">
+                Nama Sanggar / Institusi <span className="text-destructive">*</span>
+              </label>
+              <input
+                type="text"
+                name="institution_name"
+                value={form.institution_name}
+                onChange={handleChange}
+                placeholder="Contoh: Sanggar Tari Kinasih / ISI Surakarta"
+                className={`w-full text-lg px-4 py-3 rounded-xl border-2 bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
+                  errors.institution_name ? "border-destructive" : "border-input"
+                }`}
+              />
+              {errors.institution_name && <p className="text-sm text-destructive">{errors.institution_name}</p>}
+            </div>
+
+            {/* ✅ 5. UI Baru: Alamat */}
+            <div className="space-y-2">
+              <label className="text-base font-semibold text-foreground block">
+                Alamat Lengkap <span className="text-destructive">*</span>
+              </label>
+              <textarea
+                name="address"
+                value={form.address}
+                onChange={handleChange}
+                placeholder="Masukkan alamat lengkap (Jalan, Kota/Kabupaten, Provinsi)"
+                rows={3}
+                className={`w-full text-lg px-4 py-3 rounded-xl border-2 bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors resize-none ${
+                  errors.address ? "border-destructive" : "border-input"
+                }`}
+              />
+              {errors.address && <p className="text-sm text-destructive">{errors.address}</p>}
+            </div>
+
+            <Separator className="my-4" />
+
+            <div className="space-y-2">
+              <label className="text-base font-semibold text-foreground block">
+                Buat Password <span className="text-destructive">*</span>
               </label>
               <div className="relative">
                 <input
@@ -276,17 +332,14 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-sm"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground text-sm font-medium"
                 >
                   {showPassword ? "🙈 Sembunyikan" : "👁️ Tampilkan"}
                 </button>
               </div>
-              {errors.password && (
-                <p className="text-sm text-destructive">{errors.password}</p>
-              )}
+              {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
             </div>
 
-            {/* Konfirmasi Password */}
             <div className="space-y-2">
               <label className="text-base font-semibold text-foreground block">
                 Konfirmasi Password <span className="text-destructive">*</span>
@@ -301,16 +354,11 @@ export default function RegisterPage() {
                   errors.confirmPassword ? "border-destructive" : "border-input"
                 }`}
               />
-              {errors.confirmPassword && (
-                <p className="text-sm text-destructive">
-                  {errors.confirmPassword}
-                </p>
-              )}
+              {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword}</p>}
             </div>
 
             <Separator />
 
-            {/* Submit */}
             <Button
               type="submit"
               disabled={isSubmitting}

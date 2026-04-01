@@ -1,48 +1,64 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { formatPrice } from "@/lib/data/venues";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { useBookingStore } from "@/lib/store/bookingStore";
-import { useEffect } from "react";
+import api from "@/lib/api";
+
+type OverviewData = {
+  total_revenue: number;
+  total_slots: number;
+  booked_slots: number;
+  occupancy_rate: number;
+  data_completion: {
+    completed: number;
+    draft: number;
+    empty: number;
+    total_need_action: number;
+  };
+};
 
 export default function OverviewTab() {
-  const { venues, fetchVenues } = useBookingStore();
+  const [data, setData] = useState<OverviewData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (venues.length === 0) fetchVenues();
-  }, [venues.length, fetchVenues]);
+    const fetchOverview = async () => {
+      try {
+        const res = await api.get('/admin/overview');
+        setData(res.data.data);
+      } catch (error) {
+        console.error("Gagal menarik data overview admin:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchOverview();
+  }, []);
 
-  const venueStats = venues.map((venue) => {
-    const totalSlots = venue.slots.length;
-    const bookedSlots = venue.slots.filter((s) => s.isBooked).length;
-    const emptySlots = totalSlots - bookedSlots;
-    const revenue = venue.slots
-      .filter((s) => s.isBooked)
-      .reduce((acc, s) => acc + s.price, 0);
-    const fillPercent = Math.round((bookedSlots / totalSlots) * 100);
-    return { venue, totalSlots, bookedSlots, emptySlots, revenue, fillPercent };
-  });
+  if (isLoading) {
+    return <div className="text-center py-10 animate-pulse text-muted-foreground">Memuat statistik...</div>;
+  }
 
-  const totalRevenue = venueStats.reduce((a, v) => a + v.revenue, 0);
-  const totalBooked = venueStats.reduce((a, v) => a + v.bookedSlots, 0);
-  const totalSlots = venueStats.reduce((a, v) => a + v.totalSlots, 0);
-  const totalEmpty = venueStats.reduce((a, v) => a + v.emptySlots, 0);
+  if (!data) return null;
+
+  const totalEmptySlots = data.total_slots - data.booked_slots;
 
   return (
     <div className="space-y-8">
-      {/* Kartu ringkasan */}
+      {/* Kartu Ringkasan Penjualan */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="batik-border border-0">
+        <Card className="batik-border border-0 bg-primary/5">
           <CardContent className="p-5">
-            <p className="text-sm text-muted-foreground uppercase tracking-wide">
+            <p className="text-sm font-bold text-primary uppercase tracking-wide">
               Total Pendapatan
             </p>
-            <p className="text-3xl font-bold text-primary mt-1">
-              {formatPrice(totalRevenue)}
+            <p className="text-3xl font-black text-primary mt-1">
+              {formatPrice(data.total_revenue)}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              {totalBooked} transaksi berhasil
+              Dari {data.booked_slots} transaksi sukses
             </p>
           </CardContent>
         </Card>
@@ -53,13 +69,13 @@ export default function OverviewTab() {
               Total Slot Terisi
             </p>
             <p className="text-3xl font-bold text-accent mt-1">
-              {totalBooked}
+              {data.booked_slots}
               <span className="text-base font-normal text-muted-foreground">
-                {" "}/ {totalSlots}
+                {" "}/ {data.total_slots}
               </span>
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              dari seluruh venue
+              {data.occupancy_rate}% Occupancy Rate
             </p>
           </CardContent>
         </Card>
@@ -70,74 +86,50 @@ export default function OverviewTab() {
               Slot Masih Kosong
             </p>
             <p className="text-3xl font-bold text-secondary mt-1">
-              {totalEmpty}
+              {totalEmptySlots}
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              slot belum terdaftar
+              slot belum terjual
             </p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Detail per venue */}
-      <div className="space-y-4">
-        <h3 className="text-tradisional text-2xl font-bold text-primary">
-          Status Per Venue
-        </h3>
-        {venueStats.map(({ venue, totalSlots, bookedSlots, emptySlots, revenue, fillPercent }) => (
-          <Card key={venue.id} className="batik-border border-0">
-            <CardContent className="p-5 space-y-3">
-              <div className="flex items-center justify-between flex-wrap gap-2">
-                <div className="flex items-center gap-3">
-                  <div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="text-tradisional text-lg font-bold text-primary">
-                        {venue.name}
-                      </p>
-                      <span className="text-xs font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full">
-                        {venue.festivalName}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-0.5">
-                      {bookedSlots} terisi · {emptySlots} kosong
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-bold text-accent">
-                    {formatPrice(revenue)}
-                  </p>
-                  <p className="text-xs text-muted-foreground">pendapatan venue ini</p>
-                </div>
-              </div>
+      <div className="flex items-center gap-6 mt-8 mb-4">
+        <div className="flex-1 h-px bg-gradient-to-r from-transparent to-border" />
+        <h3 className="text-accent tracking-widest uppercase text-sm font-bold">Status Data Peserta</h3>
+        <div className="flex-1 h-px bg-gradient-to-l from-transparent to-border" />
+      </div>
 
-              <div className="space-y-1">
-                <div className="flex justify-between text-xs text-muted-foreground">
-                  <span>Tingkat pengisian</span>
-                  <span>{fillPercent || 0}%</span>
-                </div>
-                <Progress value={fillPercent || 0} className="h-3" />
-              </div>
+      {/* ✅ 1. Tambahan Baru: Kartu Ringkasan Status Kelengkapan Data */}
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <Card className="border border-border/50 bg-card shadow-sm">
+          <CardContent className="p-4 flex flex-col items-center text-center justify-center">
+            <p className="text-4xl font-black text-primary">{data.data_completion.completed}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mt-1">Data Final (Siap)</p>
+          </CardContent>
+        </Card>
+        
+        <Card className="border border-border/50 bg-card shadow-sm">
+          <CardContent className="p-4 flex flex-col items-center text-center justify-center">
+            <p className="text-4xl font-black text-accent">{data.data_completion.draft}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mt-1">Status Draft</p>
+          </CardContent>
+        </Card>
 
-              {/* Grid slot mini dengan nama */}
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {venue.slots.map((slot) => (
-                  <span
-                    key={slot.id}
-                    title={slot.isBooked ? `${slot.time} — ${slot.registrant?.nama ?? "Terisi"}` : slot.time}
-                    className={`text-xs px-2 py-0.5 rounded-md border font-medium cursor-default ${
-                      slot.isBooked
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-background text-muted-foreground border-border"
-                    }`}
-                  >
-                    {slot.time.split("–")[0].trim()}
-                  </span>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+        <Card className="border border-border/50 bg-card shadow-sm">
+          <CardContent className="p-4 flex flex-col items-center text-center justify-center">
+            <p className="text-4xl font-black text-destructive">{data.data_completion.empty}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mt-1">Belum Isi Form</p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-2 border-accent/20 bg-accent/5 shadow-sm">
+          <CardContent className="p-4 flex flex-col items-center text-center justify-center">
+            <p className="text-4xl font-black text-accent">{data.data_completion.total_need_action}</p>
+            <p className="text-xs font-bold uppercase tracking-wider text-accent mt-1">Butuh Tindakan (Follow Up)</p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
