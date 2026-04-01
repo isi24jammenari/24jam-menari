@@ -25,45 +25,51 @@ export default function UserDashboardPage() {
       return;
     }
 
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-      },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          localStorage.removeItem("access_token");
-          router.replace("/auth/login");
-          return null;
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (!data) return;
-        if (data?.data) {
-          setUser(data.data);
-        }
-        // Chain fetch untuk cek status form (Gatekeeper)
-        return fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/schedule`, {
+    const fetchDashboardData = async () => {
+      try {
+        // 1. Fetch Profil User
+        const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
           headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
         });
-      })
-      .then((res) => (res ? res.json() : null))
-      .then((scheduleData) => {
-        if (scheduleData?.data?.[0]) {
-          const status = scheduleData.data[0].performance?.status || "empty";
-          setFormStatus(status);
-          if (status === "completed") {
-            setActiveTab("jadwal"); // Jika sudah beres, default ke jadwal
+
+        // HANYA hapus token jika token benar-benar tidak valid / expired (401)
+        if (!userRes.ok) {
+          if (userRes.status === 401) {
+            localStorage.removeItem("access_token");
+            router.replace("/auth/login");
+          }
+          return; 
+        }
+
+        const userData = await userRes.json();
+        if (userData?.data) {
+          setUser(userData.data);
+        }
+
+        // 2. Fetch Jadwal (Gatekeeper)
+        const scheduleRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/user/schedule`, {
+          headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+        });
+
+        if (scheduleRes.ok) {
+          const scheduleData = await scheduleRes.json();
+          if (scheduleData?.data?.[0]) {
+            const status = scheduleData.data[0].performance?.status || "empty";
+            setFormStatus(status);
+            if (status === "completed") {
+              setActiveTab("jadwal");
+            }
           }
         }
+      } catch (error) {
+        // Jika ada error jaringan atau server (500), tangkap disini TANPA menghapus token
+        console.error("Terjadi kesalahan saat memuat dashboard:", error);
+      } finally {
         setIsLoading(false);
-      })
-      .catch(() => {
-        localStorage.removeItem("access_token");
-        router.replace("/auth/login");
-      });
+      }
+    };
+
+    fetchDashboardData();
   }, [router]);
 
   if (isLoading) {
