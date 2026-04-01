@@ -64,6 +64,7 @@ function HomeContent() {
           <div className="grid grid-cols-3 lg:flex lg:flex-wrap gap-x-4 gap-y-4 sm:gap-5 md:gap-6 items-center justify-center justify-items-center">
             {[
               { src: "/tutwuri.webp", alt: "Tut Wuri Handayani" },
+              { src: "/kemenkebud.webp", alt: "Kemenkebud" },
               { src: "/isi.webp", alt: "ISI" },
               { src: "/himaswariska.webp", alt: "Himaswariska" },
               { src: "/himakorin.webp", alt: "Himakorin" },
