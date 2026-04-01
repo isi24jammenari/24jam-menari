@@ -26,4 +26,20 @@ api.interceptors.response.use(
   }
 );
 
+// Tambahkan/Ubah di bagian bawah file src/lib/api.ts
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      console.warn("Unauthorized access - harap login kembali.");
+      // ✅ Redirect paksa ke halaman login baru
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem("access_token");
+        window.location.href = '/auth/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;

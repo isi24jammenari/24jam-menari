@@ -1,4 +1,3 @@
-// src/components/layout/Navbar.tsx
 "use client";
 
 import Link from "next/link";
@@ -11,8 +10,6 @@ export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
 
-  // ✅ FIX 1: Baca localStorage untuk cek status login
-  // Tidak pakai Zustand karena store reset saat refresh
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -22,8 +19,6 @@ export default function Navbar() {
     };
 
     checkAuth();
-
-    // Re-check setiap kali pathname berubah (misal setelah login/logout)
     window.addEventListener("focus", checkAuth);
     return () => window.removeEventListener("focus", checkAuth);
   }, [pathname]);
@@ -34,14 +29,14 @@ export default function Navbar() {
     router.push("/");
   };
 
-  // ✅ FIX 2: Tombol "Masuk Akun" hanya muncul jika belum login
-  // Di halaman dashboard, tombol ini tidak perlu tampil sama sekali
+  // ✅ Sembunyikan tombol "Masuk" jika sudah di dalam Dashboard ATAU sedang di halaman Login
   const isDashboard = pathname?.startsWith("/dashboard");
+  const isAuthPage = pathname?.startsWith("/auth");
+  const hideLoginBtn = isDashboard || isAuthPage;
 
   return (
     <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border shadow-sm">
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between relative">
-        {/* Logo */}
         <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
           <Image
             src="/24jammenari.webp"
@@ -53,16 +48,13 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* Portal Text - Desktop Only */}
         <div className="hidden lg:block absolute left-1/2 -translate-x-1/2">
           <p className="text-sm font-medium tracking-widest text-muted-foreground uppercase italic">
             Portal Pendaftaran Penampil 24 Jam Menari Surakarta
           </p>
         </div>
 
-        {/* Action Bar Kanan */}
         <div className="flex items-center gap-3 sm:gap-6">
-          {/* Instagram — selalu tampil */}
           <a
             href="https://www.instagram.com/24jammenari_official/"
             target="_blank"
@@ -74,9 +66,7 @@ export default function Navbar() {
           </a>
 
           {isLoggedIn ? (
-            // ✅ SUDAH LOGIN: Tombol Dashboard + Logout
             <div className="flex items-center gap-2">
-              {/* Tombol ke Dashboard — sembunyikan jika sudah di dashboard */}
               {!isDashboard && (
                 <button
                   onClick={() => router.push("/dashboard/user")}
@@ -87,7 +77,6 @@ export default function Navbar() {
                 </button>
               )}
 
-              {/* Tombol Logout — selalu tampil saat login */}
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground border border-destructive/30 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-semibold transition-all text-sm sm:text-base shadow-sm"
@@ -98,11 +87,10 @@ export default function Navbar() {
               </button>
             </div>
           ) : (
-            // ✅ BELUM LOGIN: Tombol Masuk Akun
-            // Sembunyikan di halaman booking flow (payment, register) agar tidak mengganggu
-            !isDashboard && (
+            // ✅ Arahkan ke /auth/login
+            !hideLoginBtn && (
               <button
-                onClick={() => router.push("/?login=true")}
+                onClick={() => router.push("/auth/login")}
                 className="flex items-center gap-2 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground border border-primary/30 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-semibold transition-all text-sm sm:text-base shadow-sm"
               >
                 <span className="text-lg">👤</span>

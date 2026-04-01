@@ -5,20 +5,22 @@ import { useRouter } from "next/navigation";
 import PageWrapper from "@/components/layout/PageWrapper";
 import ScheduleTab from "@/components/dashboard/user/ScheduleTab";
 import FormTab from "@/components/dashboard/user/FormTab";
-import DocumentsTab from "@/components/dashboard/user/DocumentsTab"; // ✅ Import baru
+import DocumentsTab from "@/components/dashboard/user/DocumentsTab";
 
-type Tab = "jadwal" | "formulir" | "dokumen"; // ✅ Tambah tipe dokumen
+type Tab = "jadwal" | "formulir" | "dokumen";
 
 export default function UserDashboardPage() {
   const router = useRouter();
+
   const [activeTab, setActiveTab] = useState<Tab>("jadwal");
   const [user, setUser] = useState<{ name: string; email: string } | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
+
     if (!token) {
-      router.replace("/?login=true");
+      router.replace("/auth/login");
       return;
     }
 
@@ -31,18 +33,21 @@ export default function UserDashboardPage() {
       .then((res) => {
         if (!res.ok) {
           localStorage.removeItem("access_token");
-          router.replace("/?login=true");
+          router.replace("/auth/login");
           return null;
         }
         return res.json();
       })
       .then((data) => {
-        if (data?.data) setUser(data.data);
+        if (!data) return;
+        if (data?.data) {
+          setUser(data.data);
+        }
         setIsLoading(false);
       })
       .catch(() => {
         localStorage.removeItem("access_token");
-        router.replace("/?login=true");
+        router.replace("/auth/login");
       });
   }, [router]);
 
@@ -62,11 +67,12 @@ export default function UserDashboardPage() {
   const tabs: { id: Tab; label: string; icon: string }[] = [
     { id: "jadwal", label: "Jadwal & Venue", icon: "📅" },
     { id: "formulir", label: "Formulir", icon: "📋" },
-    { id: "dokumen", label: "Dokumen", icon: "📁" }, // ✅ Tambah tab dokumen
+    { id: "dokumen", label: "Dokumen", icon: "📁" },
   ];
 
   return (
     <PageWrapper>
+      {/* Header */}
       <div className="mb-8">
         <p className="text-muted-foreground text-lg">Selamat datang kembali,</p>
         <h1 className="text-tradisional text-4xl font-bold text-primary leading-tight">
@@ -78,6 +84,7 @@ export default function UserDashboardPage() {
         </div>
       </div>
 
+      {/* Tab Navigator */}
       <div className="flex gap-2 mb-8 border-b border-border pb-1 overflow-x-auto no-scrollbar">
         {tabs.map((tab) => (
           <button
@@ -95,10 +102,11 @@ export default function UserDashboardPage() {
         ))}
       </div>
 
+      {/* Tab Content */}
       <div>
         {activeTab === "jadwal" && <ScheduleTab />}
         {activeTab === "formulir" && <FormTab />}
-        {activeTab === "dokumen" && <DocumentsTab />} {/* ✅ Render DocumentsTab */}
+        {activeTab === "dokumen" && <DocumentsTab />}
       </div>
     </PageWrapper>
   );

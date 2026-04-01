@@ -1,19 +1,10 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect } from "react";
 import PageWrapper from "@/components/layout/PageWrapper";
 import SectionTitle from "@/components/shared/SectionTitle";
 import VenueCard from "@/components/booking/VenueCard";
 import { useBookingStore } from "@/lib/store/bookingStore";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
 
 // Komponen Pemicu Fetching Venues
@@ -45,69 +36,6 @@ function VenueLoader() {
 }
 
 function HomeContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const { setUser } = useBookingStore();
-
-  const [showLoginDialog, setShowLoginDialog] = useState(false);
-  const [loginForm, setLoginForm] = useState({ email: "", password: "" });
-  const [loginError, setLoginError] = useState("");
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-
-  useEffect(() => {
-    if (searchParams.get("login") === "true") {
-      setShowLoginDialog(true);
-      router.replace("/", { scroll: false });
-    }
-  }, [searchParams, router]);
-
-  const handleLogin = async () => {
-    if (!loginForm.email || !loginForm.password) {
-      setLoginError("Email dan password tidak boleh kosong.");
-      return;
-    }
-
-    setIsLoggingIn(true);
-    setLoginError("");
-
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          email: loginForm.email,
-          password: loginForm.password,
-        }),
-      });
-
-      const resData = await res.json();
-
-      if (!res.ok) {
-        throw new Error(resData.message || "Email atau password salah.");
-      }
-
-      localStorage.setItem("access_token", resData.data.access_token);
-      setUser(resData.data.user.email, resData.data.user.name);
-
-      setIsLoggingIn(false);
-      setShowLoginDialog(false);
-      setLoginForm({ email: "", password: "" });
-
-      router.push("/dashboard/user");
-
-    } catch (error: any) {
-      setLoginError(error.message || "Terjadi kesalahan. Coba lagi.");
-      setIsLoggingIn(false);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") handleLogin();
-  };
-
   return (
     <>
       {/* Hero */}
@@ -246,98 +174,6 @@ function HomeContent() {
         />
         <VenueLoader />
       </section>
-
-      {/* Dialog Login */}
-      <Dialog open={showLoginDialog} onOpenChange={(open) => {
-        setShowLoginDialog(open);
-        if (!open) {
-          setLoginError("");
-          setLoginForm({ email: "", password: "" });
-        }
-      }}>
-        <DialogContent className="max-w-md batik-border border-0">
-          <DialogHeader>
-            <DialogTitle className="text-tradisional text-2xl text-primary">
-              🔐 Masuk ke Dashboard
-            </DialogTitle>
-            <DialogDescription className="text-base">
-              Masukkan email dan password akun Anda yang sudah terdaftar.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4 mt-2">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-foreground block">
-                Email
-              </label>
-              <input
-                type="email"
-                value={loginForm.email}
-                onChange={(e) =>
-                  setLoginForm((p) => ({ ...p, email: e.target.value }))
-                }
-                onKeyDown={handleKeyDown}
-                placeholder="contoh@email.com"
-                className="w-full text-lg px-4 py-3 rounded-xl border-2 border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-foreground block">
-                Password
-              </label>
-              <input
-                type="password"
-                value={loginForm.password}
-                onChange={(e) =>
-                  setLoginForm((p) => ({ ...p, password: e.target.value }))
-                }
-                onKeyDown={handleKeyDown}
-                placeholder="Masukkan password"
-                className="w-full text-lg px-4 py-3 rounded-xl border-2 border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-colors"
-              />
-            </div>
-
-            {loginError && (
-              <p className="text-sm text-destructive font-medium">⚠️ {loginError}</p>
-            )}
-
-            <div className="bg-primary/5 border border-primary/20 rounded-xl p-3 text-sm text-foreground">
-              💡 Akun dibuat otomatis setelah pembayaran slot berhasil.{" "}
-              <span className="text-muted-foreground">
-                Belum punya akun? Pilih venue dan selesaikan pembayaran terlebih dahulu.
-              </span>
-            </div>
-
-            <div className="flex gap-3 pt-1">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowLoginDialog(false);
-                  setLoginError("");
-                  setLoginForm({ email: "", password: "" });
-                }}
-                className="flex-1 text-lg py-6"
-              >
-                Batal
-              </Button>
-              <Button
-                onClick={handleLogin}
-                disabled={isLoggingIn}
-                className="flex-1 text-lg py-6"
-              >
-                {isLoggingIn ? (
-                  <span className="flex items-center gap-2">
-                    <span className="animate-spin">⏳</span> Masuk...
-                  </span>
-                ) : (
-                  "Masuk →"
-                )}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }
