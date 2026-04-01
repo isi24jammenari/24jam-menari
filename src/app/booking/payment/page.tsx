@@ -20,7 +20,6 @@ import { formatPrice } from "@/lib/data/venues";
 
 type PaymentMethod = "bca" | "bni" | "bri" | "mandiri" | "qris" | null;
 
-// OPTIMASI: Tarik array statis keluar dari komponen agar tidak di-recreate di setiap render
 const PAYMENT_METHODS = [
   { id: "bca", label: "BCA Virtual Account", icon: "🏦" },
   { id: "bni", label: "BNI Virtual Account", icon: "🏦" },
@@ -30,36 +29,27 @@ const PAYMENT_METHODS = [
 ] as const;
 
 // ─── Session persistence ───────────────────────────────────────────────────
-// Menyimpan data pembayaran ke sessionStorage agar tidak hilang saat refresh.
-// Menggunakan sessionStorage (bukan localStorage) sehingga data otomatis
-// bersih saat tab/browser ditutup.
 const SESSION_KEY = "pending_payment";
 
 type PendingPayment = {
   bookingId: string;
   paymentInstructions: any;
-  timerExpiry: number; // Unix ms, hasil Date.now() + 15 menit
+  timerExpiry: number;
 };
 
 function savePendingPayment(data: PendingPayment) {
-  try {
-    sessionStorage.setItem(SESSION_KEY, JSON.stringify(data));
-  } catch (_) {}
+  try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(data)); } catch (_) {}
 }
 
 function loadPendingPayment(): PendingPayment | null {
   try {
     const raw = sessionStorage.getItem(SESSION_KEY);
     return raw ? JSON.parse(raw) : null;
-  } catch (_) {
-    return null;
-  }
+  } catch (_) { return null; }
 }
 
 function clearPendingPayment() {
-  try {
-    sessionStorage.removeItem(SESSION_KEY);
-  } catch (_) {}
+  try { sessionStorage.removeItem(SESSION_KEY); } catch (_) {}
 }
 // ──────────────────────────────────────────────────────────────────────────
 
@@ -75,7 +65,6 @@ export default function PaymentPage() {
     startPaymentTimer,
     setPaymentStatus,
     resetBooking,
-    // ✅ FIX 1 & 2: Tarik bookingId dan setBookingId dari store
     bookingId,
     setBookingId,
   } = useBookingStore();
@@ -85,28 +74,25 @@ export default function PaymentPage() {
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentInstructions, setPaymentInstructions] = useState<any>(null);
+  // ✅ FIX RACE: Tambah flag untuk tahu apakah restore sudah selesai
+  const [isRestored, setIsRestored] = useState(false);
+  // ✅ State untuk feedback tombol salin URL
+  const [copied, setCopied] = useState(false);
 
-  // ✅ FIX 3: Ref untuk interval polling agar bisa di-clear dengan aman
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // ✅ FIX 3: Polling logic — cek status booking ke backend setiap 5 detik
-  // Didefinisikan lebih awal (sebelum useEffect restore) agar bisa dipanggil di sana
   const startPolling = useCallback((id: string) => {
-    // Jangan dobel polling jika sudah jalan
     if (pollingRef.current) return;
 
     pollingRef.current = setInterval(async () => {
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/booking/status/${id}`,
-          {
-            headers: { Accept: "application/json" },
-          }
+          { headers: { Accept: "application/json" } }
         );
         const data = await res.json();
 
         if (data.data?.status === "success") {
-          // Hentikan polling, tampilkan dialog sukses
           clearInterval(pollingRef.current!);
           pollingRef.current = null;
           setPaymentStatus("success");
@@ -115,73 +101,52 @@ export default function PaymentPage() {
           data.data?.status === "failed" ||
           data.data?.status === "expired"
         ) {
-          // Hentikan polling, tampilkan dialog expired
           clearInterval(pollingRef.current!);
           pollingRef.current = null;
           setPaymentStatus("expired");
           setShowExpiredDialog(true);
         }
-        // Jika masih "pending", biarkan polling lanjut
       } catch (err) {
-        // Jika network error, polling tetap lanjut sampai timer frontend habis
         console.warn("Polling error:", err);
       }
-    }, 5000); // Cek setiap 5 detik
+    }, 5000);
   }, [setPaymentStatus]);
 
-  // ✅ RESTORE: Pulihkan state dari sessionStorage jika halaman di-refresh
-  // Harus setelah startPolling didefinisikan karena useEffect ini memanggilnya
+  // ✅ RESTORE: Pulihkan state dari sessionStorage, set isRestored setelah selesai
   useEffect(() => {
     const saved = loadPendingPayment();
-    if (!saved) return;
-
-    // Hanya restore jika timer belum habis
-    if (Date.now() < saved.timerExpiry) {
+    if (saved && Date.now() < saved.timerExpiry) {
       setBookingId(saved.bookingId);
       setPaymentInstructions(saved.paymentInstructions);
-      // Sync timer dan status ke store agar PaymentTimer lanjut dari sisa waktu
       useBookingStore.setState({
         timerExpiry: saved.timerExpiry,
         paymentStatus: "pending",
       });
-      // Lanjutkan polling dari booking_id yang tersimpan
       startPolling(saved.bookingId);
-    } else {
-      // Timer sudah habis saat offline/refresh — bersihkan session
+    } else if (saved) {
       clearPendingPayment();
     }
+    setIsRestored(true); // ← selalu set true setelah restore selesai
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Guard: redirect jika tidak ada pilihan venue/waktu DAN tidak ada sesi tersimpan
+  // Guard: redirect hanya setelah restore selesai
   useEffect(() => {
+    if (!isRestored) return; // tunggu restore dulu
     if (!selectedVenueName || !selectedSlotTime) {
-      // Beri sedikit jeda agar useEffect restore di atas sempat jalan lebih dulu
-      const timeout = setTimeout(() => {
-        if (!useBookingStore.getState().selectedVenueName) {
-          router.replace("/");
-        }
-      }, 100);
-      return () => clearTimeout(timeout);
+      router.replace("/");
     }
-  }, [selectedVenueName, selectedSlotTime, router]);
+  }, [isRestored, selectedVenueName, selectedSlotTime, router]);
 
-  // ✅ FIX 2: HAPUS useEffect startPaymentTimer yang lama.
-  // Timer sekarang hanya dipanggil di dalam handleBayar() setelah API sukses.
-
-  // Bersihkan polling saat komponen unmount
   useEffect(() => {
     return () => {
-      if (pollingRef.current) {
-        clearInterval(pollingRef.current);
-      }
+      if (pollingRef.current) clearInterval(pollingRef.current);
     };
   }, []);
 
   const handleExpire = useCallback(() => {
     setPaymentStatus("expired");
     setShowExpiredDialog(true);
-    // Hentikan polling jika timer frontend habis duluan
     if (pollingRef.current) {
       clearInterval(pollingRef.current);
       pollingRef.current = null;
@@ -189,17 +154,23 @@ export default function PaymentPage() {
   }, [setPaymentStatus]);
 
   const handleExpiredClose = () => {
-    clearPendingPayment(); // ✅ RESTORE: Bersihkan session saat expired
+    clearPendingPayment();
     setShowExpiredDialog(false);
     resetBooking();
     router.replace("/");
   };
 
   const handleSuccessClose = () => {
-    clearPendingPayment(); // ✅ RESTORE: Bersihkan session saat sukses
+    clearPendingPayment();
     setShowSuccessDialog(false);
-    // ✅ FIX 5: bookingId sudah ada di store, halaman register bisa membacanya langsung
     router.push("/booking/register");
+  };
+
+  const handleCopyUrl = (url: string) => {
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   };
 
   const handleBayar = async () => {
@@ -225,24 +196,18 @@ export default function PaymentPage() {
         throw new Error(resData.message || "Gagal membuat pesanan.");
       }
 
-      // ✅ FIX 1: Simpan booking_id ke store setelah API berhasil
       if (resData.data?.booking_id) {
         setBookingId(resData.data.booking_id);
       }
 
-      // ✅ FIX 2: Start timer SETELAH API berhasil, bukan saat halaman dibuka
       startPaymentTimer();
-
-      // Simpan instruksi pembayaran dari Core API ke state
       setPaymentInstructions(resData.data);
       setIsProcessing(false);
 
-      // ✅ FIX 3: Mulai polling status pembayaran ke backend
       if (resData.data?.booking_id) {
         startPolling(resData.data.booking_id);
       }
 
-      // ✅ RESTORE: Simpan ke sessionStorage agar tahan refresh
       if (resData.data?.booking_id) {
         savePendingPayment({
           bookingId: resData.data.booking_id,
@@ -257,6 +222,9 @@ export default function PaymentPage() {
       setIsProcessing(false);
     }
   };
+
+  // ✅ FIX RACE: Tunggu restore selesai dulu sebelum render apapun
+  if (!isRestored) return null;
 
   if (!selectedVenueName || !selectedSlotTime || !selectedSlotPrice) {
     return null;
@@ -280,7 +248,7 @@ export default function PaymentPage() {
           </div>
         </div>
 
-        {/* Timer — hanya tampil setelah API hold berhasil (paymentStatus === "pending") */}
+        {/* Timer */}
         {timerExpiry && paymentStatus === "pending" && (
           <div className="flex justify-center mb-8">
             <Card className="batik-border border-0 px-10 py-6">
@@ -369,7 +337,7 @@ export default function PaymentPage() {
                 "Pilih Metode Pembayaran Dulu"
               )}
             </Button>
-            
+
             <p className="text-center text-sm text-muted-foreground mt-4">
               🔒 Transaksi aman menggunakan Midtrans Core API
             </p>
@@ -381,13 +349,36 @@ export default function PaymentPage() {
                 Selesaikan Pembayaran Anda
               </h2>
               <Separator className="bg-primary/20" />
-              
+
               <div className="py-4">
+                {/* ✅ FIX QRIS: Tampilkan gambar + URL box untuk simulator */}
                 {paymentInstructions.payment_method === "qris" && paymentInstructions.qr_code_url && (
                   <div className="flex flex-col items-center gap-4">
-                    <p className="text-sm text-muted-foreground uppercase font-bold tracking-wider">Scan QRIS Berikut</p>
+                    <p className="text-sm text-muted-foreground uppercase font-bold tracking-wider">
+                      Scan QRIS Berikut
+                    </p>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={paymentInstructions.qr_code_url} alt="QRIS Code" className="w-64 h-64 border-4 border-white rounded-xl shadow-lg" />
+                    <img
+                      src={paymentInstructions.qr_code_url}
+                      alt="QRIS Code"
+                      className="w-64 h-64 border-4 border-white rounded-xl shadow-lg"
+                    />
+                    {/* URL untuk Midtrans Simulator */}
+                    <div className="w-full bg-background border border-border rounded-xl p-3 text-left space-y-2">
+                      <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
+                        🧪 URL untuk Midtrans Simulator
+                      </p>
+                      <p className="text-xs font-mono text-foreground break-all select-all leading-relaxed">
+                        {paymentInstructions.qr_code_url}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => handleCopyUrl(paymentInstructions.qr_code_url)}
+                        className="text-xs text-primary font-semibold hover:underline transition-colors"
+                      >
+                        {copied ? "✓ Tersalin!" : "Salin URL →"}
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -420,7 +411,6 @@ export default function PaymentPage() {
                 )}
               </div>
 
-              {/* ✅ FIX 3 & 4: Indikator polling menggantikan Dev Mode Button */}
               <p className="text-muted-foreground text-sm">
                 Sistem akan otomatis memverifikasi pembayaran Anda. Halaman ini akan berpindah sendiri setelah pembayaran terkonfirmasi.
               </p>
@@ -449,10 +439,7 @@ export default function PaymentPage() {
                 </span>
               </DialogDescription>
             </DialogHeader>
-            <Button
-              onClick={handleExpiredClose}
-              className="w-full mt-4 text-lg py-6"
-            >
+            <Button onClick={handleExpiredClose} className="w-full mt-4 text-lg py-6">
               Kembali ke Beranda
             </Button>
           </DialogContent>
@@ -490,10 +477,7 @@ export default function PaymentPage() {
                 </span>
               </DialogDescription>
             </DialogHeader>
-            <Button
-              onClick={handleSuccessClose}
-              className="w-full mt-2 text-lg py-6"
-            >
+            <Button onClick={handleSuccessClose} className="w-full mt-2 text-lg py-6">
               Lanjut Buat Akun →
             </Button>
           </DialogContent>
