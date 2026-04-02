@@ -7,6 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
 export default function KomunitasFormPage() {
+  // ==========================================
+  // STATE GATEKEEPER (Status Form)
+  // ==========================================
+  const [isFormOpen, setIsFormOpen] = useState<boolean | null>(null);
+
   // State Data Teks (Penari & Karya)
   const [formData, setFormData] = useState({
     name: "",
@@ -23,7 +28,7 @@ export default function KomunitasFormPage() {
     p2_wa: "",
   });
 
-  // State Data File (Tidak bisa diautosave karena limitasi keamanan browser)
+  // State Data File
   const [healthCert, setHealthCert] = useState<File | null>(null);
   const [cv, setCv] = useState<File | null>(null);
   const [photo, setPhoto] = useState<File | null>(null);
@@ -35,9 +40,21 @@ export default function KomunitasFormPage() {
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
-  // ==========================================
-  // FITUR AUTOSAVE (Menyimpan data teks ke LocalStorage)
-  // ==========================================
+  // Cek Status Buka/Tutup Form dari API
+  useEffect(() => {
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/komunitas/status`);
+        const data = await res.json();
+        setIsFormOpen(data?.data?.is_open ?? true);
+      } catch (error) {
+        setIsFormOpen(true); // Fallback jika gagal fetch agar web tidak mati
+      }
+    };
+    fetchStatus();
+  }, []);
+
+  // Fitur Autosave
   useEffect(() => {
     const savedData = localStorage.getItem("komunitas_autosave");
     if (savedData) {
@@ -51,14 +68,10 @@ export default function KomunitasFormPage() {
     }
   }, []);
 
-  // Simpan setiap kali ada ketikan
   useEffect(() => {
     localStorage.setItem("komunitas_autosave", JSON.stringify({ formData, pendamping }));
   }, [formData, pendamping]);
 
-  // ==========================================
-  // HANDLERS
-  // ==========================================
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -71,7 +84,6 @@ export default function KomunitasFormPage() {
     if (e.target.files && e.target.files[0]) setter(e.target.files[0]);
   };
 
-  // Validasi Ketat: Tombol Submit hanya aktif jika seluruh variabel ini terisi
   const isFormValid = 
     formData.name && formData.email && formData.phone && formData.masterpiece_title &&
     pendamping.p1_name && pendamping.p1_wa && pendamping.p2_name && pendamping.p2_wa &&
@@ -92,7 +104,6 @@ export default function KomunitasFormPage() {
     data.append("phone", formData.phone);
     data.append("masterpiece_title", formData.masterpiece_title);
     
-    // Gabungkan pendamping agar sesuai dengan struktur database Backend
     const combinedPendamping = `Pendamping 1: ${pendamping.p1_name} (WA: ${pendamping.p1_wa})\nPendamping 2: ${pendamping.p2_name} (WA: ${pendamping.p2_wa})`;
     data.append("companions_identity", combinedPendamping);
     
@@ -115,7 +126,7 @@ export default function KomunitasFormPage() {
       const response = JSON.parse(xhr.responseText);
       if (xhr.status >= 200 && xhr.status < 300) {
         setSuccessMsg("Pendaftaran berhasil! Silakan cek email Anda untuk detail konfirmasi.");
-        localStorage.removeItem("komunitas_autosave"); // Bersihkan autosave jika sukses
+        localStorage.removeItem("komunitas_autosave"); 
       } else {
         setErrorMsg(response.message || "Terjadi kesalahan saat mendaftar. Pastikan ukuran file sesuai ketentuan.");
       }
@@ -130,6 +141,59 @@ export default function KomunitasFormPage() {
     xhr.send(data);
   };
 
+  // ==========================================
+  // RENDER UI: LOADING STATE
+  // ==========================================
+  if (isFormOpen === null) {
+    return (
+      <PageWrapper narrow>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      </PageWrapper>
+    );
+  }
+
+  // ==========================================
+  // RENDER UI: JIKA FORM DITUTUP
+  // ==========================================
+  if (isFormOpen === false) {
+    return (
+      <PageWrapper narrow>
+        <div className="flex flex-col items-center justify-center min-h-[70vh] py-12 px-4 text-center animate-in fade-in zoom-in duration-500 relative">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-destructive/5 rounded-full blur-3xl -z-10 pointer-events-none" />
+          
+          <div className="w-24 h-24 bg-muted text-muted-foreground rounded-3xl flex items-center justify-center text-5xl mb-6 shadow-inner border border-border">🔒</div>
+          
+          <h1 className="text-3xl md:text-4xl font-black text-foreground mb-4">Pendaftaran Ditutup</h1>
+          
+          <p className="text-lg text-muted-foreground font-medium max-w-xl mb-8 leading-relaxed">
+            Pendaftaran penari 24Jam Non-stop sudah ditutup. Sampai jumpa di tahun depan!<br/><br/>
+            Agar tidak ketinggalan info, follow sosial media 24Jam Menari ISI Surakarta:
+          </p>
+          
+          <div className="flex flex-col sm:flex-row gap-4">
+            <a href="https://instagram.com/24jammenari_official" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 px-6 py-4 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-xl font-bold transition-colors border border-primary/20">
+              <span className="text-2xl">📸</span> Instagram
+            </a>
+            <a href="https://tiktok.com/@24jammenari_official" target="_blank" rel="noreferrer" className="flex items-center justify-center gap-2 px-6 py-4 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-xl font-bold transition-colors border border-primary/20">
+              <span className="text-2xl">🎵</span> TikTok
+            </a>
+          </div>
+
+          <div className="mt-16 text-center">
+            <a href="/komunitas/login" className="text-xs text-muted-foreground/30 hover:text-muted-foreground transition-colors cursor-pointer">
+              Portal Admin Komunitas
+            </a>
+          </div>
+        </div>
+      </PageWrapper>
+    );
+  }
+
+  // ==========================================
+  // RENDER UI: JIKA FORM DIBUKA (DEFAULT)
+  // ==========================================
   return (
     <PageWrapper narrow>
       <div className="flex flex-col items-center justify-center min-h-screen py-12 px-4 relative">
@@ -145,7 +209,6 @@ export default function KomunitasFormPage() {
           </h2>
         </div>
 
-        {/* BLOK INFORMASI FASILITAS & KETENTUAN (SAMA SEPERTI SEBELUMNYA) */}
         <div className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <Card className="border-2 border-primary/20 shadow-lg bg-card/80 backdrop-blur-md">
             <CardHeader className="pb-2">
@@ -171,13 +234,12 @@ export default function KomunitasFormPage() {
             <CardContent className="text-sm text-muted-foreground space-y-2 font-medium">
               <p>🔴 Batas akhir pengisian: <strong>10 April 2026</strong></p>
               <p>🔴 Kehadiran maks: <strong>28 April 2026 Pukul 13.00 WIB</strong></p>
-              <p>🔴 Wajib mengikuti seluruh aturan panitia.</p>
+              <p>🔴 Wajib mengikuti aturan panitia.</p>
               <p>🔴 Aktivitas menari dapat <strong>diberhentikan sewaktu-waktu</strong> oleh medis jika kondisi tidak memungkinkan.</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* FORM UTAMA */}
         <Card className="w-full max-w-3xl border-0 shadow-2xl bg-card/95 backdrop-blur-sm overflow-hidden relative">
           <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary via-accent to-primary" />
           
@@ -206,7 +268,6 @@ export default function KomunitasFormPage() {
                   💡 Draft teks tersimpan otomatis di browser Anda. (Pilih ulang file jika halaman terefresh).
                 </div>
 
-                {/* BAGIAN 1: IDENTITAS PENARI (TIDAK BOLEH DIHAPUS) */}
                 <div className="space-y-6">
                   <h3 className="text-xl font-black border-b-2 border-border pb-2 flex items-center gap-2">
                     <span className="text-primary">1.</span> Identitas Penari
@@ -227,7 +288,6 @@ export default function KomunitasFormPage() {
                   </div>
                 </div>
 
-                {/* BAGIAN 2: KARYA MASTERPIECE */}
                 <div className="space-y-6">
                   <h3 className="text-xl font-black border-b-2 border-border pb-2 flex items-center gap-2">
                     <span className="text-primary">2.</span> Karya Masterpiece
@@ -238,12 +298,10 @@ export default function KomunitasFormPage() {
                   </div>
                 </div>
 
-                {/* BAGIAN 3: IDENTITAS PENDAMPING (DIROMBAK TOTAL) */}
                 <div className="space-y-6">
                   <h3 className="text-xl font-black border-b-2 border-border pb-2 flex items-center gap-2">
                     <span className="text-primary">3.</span> Identitas Pendamping
                   </h3>
-                  
                   <div className="bg-muted p-5 rounded-xl border border-border space-y-5">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -255,9 +313,7 @@ export default function KomunitasFormPage() {
                         <input type="text" name="p1_wa" required value={pendamping.p1_wa} onChange={handlePendampingChange} className="w-full px-4 py-3 rounded-xl border-2 border-input bg-background focus:ring-2 focus:ring-primary transition-all font-medium" placeholder="08..." disabled={isSubmitting} />
                       </div>
                     </div>
-
                     <div className="w-full h-px bg-border my-2"></div>
-
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label className="text-sm font-bold">Nama Pendamping 2 <span className="text-destructive">*</span></label>
@@ -271,7 +327,6 @@ export default function KomunitasFormPage() {
                   </div>
                 </div>
 
-                {/* BAGIAN 4: UNGGAH BERKAS */}
                 <div className="space-y-6">
                   <h3 className="text-xl font-black border-b-2 border-border pb-2 flex items-center gap-2">
                     <span className="text-primary">4.</span> Berkas Persyaratan
@@ -297,7 +352,6 @@ export default function KomunitasFormPage() {
                   </div>
                 </div>
 
-                {/* SUBMIT BUTTON & PROGRESS BAR */}
                 <div className="pt-4">
                   {isSubmitting && (
                     <div className="mb-4 space-y-2 animate-in fade-in">
@@ -311,7 +365,6 @@ export default function KomunitasFormPage() {
 
                   <Button 
                     type="submit" 
-                    // Tombol DIKUNCI MATI jika ada 1 saja form/file yang belum diisi
                     disabled={!isFormValid || isSubmitting} 
                     className="w-full h-14 text-lg font-black shadow-xl rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
                   >
@@ -322,6 +375,12 @@ export default function KomunitasFormPage() {
             )}
           </CardContent>
         </Card>
+
+        <div className="mt-12 text-center">
+          <a href="/komunitas/login" className="text-xs text-muted-foreground/30 hover:text-muted-foreground transition-colors cursor-pointer">
+            Portal Admin Komunitas
+          </a>
+        </div>
       </div>
     </PageWrapper>
   );
