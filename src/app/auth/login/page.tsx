@@ -124,6 +124,17 @@ export default function LoginPage() {
               <p className="text-muted-foreground leading-relaxed">
                 Akun dibuat otomatis setelah pembayaran slot pementasan berhasil. Belum punya akun? Silakan pilih venue dan selesaikan pembayaran terlebih dahulu di halaman utama.
               </p>
+              <div className="mt-4 pt-4 border-t border-primary/10">
+                <p className="text-destructive font-semibold mb-2 text-center">Sudah bayar tapi terkeluar?</p>
+                <Button 
+                  variant="outline" 
+                  className="w-full border-destructive/50 text-destructive hover:bg-destructive/10" 
+                  onClick={() => router.push('/booking/claim')}
+                  type="button"
+                >
+                   Klaim Jadwal & Buat Akun
+                </Button>
+              </div>
             </div>
 
             <Button

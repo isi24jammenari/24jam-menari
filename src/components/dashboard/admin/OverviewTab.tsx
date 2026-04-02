@@ -7,6 +7,29 @@ import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
+// Komponen helper untuk Copy to Clipboard
+const CopyableToken = ({ token }: { token: string }) => {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    if (!token) return;
+    navigator.clipboard.writeText(token);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <div className="flex items-center gap-2 bg-background w-fit px-2 py-1 rounded-md border border-border mt-1.5 shadow-sm">
+      <p className="text-[11px] text-foreground font-mono font-bold tracking-widest">{token || "TIDAK ADA TOKEN"}</p>
+      <button 
+        onClick={handleCopy}
+        className="text-muted-foreground hover:text-primary transition-all text-xs active:scale-90"
+        title="Copy Token Klaim"
+      >
+        {copied ? "✅" : "📋"}
+      </button>
+    </div>
+  );
+};
+
 export default function OverviewTab() {
   const [data, setData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -130,9 +153,9 @@ export default function OverviewTab() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-muted border-b border-border">
-                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Tanggal & ID</th>
+                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Tanggal & Token Klaim</th>
                   <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Pendaftar</th>
-                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Jumlah (Slot)</th>
+                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Venue & Jadwal</th>
                   <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Nominal</th>
                   <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Aksi</th>
                 </tr>
@@ -145,14 +168,18 @@ export default function OverviewTab() {
                     <tr key={mut.id} className="transition-colors hover:bg-muted/50">
                       <td className="px-4 py-3">
                         <p className="font-semibold text-foreground whitespace-nowrap">{new Date(mut.created_at).toLocaleString('id-ID')}</p>
-                        <p className="text-xs text-muted-foreground font-mono mt-0.5">ID: {mut.id.split('-')[0]}</p>
+                        {/* Menggunakan midtrans_order_id, BUKAN mut.id */}
+                        <CopyableToken token={mut.midtrans_order_id} />
                       </td>
                       <td className="px-4 py-3">
                         <p className="font-bold text-foreground">{mut.user?.name}</p>
                         <p className="text-xs text-muted-foreground">{mut.user?.email}</p>
                       </td>
                       <td className="px-4 py-3">
-                        <Badge variant="outline" className="font-bold">1 Slot</Badge>
+                        <p className="font-bold text-foreground text-sm">{mut.time_slot?.venue?.name || "-"}</p>
+                        <Badge variant="outline" className="mt-1 text-xs font-semibold bg-primary/5 text-primary border-primary/20">
+                          {mut.time_slot?.time_range || "-"}
+                        </Badge>
                       </td>
                       <td className="px-4 py-3 font-bold text-primary">
                         {formatPrice(mut.amount)}
