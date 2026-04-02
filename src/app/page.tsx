@@ -73,8 +73,8 @@ function HomeContent() {
           <p className="text-lg md:text-3xl font-semibold tracking-[0.2em] text-accent uppercase">
             HARI TARI DUNIA KE - 20
           </p>
-          <h1 className="text-tradisional text-5xl md:text-7xl lg:text-8xl font-bold text-primary tracking-tight">
-            24JAM MENARI ISI SURAKARTA
+          <h1 className="text-tradisional text-5xl md:text-7xl lg:text-8xl font-bold text-primary tracking-tight leading-tight">
+            24JAM MENARI <br /> ISI SURAKARTA
           </h1>
           <p className="text-xl md:text-4xl font-light text-muted-foreground italic pt-2">
             "Tanpa Batas : Menembus Medan Budaya"

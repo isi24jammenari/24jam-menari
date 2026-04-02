@@ -46,7 +46,7 @@ export const VENUE_FACILITIES: Record<string, { venue: string[]; festival: strin
       "Ukuran panggung : L 15,60 X P 14,38", "Gamelan Slendro Pelog & Mic", "Backdrop Belakang hitam", "Lighting General & Sound", "Mic 10 chanel standby", "BANCIK / LEVEL 2 BUAH (p 200cm x L 100cm x t 40cm)"
     ],
     festival: [
-      "Durasi 20 menit", "Ruang tunggu pentas VIP (1 jam sebelum pementasan)", "E-sertifikat (peserta dan sanggar)", "Figura Sertifikat A3 sanggar", "Dokumentasi Video (link Drive)"
+      "Durasi 20 menit", "Ruang tunggu pentas (1 jam sebelum pementasan)", "E-sertifikat (peserta dan sanggar)", "Figura Sertifikat A3 sanggar", "Dokumentasi Video (link Drive)"
     ],
   },
   "teater-kecil-fest2": {
