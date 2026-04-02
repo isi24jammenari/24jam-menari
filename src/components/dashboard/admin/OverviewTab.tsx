@@ -118,21 +118,23 @@ export default function OverviewTab() {
     <div className="space-y-8">
       {/* 1. Statistik Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-card border-2 border-border rounded-xl p-5 shadow-sm">
-          <p className="text-muted-foreground text-sm font-bold uppercase tracking-wider mb-1">Penghasilan Bersih</p>
-          <p className="text-3xl font-black text-primary">{formatPrice(stats.total_income)}</p>
+        <div className="bg-card border-2 border-border rounded-xl p-5 shadow-sm overflow-hidden flex flex-col justify-center">
+          <p className="text-muted-foreground text-xs md:text-sm font-bold uppercase tracking-wider mb-1 truncate">Penghasilan Bersih</p>
+          <p className="text-2xl lg:text-xl xl:text-2xl font-black text-primary truncate" title={formatPrice(stats.total_income)}>
+            {formatPrice(stats.total_income)}
+          </p>
         </div>
-        <div className="bg-card border-2 border-border rounded-xl p-5 shadow-sm">
-          <p className="text-muted-foreground text-sm font-bold uppercase tracking-wider mb-1">Total Slot Event</p>
-          <p className="text-3xl font-black text-foreground">{stats.total_slots} <span className="text-base font-medium">Slot</span></p>
+        <div className="bg-card border-2 border-border rounded-xl p-5 shadow-sm overflow-hidden flex flex-col justify-center">
+          <p className="text-muted-foreground text-xs md:text-sm font-bold uppercase tracking-wider mb-1 truncate">Total Slot Event</p>
+          <p className="text-2xl lg:text-xl xl:text-2xl font-black text-foreground truncate">{stats.total_slots} <span className="text-sm font-medium">Slot</span></p>
         </div>
-        <div className="bg-card border-2 border-border rounded-xl p-5 shadow-sm">
-          <p className="text-muted-foreground text-sm font-bold uppercase tracking-wider mb-1">Slot Terisi</p>
-          <p className="text-3xl font-black text-accent">{stats.booked_slots} <span className="text-base font-medium">Grup</span></p>
+        <div className="bg-card border-2 border-border rounded-xl p-5 shadow-sm overflow-hidden flex flex-col justify-center">
+          <p className="text-muted-foreground text-xs md:text-sm font-bold uppercase tracking-wider mb-1 truncate">Slot Terisi</p>
+          <p className="text-2xl lg:text-xl xl:text-2xl font-black text-accent truncate">{stats.booked_slots} <span className="text-sm font-medium">Grup</span></p>
         </div>
-        <div className="bg-card border-2 border-border rounded-xl p-5 shadow-sm">
-          <p className="text-muted-foreground text-sm font-bold uppercase tracking-wider mb-1">Sisa Slot</p>
-          <p className="text-3xl font-black text-green-600">{stats.available_slots} <span className="text-base font-medium">Kosong</span></p>
+        <div className="bg-card border-2 border-border rounded-xl p-5 shadow-sm overflow-hidden flex flex-col justify-center">
+          <p className="text-muted-foreground text-xs md:text-sm font-bold uppercase tracking-wider mb-1 truncate">Sisa Slot</p>
+          <p className="text-2xl lg:text-xl xl:text-2xl font-black text-green-600 truncate">{stats.available_slots} <span className="text-sm font-medium">Kosong</span></p>
         </div>
       </div>
 
