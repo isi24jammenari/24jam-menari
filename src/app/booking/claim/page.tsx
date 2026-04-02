@@ -77,7 +77,7 @@ export default function ClaimPage() {
                 Untuk mencegah pencurian jadwal, Anda memerlukan <strong>Token Klaim</strong> dari panitia.
               </p>
               <a 
-                href="https://wa.me/6281234567890?text=Halo%20Admin,%20saya%20sudah%20bayar%20tapi%20terkeluar.%20Ini%20bukti%20transfernya." 
+                href="https://wa.me/6282123239004?text=Halo%20Admin,%20saya%20sudah%20bayar%20tapi%20terkeluar.%20Ini%20bukti%20transfernya." 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full bg-[#25D366] text-white font-bold py-3.5 px-4 rounded-xl hover:bg-[#20b858] transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5"
