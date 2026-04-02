@@ -273,7 +273,7 @@ export default function KomunitasFormPage() {
 
         {/* PINTU RAHASIA ADMIN */}
         <div className="mt-12 text-center">
-          <a href="/komunitas/admin" className="text-xs text-muted-foreground/30 hover:text-muted-foreground transition-colors cursor-pointer">
+          <a href="/komunitas/login" className="text-xs text-muted-foreground/30 hover:text-muted-foreground transition-colors cursor-pointer">
             Portal Admin Komunitas
           </a>
         </div>

@@ -15,7 +15,7 @@ export default function KomunitasAdminDashboardPage() {
     const token = localStorage.getItem("access_token");
 
     if (!token) {
-      router.replace("/auth/login");
+      router.replace("/komunitas/login");
       return;
     }
 
