@@ -152,43 +152,80 @@ export default function OverviewTab() {
             )}
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-muted border-b border-border">
-                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Tanggal & Token Klaim</th>
+                <tr className="bg-muted border-b border-border whitespace-nowrap">
+                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Tanggal</th>
+                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Token Klaim</th>
                   <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Pendaftar</th>
                   <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Venue & Jadwal</th>
-                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Nominal</th>
+                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Festival</th>
+                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Nominal & Pembayaran</th>
                   <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Aksi</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
                 {mutations.data.length === 0 ? (
-                  <tr><td colSpan={5} className="text-center py-8 text-muted-foreground">Belum ada mutasi masuk.</td></tr>
+                  <tr><td colSpan={7} className="text-center py-8 text-muted-foreground">Belum ada mutasi masuk.</td></tr>
                 ) : (
                   mutations.data.map((mut: any) => (
                     <tr key={mut.id} className="transition-colors hover:bg-muted/50">
+                      
+                      {/* 1. Tanggal */}
                       <td className="px-4 py-3">
-                        <p className="font-semibold text-foreground whitespace-nowrap">{new Date(mut.created_at).toLocaleString('id-ID')}</p>
-                        {/* Menggunakan midtrans_order_id, BUKAN mut.id */}
-                        <CopyableToken token={mut.midtrans_order_id} />
+                        <p className="font-semibold text-foreground whitespace-nowrap">
+                          {new Date(mut.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
+                        </p>
                       </td>
+                      
+                      {/* 2. Token Klaim */}
                       <td className="px-4 py-3">
-                        <p className="font-bold text-foreground">{mut.user?.name}</p>
-                        <p className="text-xs text-muted-foreground">{mut.user?.email}</p>
+                        <Badge variant="outline" className="font-mono text-xs bg-slate-100 text-slate-800 border-slate-300">
+                          {mut.midtrans_order_id || mut.id.split('-')[0]}
+                        </Badge>
                       </td>
+                      
+                      {/* 3. Pendaftar */}
                       <td className="px-4 py-3">
+                        <p className="font-bold text-foreground truncate max-w-[150px]">{mut.user?.name || "Belum Ada Akun"}</p>
+                        <p className="text-xs text-muted-foreground truncate max-w-[150px]">{mut.user?.email || "-"}</p>
+                      </td>
+                      
+                      {/* 4. Venue & Jadwal */}
+                      <td className="px-4 py-3 whitespace-nowrap">
                         <p className="font-bold text-foreground text-sm">{mut.time_slot?.venue?.name || "-"}</p>
                         <Badge variant="outline" className="mt-1 text-xs font-semibold bg-primary/5 text-primary border-primary/20">
                           {mut.time_slot?.time_range || "-"}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3 font-bold text-primary">
-                        {formatPrice(mut.amount)}
+
+                      {/* 5. Festival */}
+                      <td className="px-4 py-3">
+                        <span className="inline-block px-2 py-1 bg-accent/10 text-accent font-bold text-xs rounded-md uppercase tracking-wider">
+                          {mut.time_slot?.venue?.festival_name || "FESTIVAL"}
+                        </span>
                       </td>
+
+                      {/* 6. Nominal & Pembayaran */}
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <p className="font-bold text-primary">{formatPrice(mut.amount)}</p>
+                        {mut.payment_method && (
+                          <span className="inline-block mt-1 px-2 py-0.5 bg-slate-200 text-slate-700 font-bold text-[10px] rounded uppercase tracking-wider">
+                            {mut.payment_method}
+                          </span>
+                        )}
+                      </td>
+
+                      {/* 7. Aksi */}
                       <td className="px-4 py-3 text-right">
-                        <Button onClick={() => generateInvoice(mut)} size="sm" variant="secondary" className="text-xs font-bold">
-                          📄 Download Invoice
+                        <Button 
+                          onClick={() => generateInvoice(mut)} 
+                          size="sm" 
+                          variant="secondary" 
+                          className="text-xs font-bold whitespace-nowrap shadow-sm hover:scale-105 transition-transform"
+                        >
+                          📄 Invoice/Nota
                         </Button>
                       </td>
+                      
                     </tr>
                   ))
                 )}
