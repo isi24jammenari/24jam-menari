@@ -142,18 +142,16 @@ function HomeContent() {
           <h4 className="text-center font-semibold text-lg text-foreground">
             Masih Bingung? Tonton Video Panduan Berikut:
           </h4>
-          <div className="relative w-full aspect-video bg-black/60 border border-border rounded-2xl overflow-hidden shadow-lg group flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors">
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1547153760-18fc86324498?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center opacity-30 mix-blend-luminosity" />
-            <div className="relative z-10 w-20 h-20 bg-primary/90 rounded-full flex items-center justify-center text-primary-foreground shadow-xl group-hover:scale-110 group-hover:bg-primary transition-all">
-              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="currentColor" className="ml-2">
-                <path d="M5 3l14 9-14 9V3z" />
-              </svg>
-            </div>
-            <div className="absolute bottom-4 left-0 right-0 text-center z-10">
-              <span className="bg-background/80 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-medium text-foreground">
-                Klik untuk memutar video tutorial
-              </span>
-            </div>
+          <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-lg border border-border bg-black">
+            <iframe
+              className="absolute top-0 left-0 w-full h-full"
+              src="https://www.youtube.com/embed/m7e_DyO3A_w?rel=0"
+              title="Video Panduan Pendaftaran 24 Jam Menari"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            ></iframe>
           </div>
         </div>
       </section>
