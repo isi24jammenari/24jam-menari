@@ -9,14 +9,16 @@ import api from "@/lib/api";
 export default function RundownTab() {
   const [rundownData, setRundownData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRundown = async () => {
       try {
         const res = await api.get('/admin/participants'); // Pakai endpoint yang sama
         setRundownData(res.data.data);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Gagal menarik data rundown:", error);
+        setErrorMsg(error.response?.data?.message || "Gagal memuat data rundown.");
       } finally {
         setIsLoading(false);
       }
@@ -30,15 +32,15 @@ export default function RundownTab() {
     const wb = XLSX.utils.book_new();
     
     // 1. Ambil daftar Venue yang unik dari data
-    const venues = Array.from(new Set(rundownData.map(item => item.timeSlot?.venue?.name).filter(Boolean)));
+    const venues = Array.from(new Set(rundownData.map(item => item.time_slot?.venue?.name).filter(Boolean)));
 
     // 2. Looping per Venue dan buat sheet masing-masing
     venues.forEach((venueName) => {
       // Filter data spesifik untuk venue ini
-      const venueData = rundownData.filter(item => item.timeSlot?.venue?.name === venueName);
+      const venueData = rundownData.filter(item => item.time_slot?.venue?.name === venueName);
       
       // Sort berdasarkan Jam Tampil (Ascending)
-      venueData.sort((a, b) => (a.timeSlot?.time_range > b.timeSlot?.time_range) ? 1 : -1);
+      venueData.sort((a, b) => ((a.time_slot?.time_range || "") > (b.time_slot?.time_range || "")) ? 1 : -1);
 
       // Map ke format baris (MENGHILANGKAN NAMA AKUN, SINOPSIS, KEDATANGAN, DAN SERTIFIKAT)
       const rows = venueData.map((item, index) => {
@@ -48,7 +50,7 @@ export default function RundownTab() {
 
         return {
           "No": index + 1,
-          "Jam Tampil": item.timeSlot?.time_range || "-",
+          "Jam Tampil": item.time_slot?.time_range || "-",
           "Nama Kelompok / Sanggar": perf.group_name || "-",
           "Nama Narahubung": perf.cp_name || "-",
           "WA Narahubung": perf.contact_person || "-",
@@ -75,6 +77,7 @@ export default function RundownTab() {
   };
 
   if (isLoading) return <div className="text-center py-10 animate-pulse text-muted-foreground">Memuat urutan rundown...</div>;
+  if (errorMsg) return <div className="text-center py-10 text-red-500 font-bold border-2 border-red-500 rounded-xl bg-red-500/10 p-4">{errorMsg}</div>;
 
   return (
     <div className="space-y-6">
@@ -110,8 +113,8 @@ export default function RundownTab() {
                   return (
                   <tr key={item.id} className="transition-colors hover:bg-muted/50">
                     <td className="px-4 py-3 whitespace-nowrap">
-                      <p className="font-semibold text-foreground">{item.timeSlot?.time_range}</p>
-                      <p className="text-xs text-muted-foreground font-bold mt-0.5 text-primary">{item.timeSlot?.venue?.name}</p>
+                      <p className="font-semibold text-foreground">{item.time_slot?.time_range}</p>
+                      <p className="text-xs text-muted-foreground font-bold mt-0.5 text-primary">{item.time_slot?.venue?.name}</p>
                     </td>
                     <td className="px-4 py-3 text-foreground font-medium">
                       {perf.group_name || <span className="text-muted-foreground italic">—</span>}

@@ -9,14 +9,16 @@ import api from "@/lib/api";
 export default function ParticipantsTab() {
   const [participants, setParticipants] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchParticipants = async () => {
       try {
         const res = await api.get('/admin/participants');
         setParticipants(res.data.data);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Gagal menarik data peserta:", error);
+        setErrorMsg(error.response?.data?.message || "Gagal memuat data peserta.");
       } finally {
         setIsLoading(false);
       }
@@ -38,8 +40,8 @@ export default function ParticipantsTab() {
         "Tgl Pendaftaran": new Date(item.created_at).toLocaleString('id-ID'),
         "Akun Pendaftar": item.user?.name || "-",
         "Email Akun": item.user?.email || "-",
-        "Venue Terpilih": item.timeSlot?.venue?.name || "-",
-        "Jam Tampil": item.timeSlot?.time_range || "-",
+        "Venue Terpilih": item.time_slot?.venue?.name || "-",
+        "Jam Tampil": item.time_slot?.time_range || "-",
         "Nama Peserta / Grup": perf.group_name || "-",
         "Nama Narahubung": perf.cp_name || "-",
         "WA Narahubung": perf.contact_person || "-",
@@ -67,6 +69,7 @@ export default function ParticipantsTab() {
   };
 
   if (isLoading) return <div className="text-center py-10 animate-pulse text-muted-foreground">Memuat data peserta...</div>;
+  if (errorMsg) return <div className="text-center py-10 text-red-500 font-bold border-2 border-red-500 rounded-xl bg-red-500/10 p-4">{errorMsg}</div>;
 
   return (
     <div className="space-y-6">

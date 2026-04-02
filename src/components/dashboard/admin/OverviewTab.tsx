@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 export default function OverviewTab() {
   const [data, setData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [page, setPage] = useState(1);
 
   const fetchOverview = async (pageNumber = 1) => {
@@ -18,8 +19,9 @@ export default function OverviewTab() {
       const res = await api.get(`/admin/overview?page=${pageNumber}`);
       setData(res.data.data);
       setPage(pageNumber);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Gagal menarik data overview", error);
+      setErrorMsg(error.response?.data?.message || "Error 500: Terjadi fatal error di Backend Laravel.");
     } finally {
       setIsLoading(false);
     }
@@ -84,6 +86,7 @@ export default function OverviewTab() {
     doc.save(`Invoice_${mutation.user?.name}_${mutation.id.substring(0,6)}.pdf`);
   };
 
+  if (errorMsg) return <div className="py-10 text-red-500 font-bold text-center border-2 border-red-500 rounded-xl bg-red-500/10 p-4">Backend Error: {errorMsg}</div>;
   if (!data) return <div className="animate-pulse py-10 text-muted-foreground text-center">Memuat statistik...</div>;
 
   const { stats, mutations } = data;
