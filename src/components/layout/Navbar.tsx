@@ -88,7 +88,7 @@ export default function Navbar() {
                 className="flex items-center gap-2 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground border border-primary/30 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-semibold transition-all text-sm sm:text-base shadow-sm"
               >
                 <span className="text-lg">👤</span>
-                <span className="hidden sm:inline">Masuk Akun</span>
+                <span className="hidden sm:inline">Sudah Daftar? Masuk</span>
                 <span className="sm:hidden">Masuk</span>
               </button>
             )
