@@ -1,47 +1,92 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import PageWrapper from "@/components/layout/PageWrapper";
 import OverviewTab from "@/components/dashboard/admin/OverviewTab";
+import ParticipantsTab from "@/components/dashboard/admin/ParticipantsTab"; // Tab Baru
 import RundownTab from "@/components/dashboard/admin/RundownTab";
 import ManagementTab from "@/components/dashboard/admin/ManagementTab";
-import { Badge } from "@/components/ui/badge";
+import CertificateTab from "@/components/dashboard/admin/CertificateTab"; // Tab Baru
 
-type Tab = "overview" | "user" | "pengelolaan";
-
-const tabs: { id: Tab; label: string; icon: string; badge?: number }[] = [
-  { id: "overview", label: "Overview", icon: "📊" },
-  { id: "user", label: "Rundown User", icon: "📋" },
-  { id: "pengelolaan", label: "Pengelolaan", icon: "⚙️" },
-];
+type Tab = "overview" | "peserta" | "rundown" | "pengelolaan" | "sertifikat";
 
 export default function AdminDashboardPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>("overview");
+  const [adminUser, setAdminUser] = useState<{ name: string; email: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const token = localStorage.getItem("access_token");
+
+    if (!token) {
+      router.replace("/auth/login");
+      return;
+    }
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/user`, {
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+    })
+      .then((res) => {
+        if (!res.ok) {
+          localStorage.removeItem("access_token");
+          router.replace("/auth/login");
+          return null;
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (data?.data) {
+          if (data.data.role !== "admin") {
+            alert("Akses ditolak. Anda bukan admin.");
+            localStorage.removeItem("access_token");
+            router.replace("/auth/login");
+            return;
+          }
+          setAdminUser(data.data);
+        }
+        setIsLoading(false);
+      })
+      .catch(() => {
+        localStorage.removeItem("access_token");
+        router.replace("/auth/login");
+      });
+  }, [router]);
+
+  if (isLoading) {
+    return (
+      <PageWrapper>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      </PageWrapper>
+    );
+  }
+
+  const tabs: { id: Tab; label: string; icon: string }[] = [
+    { id: "overview", label: "Overview & Mutasi", icon: "📊" },
+    { id: "peserta", label: "Data Diri Penari", icon: "👥" },
+    { id: "rundown", label: "Rundown", icon: "⏱️" },
+    { id: "pengelolaan", label: "Pengelolaan", icon: "⚙️" },
+    { id: "sertifikat", label: "E-Sertifikat", icon: "🎓" },
+  ];
 
   return (
     <PageWrapper>
-      {/* Header */}
       <div className="mb-8">
-        <p className="text-muted-foreground text-lg">Panel Administrasi</p>
+        <p className="text-muted-foreground text-lg">Portal Manajemen,</p>
         <h1 className="text-tradisional text-4xl font-bold text-primary leading-tight">
-          Dashboard Admin
+          {adminUser?.name ?? "Admin"}
         </h1>
-        <div className="flex items-center gap-3 mt-2">
-          <div className="h-px w-10 bg-accent opacity-60" />
-          <span className="text-accent text-sm">✦</span>
-          <span className="text-muted-foreground text-sm">
-            24Jam Menari
-          </span>
-        </div>
       </div>
 
-      {/* Tab Navigator */}
-      <div className="flex flex-wrap gap-2 mb-8 border-b border-border pb-1">
+      <div className="flex gap-2 mb-8 border-b border-border pb-1 overflow-x-auto no-scrollbar">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`relative flex items-center gap-2 px-5 py-3 rounded-t-xl text-lg font-semibold transition-all ${
+            className={`flex items-center gap-2 px-5 py-3 rounded-t-xl text-lg font-semibold transition-all whitespace-nowrap ${
               activeTab === tab.id
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:text-primary hover:bg-muted"
@@ -49,20 +94,16 @@ export default function AdminDashboardPage() {
           >
             <span>{tab.icon}</span>
             {tab.label}
-            {tab.badge && tab.badge > 0 && (
-              <Badge className="ml-1 bg-accent text-accent-foreground text-xs px-1.5 py-0.5 min-w-5 h-5 flex items-center justify-center">
-                {tab.badge}
-              </Badge>
-            )}
           </button>
         ))}
       </div>
 
-      {/* Tab Content */}
       <div>
         {activeTab === "overview" && <OverviewTab />}
-        {activeTab === "user" && <RundownTab />}
+        {activeTab === "peserta" && <ParticipantsTab />} 
+        {activeTab === "rundown" && <RundownTab />}
         {activeTab === "pengelolaan" && <ManagementTab />}
+        {activeTab === "sertifikat" && <CertificateTab />}
       </div>
     </PageWrapper>
   );

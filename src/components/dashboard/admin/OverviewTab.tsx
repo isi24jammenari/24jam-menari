@@ -2,134 +2,197 @@
 
 import { useEffect, useState } from "react";
 import { formatPrice } from "@/lib/data/venues";
-import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+import { jsPDF } from "jspdf";
 import api from "@/lib/api";
-
-type OverviewData = {
-  total_revenue: number;
-  total_slots: number;
-  booked_slots: number;
-  occupancy_rate: number;
-  data_completion: {
-    completed: number;
-    draft: number;
-    empty: number;
-    total_need_action: number;
-  };
-};
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export default function OverviewTab() {
-  const [data, setData] = useState<OverviewData | null>(null);
+  const [data, setData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+
+  const fetchOverview = async (pageNumber = 1) => {
+    setIsLoading(true);
+    try {
+      const res = await api.get(`/admin/overview?page=${pageNumber}`);
+      setData(res.data.data);
+      setPage(pageNumber);
+    } catch (error) {
+      console.error("Gagal menarik data overview", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchOverview = async () => {
-      try {
-        const res = await api.get('/admin/overview');
-        setData(res.data.data);
-      } catch (error) {
-        console.error("Gagal menarik data overview admin:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
     fetchOverview();
   }, []);
 
-  if (isLoading) {
-    return <div className="text-center py-10 animate-pulse text-muted-foreground">Memuat statistik...</div>;
-  }
+  const generateInvoice = (mutation: any) => {
+    // Generate Invoice PDF di sisi Frontend (Tanpa membebani backend)
+    const doc = new jsPDF();
+    const date = new Date(mutation.created_at).toLocaleString('id-ID');
+    
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(22);
+    doc.text("INVOICE PEMBAYARAN", 105, 20, { align: "center" });
+    
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text("Event: 24 Jam Menari ISI Surakarta", 105, 30, { align: "center" });
+    doc.text("Status: LUNAS (PAID)", 105, 37, { align: "center" });
 
-  if (!data) return null;
+    doc.line(20, 45, 190, 45); // Garis
 
-  const totalEmptySlots = data.total_slots - data.booked_slots;
+    doc.setFont("helvetica", "bold");
+    doc.text("ID Booking:", 20, 60);
+    doc.setFont("helvetica", "normal");
+    doc.text(mutation.id, 60, 60);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Tanggal:", 20, 70);
+    doc.setFont("helvetica", "normal");
+    doc.text(date, 60, 70);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Nama Akun:", 20, 80);
+    doc.setFont("helvetica", "normal");
+    doc.text(mutation.user?.name || "-", 60, 80);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Email Akun:", 20, 90);
+    doc.setFont("helvetica", "normal");
+    doc.text(mutation.user?.email || "-", 60, 90);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Venue/Jam:", 20, 100);
+    doc.setFont("helvetica", "normal");
+    doc.text(`${mutation.time_slot?.venue?.name} (${mutation.time_slot?.time_range})`, 60, 100);
+
+    doc.line(20, 110, 190, 110); // Garis
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("Total Bayar:", 20, 125);
+    doc.text(formatPrice(mutation.amount), 60, 125);
+
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "italic");
+    doc.text("Invoice ini digenerate secara otomatis oleh sistem admin.", 105, 270, { align: "center" });
+
+    doc.save(`Invoice_${mutation.user?.name}_${mutation.id.substring(0,6)}.pdf`);
+  };
+
+  if (!data) return <div className="animate-pulse py-10 text-muted-foreground text-center">Memuat statistik...</div>;
+
+  const { stats, mutations } = data;
 
   return (
     <div className="space-y-8">
-      {/* Kartu Ringkasan Penjualan */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="batik-border border-0 bg-primary/5">
-          <CardContent className="p-5">
-            <p className="text-sm font-bold text-primary uppercase tracking-wide">
-              Total Pendapatan
-            </p>
-            <p className="text-3xl font-black text-primary mt-1">
-              {formatPrice(data.total_revenue)}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Dari {data.booked_slots} transaksi sukses
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="batik-border border-0">
-          <CardContent className="p-5">
-            <p className="text-sm text-muted-foreground uppercase tracking-wide">
-              Total Slot Terisi
-            </p>
-            <p className="text-3xl font-bold text-accent mt-1">
-              {data.booked_slots}
-              <span className="text-base font-normal text-muted-foreground">
-                {" "}/ {data.total_slots}
-              </span>
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              {data.occupancy_rate}% Occupancy Rate
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card className="batik-border border-0">
-          <CardContent className="p-5">
-            <p className="text-sm text-muted-foreground uppercase tracking-wide">
-              Slot Masih Kosong
-            </p>
-            <p className="text-3xl font-bold text-secondary mt-1">
-              {totalEmptySlots}
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              slot belum terjual
-            </p>
-          </CardContent>
-        </Card>
+      {/* 1. Statistik Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-card border-2 border-border rounded-xl p-5 shadow-sm">
+          <p className="text-muted-foreground text-sm font-bold uppercase tracking-wider mb-1">Penghasilan Bersih</p>
+          <p className="text-3xl font-black text-primary">{formatPrice(stats.total_income)}</p>
+        </div>
+        <div className="bg-card border-2 border-border rounded-xl p-5 shadow-sm">
+          <p className="text-muted-foreground text-sm font-bold uppercase tracking-wider mb-1">Total Slot Event</p>
+          <p className="text-3xl font-black text-foreground">{stats.total_slots} <span className="text-base font-medium">Slot</span></p>
+        </div>
+        <div className="bg-card border-2 border-border rounded-xl p-5 shadow-sm">
+          <p className="text-muted-foreground text-sm font-bold uppercase tracking-wider mb-1">Slot Terisi</p>
+          <p className="text-3xl font-black text-accent">{stats.booked_slots} <span className="text-base font-medium">Grup</span></p>
+        </div>
+        <div className="bg-card border-2 border-border rounded-xl p-5 shadow-sm">
+          <p className="text-muted-foreground text-sm font-bold uppercase tracking-wider mb-1">Sisa Slot</p>
+          <p className="text-3xl font-black text-green-600">{stats.available_slots} <span className="text-base font-medium">Kosong</span></p>
+        </div>
       </div>
 
-      <div className="flex items-center gap-6 mt-8 mb-4">
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent to-border" />
-        <h3 className="text-accent tracking-widest uppercase text-sm font-bold">Status Data Peserta</h3>
-        <div className="flex-1 h-px bg-gradient-to-l from-transparent to-border" />
-      </div>
+      {/* 2. Tabel Mutasi (Dengan Pagination & Invoice) */}
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-tradisional text-2xl font-bold text-primary">Mutasi Pembayaran Berhasil</h3>
+          <p className="text-sm text-muted-foreground mt-0.5">Daftar transaksi yang sudah Lunas, diurutkan dari yang terbaru.</p>
+        </div>
 
-      {/* ✅ 1. Tambahan Baru: Kartu Ringkasan Status Kelengkapan Data */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <Card className="border border-border/50 bg-card shadow-sm">
-          <CardContent className="p-4 flex flex-col items-center text-center justify-center">
-            <p className="text-4xl font-black text-primary">{data.data_completion.completed}</p>
-            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mt-1">Data Final (Siap)</p>
-          </CardContent>
-        </Card>
-        
-        <Card className="border border-border/50 bg-card shadow-sm">
-          <CardContent className="p-4 flex flex-col items-center text-center justify-center">
-            <p className="text-4xl font-black text-accent">{data.data_completion.draft}</p>
-            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mt-1">Status Draft</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border border-border/50 bg-card shadow-sm">
-          <CardContent className="p-4 flex flex-col items-center text-center justify-center">
-            <p className="text-4xl font-black text-destructive">{data.data_completion.empty}</p>
-            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mt-1">Belum Isi Form</p>
-          </CardContent>
-        </Card>
-
-        <Card className="border-2 border-accent/20 bg-accent/5 shadow-sm">
-          <CardContent className="p-4 flex flex-col items-center text-center justify-center">
-            <p className="text-4xl font-black text-accent">{data.data_completion.total_need_action}</p>
-            <p className="text-xs font-bold uppercase tracking-wider text-accent mt-1">Butuh Tindakan (Follow Up)</p>
-          </CardContent>
-        </Card>
+        <div className="batik-border rounded-xl overflow-hidden bg-card">
+          <div className="overflow-x-auto relative min-h-[200px]">
+            {isLoading && (
+              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm z-10 flex items-center justify-center">
+                 <span className="font-bold text-primary">Memuat data...</span>
+              </div>
+            )}
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-muted border-b border-border">
+                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Tanggal & ID</th>
+                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Pendaftar</th>
+                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Jumlah (Slot)</th>
+                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Nominal</th>
+                  <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {mutations.data.length === 0 ? (
+                  <tr><td colSpan={5} className="text-center py-8 text-muted-foreground">Belum ada mutasi masuk.</td></tr>
+                ) : (
+                  mutations.data.map((mut: any) => (
+                    <tr key={mut.id} className="transition-colors hover:bg-muted/50">
+                      <td className="px-4 py-3">
+                        <p className="font-semibold text-foreground whitespace-nowrap">{new Date(mut.created_at).toLocaleString('id-ID')}</p>
+                        <p className="text-xs text-muted-foreground font-mono mt-0.5">ID: {mut.id.split('-')[0]}</p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="font-bold text-foreground">{mut.user?.name}</p>
+                        <p className="text-xs text-muted-foreground">{mut.user?.email}</p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <Badge variant="outline" className="font-bold">1 Slot</Badge>
+                      </td>
+                      <td className="px-4 py-3 font-bold text-primary">
+                        {formatPrice(mut.amount)}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <Button onClick={() => generateInvoice(mut)} size="sm" variant="secondary" className="text-xs font-bold">
+                          📄 Download Invoice
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          
+          {/* Pagination Controls */}
+          {mutations.last_page > 1 && (
+            <div className="bg-muted border-t border-border px-4 py-3 flex items-center justify-between">
+              <p className="text-sm text-muted-foreground font-medium">
+                Menampilkan Halaman {mutations.current_page} dari {mutations.last_page}
+              </p>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => fetchOverview(page - 1)} 
+                  disabled={page === 1 || isLoading}
+                >
+                  ← Sebelumnya
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => fetchOverview(page + 1)} 
+                  disabled={page === mutations.last_page || isLoading}
+                >
+                  Selanjutnya →
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
