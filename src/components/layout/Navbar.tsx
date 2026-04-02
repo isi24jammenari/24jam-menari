@@ -52,7 +52,7 @@ export default function Navbar() {
             width={120}
             height={48}
             priority
-            unoptimized
+            unoptimized // <--- INI SAKLAR PEMATIKAN OPTIMASI NEXT.JS
             className="h-10 md:h-12 w-auto object-contain"
           />
         </Link>

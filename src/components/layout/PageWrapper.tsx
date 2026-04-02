@@ -69,6 +69,7 @@ export default function PageWrapper({ children, className, narrow = false }: Pag
                   alt="Logo 24 Jam Menari" 
                   width={180} 
                   height={60} 
+                  unoptimized // <--- INI SAKLAR PEMATIKAN OPTIMASI NEXT.JS
                   className="h-12 sm:h-14 w-auto object-contain opacity-90"
                 />
                 <p className="text-muted-foreground text-sm sm:text-base leading-relaxed max-w-sm">
