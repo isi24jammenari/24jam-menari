@@ -18,14 +18,16 @@ import {
 import { useBookingStore } from "@/lib/store/bookingStore";
 import { formatPrice } from "@/lib/data/venues";
 
-type PaymentMethod = "bca" | "bni" | "bri" | "mandiri" | "qris" | null;
+import Image from "next/image"; // Tambahkan import Image di atas jika belum ada
+
+type PaymentMethod = "bni" | "bri" | "mandiri" | "gopay" | "qris" | null;
 
 const PAYMENT_METHODS = [
-  { id: "bca", label: "BCA Virtual Account", icon: "🏦" },
-  { id: "bni", label: "BNI Virtual Account", icon: "🏦" },
-  { id: "bri", label: "BRI Virtual Account", icon: "🏦" },
-  { id: "mandiri", label: "Mandiri Virtual Account", icon: "🏦" },
-  { id: "qris", label: "QRIS", icon: "📱" },
+  { id: "bni", label: "BNI Virtual Account", img: "/BNI.png" },
+  { id: "bri", label: "BRI Virtual Account", img: "/BRI.png" },
+  { id: "mandiri", label: "Mandiri Virtual Account", img: "/Mandiri.png" },
+  { id: "gopay", label: "GoPay", img: "/GoPay.png" },
+  { id: "qris", label: "QRIS", img: "/QRIS.png" },
 ] as const;
 
 // ─── Session persistence ───────────────────────────────────────────────────
@@ -304,11 +306,19 @@ export default function PaymentPage() {
                       onClick={() => setSelectedMethod(method.id as PaymentMethod)}
                       className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all duration-200 ${
                         selectedMethod === method.id
-                          ? "border-primary bg-primary/5"
-                          : "border-border bg-card hover:border-accent"
+                          ? "border-primary bg-primary/5 shadow-sm"
+                          : "border-border bg-card hover:border-accent/50"
                       }`}
                     >
-                      <span className="text-2xl">{method.icon}</span>
+                      <div className="relative w-16 h-8 shrink-0 flex items-center justify-center bg-white rounded p-1">
+                        <Image 
+                          src={method.img} 
+                          alt={`${method.label} Logo`} 
+                          fill 
+                          className="object-contain"
+                          sizes="64px"
+                        />
+                      </div>
                       <span className="text-lg font-medium">{method.label}</span>
                       {selectedMethod === method.id && (
                         <span className="ml-auto text-primary font-bold text-xl">✓</span>
@@ -382,7 +392,28 @@ export default function PaymentPage() {
                   </div>
                 )}
 
-                {["bca", "bni", "bri"].includes(paymentInstructions.payment_method) && paymentInstructions.va_number && (
+                {/* Render GoPay (Deep Link / QR) */}
+                {paymentInstructions.payment_method === "gopay" && paymentInstructions.qr_code_url && (
+                  <div className="flex flex-col items-center gap-4">
+                    <p className="text-sm text-muted-foreground uppercase font-bold tracking-wider">
+                      Scan QR GoPay Berikut
+                    </p>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={paymentInstructions.qr_code_url}
+                      alt="GoPay QR Code"
+                      className="w-64 h-64 border-4 border-white rounded-xl shadow-lg"
+                    />
+                    <div className="mt-2">
+                       <a href={paymentInstructions.gopay_deeplink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background bg-primary text-primary-foreground hover:bg-primary/90 h-10 py-2 px-4">
+                          Buka Aplikasi GoPay
+                       </a>
+                    </div>
+                  </div>
+                )}
+
+                {/* Render VA BNI & BRI */}
+                {["bni", "bri"].includes(paymentInstructions.payment_method) && paymentInstructions.va_number && (
                   <div className="space-y-2">
                     <p className="text-sm text-muted-foreground uppercase font-bold tracking-wider">
                       Virtual Account {paymentInstructions.payment_method.toUpperCase()}
