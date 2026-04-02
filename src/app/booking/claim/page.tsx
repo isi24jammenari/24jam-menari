@@ -9,7 +9,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 
 export default function ClaimPage() {
   const router = useRouter();
-  const { setBookingId, selectVenue, selectSlot } = useBookingStore();
+  
+  // ✅ PERBAIKAN 1: Tambahkan setPaymentStatus dari store
+  const { setBookingId, selectVenue, selectSlot, setPaymentStatus } = useBookingStore();
 
   const [claimToken, setClaimToken] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -34,6 +36,12 @@ export default function ClaimPage() {
       setBookingId(data.data.booking_id);
       selectVenue(data.data.venue_id, data.data.venue_name);
       selectSlot(data.data.slot_id, data.data.time_range, 0); 
+
+      // ✅ PERBAIKAN 2: Beritahu state bahwa pembayaran telah sukses
+      // Ini mencegah user ditendang kembali ke homepage oleh sistem keamanan RegisterPage
+      if (setPaymentStatus) {
+        setPaymentStatus("success");
+      }
 
       // Lempar ke halaman registrasi
       router.push("/booking/register");
