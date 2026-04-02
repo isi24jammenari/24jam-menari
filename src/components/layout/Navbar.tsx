@@ -12,6 +12,7 @@ export default function Navbar() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isAdminDomain, setIsAdminDomain] = useState(false);
+  const [isKomunitasDomain, setIsKomunitasDomain] = useState(false);
 
   useEffect(() => {
     const checkAuth = () => {
@@ -19,10 +20,10 @@ export default function Navbar() {
       setIsLoggedIn(!!token);
     };
 
-    // Deteksi apakah sedang berada di subdomain admin
     if (typeof window !== "undefined") {
       const hostname = window.location.hostname;
       setIsAdminDomain(hostname.includes("admin.24jammenari") || hostname.includes("admin.localhost"));
+      setIsKomunitasDomain(hostname.startsWith("komunitas.") || hostname.includes("komunitas.localhost"));
     }
 
     checkAuth();
@@ -36,7 +37,6 @@ export default function Navbar() {
     router.push("/");
   };
 
-  // ✅ Sembunyikan tombol "Masuk" jika sudah di dalam Dashboard ATAU sedang di halaman Login
   const isDashboard = pathname?.startsWith("/dashboard");
   const isAuthPage = pathname?.startsWith("/auth");
   const hideLoginBtn = isDashboard || isAuthPage;
@@ -44,6 +44,7 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-card/95 backdrop-blur-sm border-b border-border shadow-sm">
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between relative">
+        {/* LOGO: Ditambahkan unoptimized untuk mencegah error render WebP di Server */}
         <Link href="/" className="flex items-center hover:opacity-80 transition-opacity">
           <Image
             src="/24jammenari.webp"
@@ -51,6 +52,7 @@ export default function Navbar() {
             width={120}
             height={48}
             priority
+            unoptimized
             className="h-10 md:h-12 w-auto object-contain"
           />
         </Link>
@@ -68,8 +70,7 @@ export default function Navbar() {
 
           {isLoggedIn ? (
             <div className="flex items-center gap-2">
-              {/* Tombol Dashboard User dihilangkan jika sedang di domain admin */}
-              {!isDashboard && !isAdminDomain && (
+              {!isDashboard && !isAdminDomain && !isKomunitasDomain && (
                 <button
                   onClick={() => router.push("/dashboard/user")}
                   className="flex items-center gap-2 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground border border-primary/30 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-semibold transition-all text-sm sm:text-base shadow-sm"
@@ -82,15 +83,23 @@ export default function Navbar() {
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-2 bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground border border-destructive/30 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-semibold transition-all text-sm sm:text-base shadow-sm"
-                title="Keluar dari akun"
               >
                 <LogOut size={18} />
                 <span className="hidden sm:inline">Keluar</span>
               </button>
             </div>
           ) : (
-            // ✅ Arahkan ke /auth/login
-            !hideLoginBtn && (
+            // LOGIKA TOMBOL MASUK BERDASARKAN DOMAIN
+            isKomunitasDomain ? (
+              <button
+                onClick={() => router.push("/komunitas/login")}
+                className="flex items-center gap-2 bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground border border-destructive/30 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-semibold transition-all text-sm sm:text-base shadow-sm"
+              >
+                <span className="text-lg">🛡️</span>
+                <span className="hidden sm:inline">Login Admin</span>
+                <span className="sm:hidden">Admin</span>
+              </button>
+            ) : !hideLoginBtn ? (
               <button
                 onClick={() => router.push("/auth/login")}
                 className="flex items-center gap-2 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground border border-primary/30 px-4 py-2 sm:px-5 sm:py-2.5 rounded-full font-semibold transition-all text-sm sm:text-base shadow-sm"
@@ -99,7 +108,7 @@ export default function Navbar() {
                 <span className="hidden sm:inline">Sudah Daftar? Masuk</span>
                 <span className="sm:hidden">Masuk</span>
               </button>
-            )
+            ) : null
           )}
         </div>
       </div>
