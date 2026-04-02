@@ -354,103 +354,131 @@ export default function PaymentPage() {
           </>
         ) : (
           <Card className="batik-border border-0 mb-6 bg-primary/5 border-primary/20">
-            <CardContent className="p-8 text-center space-y-4">
-              <h2 className="text-tradisional text-2xl font-bold text-primary">
-                Selesaikan Pembayaran Anda
-              </h2>
-              <Separator className="bg-primary/20" />
+          <CardContent className="p-8 text-center space-y-6">
+            {/* Logo Metode yang Terpilih */}
+            <div className="flex justify-center mb-2">
+              <div className="relative w-32 h-16">
+                <Image
+                  src={`/${paymentInstructions.payment_method.toUpperCase()}.png`}
+                  alt={paymentInstructions.payment_method}
+                  fill
+                  className="object-contain"
+                  sizes="128px"
+                />
+              </div>
+            </div>
 
-              <div className="py-4">
-                {/* ✅ FIX QRIS: Tampilkan gambar + URL box untuk simulator */}
-                {paymentInstructions.payment_method === "qris" && paymentInstructions.qr_code_url && (
-                  <div className="flex flex-col items-center gap-4">
-                    <p className="text-sm text-muted-foreground uppercase font-bold tracking-wider">
-                      Scan QRIS Berikut
-                    </p>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
+            <h2 className="text-tradisional text-2xl font-bold text-primary">
+              Selesaikan Pembayaran Anda
+            </h2>
+            <Separator className="bg-primary/20" />
+
+            {/* Area Kode / QR */}
+            <div className="py-4">
+              {/* QRIS & GoPay */}
+              {(paymentInstructions.payment_method === "qris" || paymentInstructions.payment_method === "gopay") && 
+              paymentInstructions.qr_code_url && (
+                <div className="flex flex-col items-center gap-4">
+                  <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">
+                    Scan QR Berikut
+                  </p>
+                  <div className="bg-white p-4 rounded-2xl shadow-xl border-2 border-primary/10">
                     <img
                       src={paymentInstructions.qr_code_url}
-                      alt="QRIS Code"
-                      className="w-64 h-64 border-4 border-white rounded-xl shadow-lg"
+                      alt="Payment QR"
+                      className="w-64 h-64"
                     />
-                    {/* URL untuk Midtrans Simulator */}
-                    <div className="w-full bg-background border border-border rounded-xl p-3 text-left space-y-2">
-                      <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
-                        🧪 URL untuk Midtrans Simulator
-                      </p>
-                      <p className="text-xs font-mono text-foreground break-all select-all leading-relaxed">
-                        {paymentInstructions.qr_code_url}
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => handleCopyUrl(paymentInstructions.qr_code_url)}
-                        className="text-xs text-primary font-semibold hover:underline transition-colors"
-                      >
-                        {copied ? "✓ Tersalin!" : "Salin URL →"}
-                      </button>
-                    </div>
                   </div>
-                )}
+                  {paymentInstructions.gopay_deeplink && (
+                    <a 
+                      href={paymentInstructions.gopay_deeplink} 
+                      target="_blank" 
+                      className="mt-2 bg-[#00AED6] text-white px-6 py-3 rounded-full font-bold flex items-center gap-2 hover:scale-105 transition-transform"
+                    >
+                      📱 Bayar via Aplikasi Gojek
+                    </a>
+                  )}
+                </div>
+              )}
 
-                {/* Render GoPay (Deep Link / QR) */}
-                {paymentInstructions.payment_method === "gopay" && paymentInstructions.qr_code_url && (
-                  <div className="flex flex-col items-center gap-4">
-                    <p className="text-sm text-muted-foreground uppercase font-bold tracking-wider">
-                      Scan QR GoPay Berikut
-                    </p>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={paymentInstructions.qr_code_url}
-                      alt="GoPay QR Code"
-                      className="w-64 h-64 border-4 border-white rounded-xl shadow-lg"
-                    />
-                    <div className="mt-2">
-                       <a href={paymentInstructions.gopay_deeplink} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background bg-primary text-primary-foreground hover:bg-primary/90 h-10 py-2 px-4">
-                          Buka Aplikasi GoPay
-                       </a>
-                    </div>
-                  </div>
-                )}
-
-                {/* Render VA BNI & BRI */}
-                {["bni", "bri"].includes(paymentInstructions.payment_method) && paymentInstructions.va_number && (
-                  <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground uppercase font-bold tracking-wider">
-                      Virtual Account {paymentInstructions.payment_method.toUpperCase()}
-                    </p>
-                    <p className="text-4xl font-black text-foreground tracking-widest bg-background p-4 rounded-xl border-2 border-primary/20 inline-block">
+              {/* Virtual Account (BNI, BRI) */}
+              {["bni", "bri"].includes(paymentInstructions.payment_method) && paymentInstructions.va_number && (
+                <div className="space-y-3">
+                  <p className="text-xs text-muted-foreground uppercase font-bold tracking-widest">
+                    Nomor Virtual Account
+                  </p>
+                  <div className="flex items-center justify-center gap-3">
+                    <p className="text-4xl font-black text-foreground tracking-[0.2em] bg-background px-6 py-4 rounded-2xl border-2 border-primary/20 shadow-inner">
                       {paymentInstructions.va_number}
                     </p>
+                    <Button 
+                      variant="outline" 
+                      size="icon" 
+                      onClick={() => handleCopyUrl(paymentInstructions.va_number)}
+                      className="h-14 w-14 rounded-xl"
+                    >
+                      {copied ? "✓" : "📋"}
+                    </Button>
                   </div>
-                )}
+                </div>
+              )}
 
-                {paymentInstructions.payment_method === "mandiri" && paymentInstructions.biller_code && (
-                  <div className="space-y-4">
-                    <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground uppercase font-bold tracking-wider">Biller Code</p>
-                      <p className="text-2xl font-black text-foreground bg-background p-2 rounded-lg border-2 border-primary/20 inline-block">
-                        {paymentInstructions.biller_code}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm text-muted-foreground uppercase font-bold tracking-wider">Nomor VA (Bill Key)</p>
-                      <p className="text-3xl font-black text-foreground bg-background p-3 rounded-xl border-2 border-primary/20 inline-block">
-                        {paymentInstructions.bill_key}
-                      </p>
-                    </div>
+              {/* Mandiri (Bill Payment) */}
+              {paymentInstructions.payment_method === "mandiri" && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md mx-auto">
+                  <div className="bg-background p-4 rounded-xl border border-primary/10">
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Biller Code</p>
+                    <p className="text-xl font-bold">{paymentInstructions.biller_code}</p>
                   </div>
+                  <div className="bg-background p-4 rounded-xl border border-primary/10">
+                    <p className="text-[10px] text-muted-foreground uppercase font-bold">Bill Key</p>
+                    <p className="text-xl font-bold">{paymentInstructions.bill_key}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Tata Cara Pembayaran Spesifik */}
+            <div className="text-left bg-background/50 rounded-2xl p-6 border border-primary/5">
+              <h4 className="font-bold text-sm mb-4 flex items-center gap-2 text-primary">
+                <span className="text-lg">ℹ️</span> Instruksi Pembayaran:
+              </h4>
+              <div className="text-xs space-y-4 text-muted-foreground leading-relaxed">
+                {paymentInstructions.payment_method === 'bri' && (
+                  <ul className="list-decimal pl-4 space-y-2">
+                    <li><strong>BRIMO:</strong> Login &gt; Pilih BRIVA &gt; Masukkan nomor VA &gt; Konfirmasi &gt; Masukkan PIN.</li>
+                    <li><strong>ATM BRI:</strong> Masukkan Kartu &gt; Transaksi Lain &gt; Pembayaran &gt; Lainnya &gt; BRIVA &gt; Masukkan nomor VA &gt; Bayar.</li>
+                  </ul>
+                )}
+                {paymentInstructions.payment_method === 'bni' && (
+                  <ul className="list-decimal pl-4 space-y-2">
+                    <li><strong>BNI Mobile:</strong> Login &gt; Transfer &gt; Virtual Account Billing &gt; Pilih Tab Input Baru &gt; Masukkan nomor VA &gt; Bayar.</li>
+                    <li><strong>ATM BNI:</strong> Menu Lain &gt; Transfer &gt; Virtual Account Billing &gt; Masukkan nomor VA &gt; Konfirmasi.</li>
+                  </ul>
+                )}
+                {paymentInstructions.payment_method === 'mandiri' && (
+                  <ul className="list-decimal pl-4 space-y-2">
+                    <li><strong>Livin' Mandiri:</strong> Login &gt; Bayar &gt; Buat Pembayaran Baru &gt; Multipayment &gt; Pilih Midtrans &gt; Masukkan Biller & Bill Key.</li>
+                    <li><strong>ATM Mandiri:</strong> Bayar/Beli &gt; Lainnya &gt; Multipayment &gt; Masukkan Kode Biller &gt; Masukkan Bill Key.</li>
+                  </ul>
+                )}
+                {(paymentInstructions.payment_method === 'qris' || paymentInstructions.payment_method === 'gopay') && (
+                  <ul className="list-decimal pl-4 space-y-2">
+                    <li>Buka aplikasi pembayaran pilihan Anda (Gojek, ShopeePay, Dana, LinkAja, atau Mobile Banking).</li>
+                    <li>Pilih opsi <strong>Scan QR</strong>.</li>
+                    <li>Scan gambar QR di atas atau unggah screenshot QR ini jika membayar lewat satu HP yang sama.</li>
+                    <li>Periksa nominal dan konfirmasi pembayaran.</li>
+                  </ul>
                 )}
               </div>
+            </div>
 
-              <p className="text-muted-foreground text-sm">
-                Sistem akan otomatis memverifikasi pembayaran Anda. Halaman ini akan berpindah sendiri setelah pembayaran terkonfirmasi.
-              </p>
-              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                <span className="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-                Menunggu konfirmasi pembayaran...
-              </div>
-            </CardContent>
-          </Card>
+            <div className="flex items-center justify-center gap-2 text-sm font-medium text-primary animate-pulse">
+              <span className="w-2 h-2 rounded-full bg-primary"></span>
+              Menunggu konfirmasi pembayaran otomatis...
+            </div>
+          </CardContent>
+        </Card>
         )}
 
         {/* Dialog: Waktu Habis */}
