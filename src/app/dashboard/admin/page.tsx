@@ -5,13 +5,11 @@ import { useRouter } from "next/navigation";
 import PageWrapper from "@/components/layout/PageWrapper";
 import OverviewTab from "@/components/dashboard/admin/OverviewTab";
 import ParticipantsTab from "@/components/dashboard/admin/ParticipantsTab";
-import NonstopTab from "@/components/dashboard/admin/NonstopTab";
 import RundownTab from "@/components/dashboard/admin/RundownTab";
 import ManagementTab from "@/components/dashboard/admin/ManagementTab";
 import CertificateTab from "@/components/dashboard/admin/CertificateTab"; 
 
-// 1. TAMBAHKAN 'komunitas' KE DALAM TYPE
-type Tab = "overview" | "peserta" | "komunitas" | "rundown" | "pengelolaan" | "sertifikat";
+type Tab = "overview" | "peserta" | "rundown" | "pengelolaan" | "sertifikat";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
@@ -66,11 +64,9 @@ export default function AdminDashboardPage() {
     );
   }
 
-  // 2. TAMBAHKAN TAB KOMUNITAS KE DALAM ARRAY
   const tabs: { id: Tab; label: string; icon: string }[] = [
     { id: "overview", label: "Overview & Mutasi", icon: "📊" },
     { id: "peserta", label: "Data Diri Penari", icon: "👥" },
-    { id: "komunitas", label: "Komunitas Non-Stop", icon: "🔥" }, 
     { id: "rundown", label: "Rundown", icon: "⏱️" },
     { id: "pengelolaan", label: "Pengelolaan", icon: "⚙️" },
     { id: "sertifikat", label: "E-Sertifikat", icon: "🎓" },
@@ -78,11 +74,21 @@ export default function AdminDashboardPage() {
 
   return (
     <PageWrapper>
-      <div className="mb-8">
-        <p className="text-muted-foreground text-lg">Portal Manajemen,</p>
-        <h1 className="text-tradisional text-4xl font-bold text-primary leading-tight">
-          {adminUser?.name ?? "Admin"}
-        </h1>
+      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <p className="text-muted-foreground text-lg">Portal Manajemen Utama,</p>
+          <h1 className="text-tradisional text-4xl font-bold text-primary leading-tight">
+            {adminUser?.name ?? "Admin"}
+          </h1>
+        </div>
+
+        {/* TOMBOL JEMBATAN KE DASBOR KOMUNITAS */}
+        <button 
+          onClick={() => router.push('/komunitas/admin')}
+          className="flex items-center justify-center gap-2 px-6 py-3 bg-destructive text-white font-black rounded-xl shadow-lg hover:bg-destructive/90 transition-all hover:scale-105"
+        >
+          🔥 Buka Dasbor Penari Non-Stop →
+        </button>
       </div>
 
       <div className="flex gap-2 mb-8 border-b border-border pb-1 overflow-x-auto no-scrollbar">
@@ -102,11 +108,9 @@ export default function AdminDashboardPage() {
         ))}
       </div>
 
-      {/* 3. TAMBAHKAN KONDISIONAL RENDER UNTUK KOMUNITAS */}
       <div>
         {activeTab === "overview" && <OverviewTab />}
         {activeTab === "peserta" && <ParticipantsTab />} 
-        {activeTab === "komunitas" && <NonstopTab />}
         {activeTab === "rundown" && <RundownTab />}
         {activeTab === "pengelolaan" && <ManagementTab />}
         {activeTab === "sertifikat" && <CertificateTab />}
