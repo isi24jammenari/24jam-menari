@@ -47,12 +47,20 @@ export default function LoginPage() {
       localStorage.setItem("access_token", resData.data.access_token);
       
       // Update store user
+      // Update store user
       setUser(resData.data.user.email, resData.data.user.name);
 
       setIsLoggingIn(false);
       
-      // Arahkan ke dashboard
-      router.push("/dashboard/user");
+      // Arahkan ke dashboard berdasarkan deteksi domain
+      // Menggunakan window.location.href untuk HARD REFRESH agar cache Next.js ter-reset dan token terbaca sempurna
+      const isAdminDomain = window.location.hostname.includes("admin");
+      
+      if (isAdminDomain) {
+        window.location.href = "/dashboard/admin";
+      } else {
+        window.location.href = "/dashboard/user";
+      }
 
     } catch (error: any) {
       setLoginError(error.message || "Terjadi kesalahan. Coba lagi.");
