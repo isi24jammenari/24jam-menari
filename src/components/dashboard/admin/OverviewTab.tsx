@@ -201,11 +201,19 @@ export default function OverviewTab() {
                           {/* 4. Nominal & Pembayaran */}
                           <td className="px-4 py-3 whitespace-nowrap">
                             <p className="font-bold text-primary">{formatPrice(mut.amount)}</p>
-                            {mut.payment_method && (
-                              <span className="inline-block mt-1 px-2 py-0.5 bg-slate-200 text-slate-700 font-bold text-[10px] rounded uppercase tracking-wider">
-                                {mut.payment_method}
-                              </span>
-                            )}
+                            <div className="flex items-center gap-1 mt-1">
+                              <Badge 
+                                variant={mut.status === 'success' ? 'default' : (mut.status === 'pending' ? 'secondary' : 'destructive')} 
+                                className="text-[10px] uppercase px-1.5 py-0"
+                              >
+                                {mut.status || 'UNKNOWN'}
+                              </Badge>
+                              {mut.payment_method && (
+                                <span className="inline-block px-2 py-0.5 bg-slate-200 text-slate-700 font-bold text-[10px] rounded uppercase tracking-wider">
+                                  {mut.payment_method}
+                                </span>
+                              )}
+                            </div>
                           </td>
 
                           {/* 5. Waktu Transaksi */}
