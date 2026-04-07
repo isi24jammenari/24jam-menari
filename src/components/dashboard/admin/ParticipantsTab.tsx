@@ -30,13 +30,18 @@ export default function ParticipantsTab() {
     const rows = participants.map((item) => {
       const perf = item.performance || {};
       
-      // Formatting Array to String
-      const works = perf.works?.map((w: any) => `${w.title} (${w.duration}m)`).join(" | ") || "-";
-      const instruments = perf.instruments?.join(", ") || "-";
-      const certNames = perf.certificate_names?.join(", ") || "-";
+      const works = Array.isArray(perf.works) 
+        ? perf.works.map((w: any) => `${w.title} (${w.duration}m)`).join(" | ") 
+        : "-";
+      const instruments = Array.isArray(perf.instruments) 
+        ? perf.instruments.join(", ") 
+        : "-";
+      const certNames = Array.isArray(perf.certificate_names) 
+        ? perf.certificate_names.join(", ") 
+        : "-";
 
       return {
-        "ID Booking": item.id.split('-')[0],
+        "ID Booking": item.id ? item.id.split('-')[0] : "-",   // ← guard jika id undefined
         "Tgl Pendaftaran": new Date(item.created_at).toLocaleString('id-ID'),
         "Akun Pendaftar": item.user?.name || "-",
         "Email Akun": item.user?.email || "-",
