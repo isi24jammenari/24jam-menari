@@ -27,6 +27,11 @@ export default function ParticipantsTab() {
   }, []);
 
   const handleDownloadExcel = () => {
+    // TEMPORARY DEBUG — hapus setelah masalah ketemu
+    const problematic = participants.filter(item => !item.id || !item.created_at);
+    console.log('Total bermasalah:', problematic.length);
+    console.log('Item tanpa id/created_at:', JSON.stringify(problematic, null, 2));
+
     const rows = participants.map((item) => {
       const perf = item.performance || {};
       
@@ -41,8 +46,8 @@ export default function ParticipantsTab() {
         : "-";
 
       return {
-        "ID Booking": item.id ? item.id.split('-')[0] : "-",   // ← guard jika id undefined
-        "Tgl Pendaftaran": new Date(item.created_at).toLocaleString('id-ID'),
+        "ID Booking": item.id ? item.id.split('-')[0] : "-",
+        "Tgl Pendaftaran": item.created_at ? new Date(item.created_at).toLocaleString('id-ID') : "-",
         "Akun Pendaftar": item.user?.name || "-",
         "Email Akun": item.user?.email || "-",
         "Venue Terpilih": item.time_slot?.venue?.name || "-",
@@ -53,7 +58,7 @@ export default function ParticipantsTab() {
         "Kategori": perf.category || "-",
         "Pendukung Karya": perf.supporters || "-",
         "Daftar Karya & Durasi": works,
-        "Sinopsis": perf.works?.map((w: any) => w.synopsis).join(" \n\n ") || "-",
+        "Sinopsis": Array.isArray(perf.works) ? perf.works.map((w: any) => w.synopsis).join(" \n\n ") : "-",
         "Kedatangan & Kepulangan": perf.arrival_departure || "-",
         "Jenis Musik": perf.music_type || "-",
         "Alat Musik (Live)": instruments,
@@ -66,7 +71,6 @@ export default function ParticipantsTab() {
     const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
     
-    // Auto-width column adjustment (Basic)
     ws["!cols"] = [{ wch: 15 }, { wch: 20 }, { wch: 20 }, { wch: 25 }, { wch: 20 }, { wch: 15 }, { wch: 30 }, { wch: 25 }, { wch: 15 }, { wch: 15 }, { wch: 20 }, { wch: 40 }, { wch: 50 }, { wch: 30 }, { wch: 15 }, { wch: 30 }, { wch: 30 }, { wch: 50 }, { wch: 15 }];
 
     XLSX.utils.book_append_sheet(wb, ws, "Semua_Data_Penari");
