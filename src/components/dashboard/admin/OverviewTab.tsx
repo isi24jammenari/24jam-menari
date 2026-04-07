@@ -116,31 +116,9 @@ export default function OverviewTab() {
   // Mencari daftar Venue yang unik secara aman (Mencegah Silent Drop)
   const uniqueVenues = Array.from(new Set(allMutations.map((item: any) => item.time_slot?.venue?.name).filter(Boolean)));
   
-  // MENDETEKSI DATA YANG DIBUANG OLEH FILTER REACT
-  const lostMutations = allMutations.filter((item: any) => !item.time_slot?.venue?.name);
-  const isTk2ExistInJson = allMutations.some((m: any) => m.time_slot_id === 'tk2-2');
-
   return (
     <div className="space-y-8">
       
-      {/* ========================================================= */}
-      {/* 🔴 X-RAY DEBUGGER: MENDETEKSI KEBOHONGAN SERVER / FRONTEND */}
-      {/* ========================================================= */}
-      <div className="bg-red-50 border-2 border-red-500 p-5 rounded-xl shadow-sm">
-        <h3 className="font-black text-red-700 text-lg mb-2">🚨 X-RAY SYSTEM DEBUGGER 🚨</h3>
-        <ul className="space-y-1 text-sm text-red-900 font-medium">
-          <li>1. Total Data Transaksi Mentah dari API API: <span className="font-black text-lg bg-red-200 px-2 py-0.5 rounded">{allMutations.length}</span></li>
-          <li>2. Apakah slot <code className="bg-red-200 px-1 rounded">tk2-2</code> berhasil dikirim Laravel ke Frontend? 
-            {isTk2ExistInJson ? (
-              <span className="ml-2 font-black text-green-700 bg-green-200 px-2 py-0.5 rounded">ADA ✅ (Backend Sehat)</span>
-            ) : (
-              <span className="ml-2 font-black text-white bg-red-600 px-2 py-0.5 rounded">TIDAK ADA ❌ (Server Anda Masih Pakai Kode Lama!)</span>
-            )}
-          </li>
-          <li>3. Jumlah Data yang relasi Venue-nya terputus/dibuang React: <span className="font-black bg-red-200 px-2 py-0.5 rounded">{lostMutations.length}</span></li>
-        </ul>
-      </div>
-
       {/* 1. Statistik Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-card border-2 border-border rounded-xl p-5 shadow-sm overflow-hidden flex flex-col justify-center">
@@ -163,35 +141,9 @@ export default function OverviewTab() {
         </div>
       </div>
 
-      {/* TABEL LOST & FOUND (DATA YANG DIBUANG REACT) */}
-      {lostMutations.length > 0 && (
-        <div className="border-2 border-orange-500 rounded-xl overflow-hidden bg-orange-50 mb-8 shadow-sm">
-          <div className="bg-orange-500 text-white px-4 py-3 border-b border-orange-600 flex justify-between items-center">
-            <h4 className="font-bold text-lg">⚠️ LOST & FOUND (Data Gagal Render)</h4>
-            <Badge variant="secondary" className="bg-white text-orange-600">{lostMutations.length} Tersangkut</Badge>
-          </div>
-          <div className="overflow-x-auto relative min-h-[100px] bg-white">
-            <table className="w-full text-sm">
-              <tbody className="divide-y divide-border">
-                {lostMutations.map((mut: any) => (
-                  <tr key={mut.id} className="transition-colors hover:bg-muted/50">
-                    <td className="px-4 py-3 font-mono text-sm font-bold text-red-500">ID SLOT: {mut.time_slot_id}</td>
-                    <td className="px-4 py-3"><CopyableToken token={mut.midtrans_order_id || mut.id.split('-')[0]} /></td>
-                    <td className="px-4 py-3 font-bold text-primary">{formatPrice(mut.amount)}</td>
-                    <td className="px-4 py-3 text-right">
-                      <Button onClick={() => generateInvoice(mut)} size="sm" variant="secondary" className="text-xs font-bold">📄 Invoice</Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
       {/* 2. Tabel Mutasi (Dipisah Per Venue) */}
       <div className="space-y-4">
-        {uniqueVenues.length === 0 && lostMutations.length === 0 ? (
+        {uniqueVenues.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground bg-card rounded-xl border border-border">Belum ada mutasi masuk.</div>
         ) : (
           uniqueVenues.map((venueName, index) => {
