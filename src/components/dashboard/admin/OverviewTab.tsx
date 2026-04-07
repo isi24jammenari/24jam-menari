@@ -17,7 +17,7 @@ const CopyableToken = ({ token }: { token: string }) => {
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <div className="flex items-center gap-2 bg-background w-fit px-2 py-1 rounded-md border border-border mt-1.5 shadow-sm">
+    <div className="flex items-center gap-2 bg-background w-fit px-2 py-1 rounded-md border border-border shadow-sm">
       <p className="text-[11px] text-foreground font-mono font-bold tracking-widest">{token || "TIDAK ADA TOKEN"}</p>
       <button 
         onClick={handleCopy}
@@ -34,14 +34,12 @@ export default function OverviewTab() {
   const [data, setData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [page, setPage] = useState(1);
 
-  const fetchOverview = async (pageNumber = 1) => {
+  const fetchOverview = async () => {
     setIsLoading(true);
     try {
-      const res = await api.get(`/admin/overview?page=${pageNumber}`);
+      const res = await api.get(`/admin/overview`);
       setData(res.data.data);
-      setPage(pageNumber);
     } catch (error: any) {
       console.error("Gagal menarik data overview", error);
       setErrorMsg(error.response?.data?.message || "Error 500: Terjadi fatal error di Backend Laravel.");
@@ -113,6 +111,10 @@ export default function OverviewTab() {
   if (!data) return <div className="animate-pulse py-10 text-muted-foreground text-center">Memuat statistik...</div>;
 
   const { stats, mutations } = data;
+  const allMutations = mutations?.data || [];
+  
+  // Mencari daftar Venue yang unik dari data yang ada
+  const uniqueVenues = Array.from(new Set(allMutations.map((item: any) => item.time_slot?.venue?.name).filter(Boolean)));
 
   return (
     <div className="space-y-8">
@@ -138,130 +140,102 @@ export default function OverviewTab() {
         </div>
       </div>
 
-      {/* 2. Tabel Mutasi (Dengan Pagination & Invoice) */}
+      {/* 2. Tabel Mutasi (Dipisah Per Venue) */}
       <div className="space-y-4">
-        <div>
-          <h3 className="text-tradisional text-2xl font-bold text-primary">Mutasi Pembayaran Berhasil</h3>
-          <p className="text-sm text-muted-foreground mt-0.5">Daftar transaksi yang sudah Lunas, diurutkan dari yang terbaru.</p>
-        </div>
-
-        <div className="batik-border rounded-xl overflow-hidden bg-card">
-          <div className="overflow-x-auto relative min-h-[200px]">
-            {isLoading && (
-              <div className="absolute inset-0 bg-background/50 backdrop-blur-sm z-10 flex items-center justify-center">
-                 <span className="font-bold text-primary">Memuat data...</span>
-              </div>
-            )}
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-muted border-b border-border whitespace-nowrap">
-                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Tanggal</th>
-                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Token Klaim</th>
-                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Pendaftar</th>
-                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Venue & Jadwal</th>
-                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Festival</th>
-                  <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Nominal & Pembayaran</th>
-                  <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {mutations.data.length === 0 ? (
-                  <tr><td colSpan={7} className="text-center py-8 text-muted-foreground">Belum ada mutasi masuk.</td></tr>
-                ) : (
-                  mutations.data.map((mut: any) => (
-                    <tr key={mut.id} className="transition-colors hover:bg-muted/50">
-                      
-                      {/* 1. Tanggal */}
-                      <td className="px-4 py-3">
-                        <p className="font-semibold text-foreground whitespace-nowrap">
-                          {new Date(mut.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
-                        </p>
-                      </td>
-                      
-                      {/* 2. Token Klaim */}
-                      <td className="px-4 py-3">
-                        <Badge variant="outline" className="font-mono text-xs bg-slate-100 text-slate-800 border-slate-300">
-                          {mut.midtrans_order_id || mut.id.split('-')[0]}
-                        </Badge>
-                      </td>
-                      
-                      {/* 3. Pendaftar */}
-                      <td className="px-4 py-3">
-                        <p className="font-bold text-foreground truncate max-w-[150px]">{mut.user?.name || "Belum Ada Akun"}</p>
-                        <p className="text-xs text-muted-foreground truncate max-w-[150px]">{mut.user?.email || "-"}</p>
-                      </td>
-                      
-                      {/* 4. Venue & Jadwal */}
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <p className="font-bold text-foreground text-sm">{mut.time_slot?.venue?.name || "-"}</p>
-                        <Badge variant="outline" className="mt-1 text-xs font-semibold bg-primary/5 text-primary border-primary/20">
-                          {mut.time_slot?.time_range || "-"}
-                        </Badge>
-                      </td>
-
-                      {/* 5. Festival */}
-                      <td className="px-4 py-3">
-                        <span className="inline-block px-2 py-1 bg-accent/10 text-accent font-bold text-xs rounded-md uppercase tracking-wider">
-                          {mut.time_slot?.venue?.festival_name || "FESTIVAL"}
-                        </span>
-                      </td>
-
-                      {/* 6. Nominal & Pembayaran */}
-                      <td className="px-4 py-3 whitespace-nowrap">
-                        <p className="font-bold text-primary">{formatPrice(mut.amount)}</p>
-                        {mut.payment_method && (
-                          <span className="inline-block mt-1 px-2 py-0.5 bg-slate-200 text-slate-700 font-bold text-[10px] rounded uppercase tracking-wider">
-                            {mut.payment_method}
-                          </span>
-                        )}
-                      </td>
-
-                      {/* 7. Aksi */}
-                      <td className="px-4 py-3 text-right">
-                        <Button 
-                          onClick={() => generateInvoice(mut)} 
-                          size="sm" 
-                          variant="secondary" 
-                          className="text-xs font-bold whitespace-nowrap shadow-sm hover:scale-105 transition-transform"
-                        >
-                          📄 Invoice/Nota
-                        </Button>
-                      </td>
-                      
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h3 className="text-tradisional text-2xl font-bold text-primary">Mutasi Pembayaran Berhasil</h3>
+            <p className="text-sm text-muted-foreground mt-0.5">Daftar transaksi yang sudah Lunas, dipisahkan per Venue.</p>
           </div>
-          
-          {/* Pagination Controls */}
-          {mutations.last_page > 1 && (
-            <div className="bg-muted border-t border-border px-4 py-3 flex items-center justify-between">
-              <p className="text-sm text-muted-foreground font-medium">
-                Menampilkan Halaman {mutations.current_page} dari {mutations.last_page}
-              </p>
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => fetchOverview(page - 1)} 
-                  disabled={page === 1 || isLoading}
-                >
-                  ← Sebelumnya
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => fetchOverview(page + 1)} 
-                  disabled={page === mutations.last_page || isLoading}
-                >
-                  Selanjutnya →
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
+
+        {uniqueVenues.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground bg-card rounded-xl border border-border">Belum ada mutasi masuk.</div>
+        ) : (
+          uniqueVenues.map((venueName, index) => {
+            // Filter & Sort data untuk masing-masing venue
+            const venueData = allMutations
+              .filter((item: any) => item.time_slot?.venue?.name === venueName)
+              .sort((a: any, b: any) => ((a.time_slot?.time_range || "") > (b.time_slot?.time_range || "")) ? 1 : -1);
+
+            return (
+              <div key={index} className="batik-border rounded-xl overflow-hidden bg-card mb-8 shadow-sm">
+                <div className="bg-primary/10 px-4 py-3 border-b border-border flex justify-between items-center">
+                  <h4 className="font-bold text-primary text-lg">{venueName as string}</h4>
+                  <Badge variant="outline" className="bg-background">{venueData.length} Slot Lunas</Badge>
+                </div>
+                <div className="overflow-x-auto relative min-h-[100px]">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-muted/50 border-b border-border whitespace-nowrap">
+                        <th className="text-left px-4 py-3 font-semibold text-muted-foreground w-40">Jam Tampil</th>
+                        <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Pendaftar</th>
+                        <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Token Klaim</th>
+                        <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Pembayaran</th>
+                        <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Waktu Transaksi</th>
+                        <th className="text-right px-4 py-3 font-semibold text-muted-foreground">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                      {venueData.map((mut: any) => (
+                        <tr key={mut.id} className="transition-colors hover:bg-muted/50">
+                          
+                          {/* 1. Jam Tampil */}
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <Badge variant="outline" className="font-mono text-sm bg-primary/5 text-primary border-primary/20">
+                              {mut.time_slot?.time_range || "-"}
+                            </Badge>
+                          </td>
+                          
+                          {/* 2. Pendaftar */}
+                          <td className="px-4 py-3">
+                            <p className="font-bold text-foreground truncate max-w-[200px]">{mut.user?.name || "Belum Ada Akun"}</p>
+                            <p className="text-xs text-muted-foreground truncate max-w-[200px]">{mut.user?.email || "-"}</p>
+                          </td>
+
+                          {/* 3. Token Klaim (Dapat di-copy) */}
+                          <td className="px-4 py-3">
+                            <CopyableToken token={mut.midtrans_order_id || mut.id.split('-')[0]} />
+                          </td>
+                          
+                          {/* 4. Nominal & Pembayaran */}
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <p className="font-bold text-primary">{formatPrice(mut.amount)}</p>
+                            {mut.payment_method && (
+                              <span className="inline-block mt-1 px-2 py-0.5 bg-slate-200 text-slate-700 font-bold text-[10px] rounded uppercase tracking-wider">
+                                {mut.payment_method}
+                              </span>
+                            )}
+                          </td>
+
+                          {/* 5. Waktu Transaksi */}
+                          <td className="px-4 py-3">
+                            <p className="text-xs text-muted-foreground whitespace-nowrap">
+                              {new Date(mut.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
+                            </p>
+                          </td>
+
+                          {/* 6. Aksi */}
+                          <td className="px-4 py-3 text-right">
+                            <Button 
+                              onClick={() => generateInvoice(mut)} 
+                              size="sm" 
+                              variant="secondary" 
+                              className="text-xs font-bold whitespace-nowrap shadow-sm hover:scale-105 transition-transform"
+                            >
+                              📄 Invoice
+                            </Button>
+                          </td>
+                          
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            );
+          })
+        )}
       </div>
     </div>
   );
