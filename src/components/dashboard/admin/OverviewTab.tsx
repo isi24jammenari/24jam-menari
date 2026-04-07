@@ -38,7 +38,8 @@ export default function OverviewTab() {
   const fetchOverview = async () => {
     setIsLoading(true);
     try {
-      const res = await api.get(`/admin/overview`);
+      // INJEKSI TIMESTAMP: Memaksa Browser & Server tidak menggunakan Cache basi!
+      const res = await api.get(`/admin/overview?t=${new Date().getTime()}`);
       setData(res.data.data);
     } catch (error: any) {
       console.error("Gagal menarik data overview", error);
@@ -53,7 +54,6 @@ export default function OverviewTab() {
   }, []);
 
   const generateInvoice = (mutation: any) => {
-    // Generate Invoice PDF di sisi Frontend (Tanpa membebani backend)
     const doc = new jsPDF();
     const date = new Date(mutation.created_at).toLocaleString('id-ID');
     
@@ -66,7 +66,7 @@ export default function OverviewTab() {
     doc.text("Event: 24 Jam Menari ISI Surakarta", 105, 30, { align: "center" });
     doc.text("Status: LUNAS (PAID)", 105, 37, { align: "center" });
 
-    doc.line(20, 45, 190, 45); // Garis
+    doc.line(20, 45, 190, 45); 
 
     doc.setFont("helvetica", "bold");
     doc.text("ID Booking:", 20, 60);
@@ -91,9 +91,9 @@ export default function OverviewTab() {
     doc.setFont("helvetica", "bold");
     doc.text("Venue/Jam:", 20, 100);
     doc.setFont("helvetica", "normal");
-    doc.text(`${mutation.time_slot?.venue?.name} (${mutation.time_slot?.time_range})`, 60, 100);
+    doc.text(`${mutation.time_slot?.venue?.name || 'VENUE ERROR'} (${mutation.time_slot?.time_range || 'JAM ERROR'})`, 60, 100);
 
-    doc.line(20, 110, 190, 110); // Garis
+    doc.line(20, 110, 190, 110); 
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
@@ -104,7 +104,7 @@ export default function OverviewTab() {
     doc.setFont("helvetica", "italic");
     doc.text("Invoice ini digenerate secara otomatis oleh sistem admin.", 105, 270, { align: "center" });
 
-    doc.save(`Invoice_${mutation.user?.name}_${mutation.id.substring(0,6)}.pdf`);
+    doc.save(`Invoice_${mutation.user?.name || 'User'}_${mutation.id.substring(0,6)}.pdf`);
   };
 
   if (errorMsg) return <div className="py-10 text-red-500 font-bold text-center border-2 border-red-500 rounded-xl bg-red-500/10 p-4">Backend Error: {errorMsg}</div>;
@@ -113,11 +113,34 @@ export default function OverviewTab() {
   const { stats, mutations } = data;
   const allMutations = mutations?.data || [];
   
-  // Mencari daftar Venue yang unik dari data yang ada
+  // Mencari daftar Venue yang unik secara aman (Mencegah Silent Drop)
   const uniqueVenues = Array.from(new Set(allMutations.map((item: any) => item.time_slot?.venue?.name).filter(Boolean)));
+  
+  // MENDETEKSI DATA YANG DIBUANG OLEH FILTER REACT
+  const lostMutations = allMutations.filter((item: any) => !item.time_slot?.venue?.name);
+  const isTk2ExistInJson = allMutations.some((m: any) => m.time_slot_id === 'tk2-2');
 
   return (
     <div className="space-y-8">
+      
+      {/* ========================================================= */}
+      {/* 🔴 X-RAY DEBUGGER: MENDETEKSI KEBOHONGAN SERVER / FRONTEND */}
+      {/* ========================================================= */}
+      <div className="bg-red-50 border-2 border-red-500 p-5 rounded-xl shadow-sm">
+        <h3 className="font-black text-red-700 text-lg mb-2">🚨 X-RAY SYSTEM DEBUGGER 🚨</h3>
+        <ul className="space-y-1 text-sm text-red-900 font-medium">
+          <li>1. Total Data Transaksi Mentah dari API API: <span className="font-black text-lg bg-red-200 px-2 py-0.5 rounded">{allMutations.length}</span></li>
+          <li>2. Apakah slot <code className="bg-red-200 px-1 rounded">tk2-2</code> berhasil dikirim Laravel ke Frontend? 
+            {isTk2ExistInJson ? (
+              <span className="ml-2 font-black text-green-700 bg-green-200 px-2 py-0.5 rounded">ADA ✅ (Backend Sehat)</span>
+            ) : (
+              <span className="ml-2 font-black text-white bg-red-600 px-2 py-0.5 rounded">TIDAK ADA ❌ (Server Anda Masih Pakai Kode Lama!)</span>
+            )}
+          </li>
+          <li>3. Jumlah Data yang relasi Venue-nya terputus/dibuang React: <span className="font-black bg-red-200 px-2 py-0.5 rounded">{lostMutations.length}</span></li>
+        </ul>
+      </div>
+
       {/* 1. Statistik Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-card border-2 border-border rounded-xl p-5 shadow-sm overflow-hidden flex flex-col justify-center">
@@ -140,20 +163,38 @@ export default function OverviewTab() {
         </div>
       </div>
 
-      {/* 2. Tabel Mutasi (Dipisah Per Venue) */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div>
-            <h3 className="text-tradisional text-2xl font-bold text-primary">Mutasi Pembayaran Berhasil</h3>
-            <p className="text-sm text-muted-foreground mt-0.5">Daftar transaksi yang sudah Lunas, dipisahkan per Venue.</p>
+      {/* TABEL LOST & FOUND (DATA YANG DIBUANG REACT) */}
+      {lostMutations.length > 0 && (
+        <div className="border-2 border-orange-500 rounded-xl overflow-hidden bg-orange-50 mb-8 shadow-sm">
+          <div className="bg-orange-500 text-white px-4 py-3 border-b border-orange-600 flex justify-between items-center">
+            <h4 className="font-bold text-lg">⚠️ LOST & FOUND (Data Gagal Render)</h4>
+            <Badge variant="secondary" className="bg-white text-orange-600">{lostMutations.length} Tersangkut</Badge>
+          </div>
+          <div className="overflow-x-auto relative min-h-[100px] bg-white">
+            <table className="w-full text-sm">
+              <tbody className="divide-y divide-border">
+                {lostMutations.map((mut: any) => (
+                  <tr key={mut.id} className="transition-colors hover:bg-muted/50">
+                    <td className="px-4 py-3 font-mono text-sm font-bold text-red-500">ID SLOT: {mut.time_slot_id}</td>
+                    <td className="px-4 py-3"><CopyableToken token={mut.midtrans_order_id || mut.id.split('-')[0]} /></td>
+                    <td className="px-4 py-3 font-bold text-primary">{formatPrice(mut.amount)}</td>
+                    <td className="px-4 py-3 text-right">
+                      <Button onClick={() => generateInvoice(mut)} size="sm" variant="secondary" className="text-xs font-bold">📄 Invoice</Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
+      )}
 
-        {uniqueVenues.length === 0 ? (
+      {/* 2. Tabel Mutasi (Dipisah Per Venue) */}
+      <div className="space-y-4">
+        {uniqueVenues.length === 0 && lostMutations.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground bg-card rounded-xl border border-border">Belum ada mutasi masuk.</div>
         ) : (
           uniqueVenues.map((venueName, index) => {
-            // Filter & Sort data untuk masing-masing venue
             const venueData = allMutations
               .filter((item: any) => item.time_slot?.venue?.name === venueName)
               .sort((a: any, b: any) => ((a.time_slot?.time_range || "") > (b.time_slot?.time_range || "")) ? 1 : -1);
@@ -179,62 +220,36 @@ export default function OverviewTab() {
                     <tbody className="divide-y divide-border">
                       {venueData.map((mut: any) => (
                         <tr key={mut.id} className="transition-colors hover:bg-muted/50">
-                          
-                          {/* 1. Jam Tampil */}
                           <td className="px-4 py-3 whitespace-nowrap">
                             <Badge variant="outline" className="font-mono text-sm bg-primary/5 text-primary border-primary/20">
                               {mut.time_slot?.time_range || "-"}
                             </Badge>
                           </td>
-                          
-                          {/* 2. Pendaftar */}
                           <td className="px-4 py-3">
                             <p className="font-bold text-foreground truncate max-w-[200px]">{mut.user?.name || "Belum Ada Akun"}</p>
                             <p className="text-xs text-muted-foreground truncate max-w-[200px]">{mut.user?.email || "-"}</p>
                           </td>
-
-                          {/* 3. Token Klaim (Dapat di-copy) */}
                           <td className="px-4 py-3">
                             <CopyableToken token={mut.midtrans_order_id || mut.id.split('-')[0]} />
                           </td>
-                          
-                          {/* 4. Nominal & Pembayaran */}
                           <td className="px-4 py-3 whitespace-nowrap">
                             <p className="font-bold text-primary">{formatPrice(mut.amount)}</p>
-                            <div className="flex items-center gap-1 mt-1">
-                              <Badge 
-                                variant={mut.status === 'success' ? 'default' : (mut.status === 'pending' ? 'secondary' : 'destructive')} 
-                                className="text-[10px] uppercase px-1.5 py-0"
-                              >
-                                {mut.status || 'UNKNOWN'}
-                              </Badge>
-                              {mut.payment_method && (
-                                <span className="inline-block px-2 py-0.5 bg-slate-200 text-slate-700 font-bold text-[10px] rounded uppercase tracking-wider">
-                                  {mut.payment_method}
-                                </span>
-                              )}
-                            </div>
+                            {mut.payment_method && (
+                              <span className="inline-block mt-1 px-2 py-0.5 bg-slate-200 text-slate-700 font-bold text-[10px] rounded uppercase tracking-wider">
+                                {mut.payment_method}
+                              </span>
+                            )}
                           </td>
-
-                          {/* 5. Waktu Transaksi */}
                           <td className="px-4 py-3">
                             <p className="text-xs text-muted-foreground whitespace-nowrap">
                               {new Date(mut.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })}
                             </p>
                           </td>
-
-                          {/* 6. Aksi */}
                           <td className="px-4 py-3 text-right">
-                            <Button 
-                              onClick={() => generateInvoice(mut)} 
-                              size="sm" 
-                              variant="secondary" 
-                              className="text-xs font-bold whitespace-nowrap shadow-sm hover:scale-105 transition-transform"
-                            >
+                            <Button onClick={() => generateInvoice(mut)} size="sm" variant="secondary" className="text-xs font-bold whitespace-nowrap shadow-sm hover:scale-105 transition-transform">
                               📄 Invoice
                             </Button>
                           </td>
-                          
                         </tr>
                       ))}
                     </tbody>
