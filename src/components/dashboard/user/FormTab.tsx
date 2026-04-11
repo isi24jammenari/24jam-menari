@@ -42,8 +42,7 @@ export default function FormTab() {
   const totalDuration = form.works.reduce((total, work) => total + (Number(work.duration) || 0), 0);
   const isDurationExceeded = totalDuration > MAX_DURATION;
 
-  // ENGINE DEADLINE UI: Mengecek apakah sudah lewat 10 April 2026
-  const isPastDeadline = new Date() > new Date('2026-04-10T23:59:59+07:00');
+  const [isPastDeadline, setIsPastDeadline] = useState(false);
 
   useEffect(() => {
     const fetchScheduleData = async () => {
@@ -53,6 +52,9 @@ export default function FormTab() {
         if (scheduleData) {
           setBookingId(scheduleData.id);
           setHasPending(scheduleData.has_pending_revision);
+          
+          // Jika is_form_edit_open = false, berarti deadline sudah lewat / ditutup admin
+          setIsPastDeadline(scheduleData.is_form_edit_open === false);
 
           // Jika ada revisi pending, tampilkan data revisi tersebut agar user tahu apa yang sedang diajukan
           const sourceData = scheduleData.has_pending_revision 
@@ -174,7 +176,7 @@ export default function FormTab() {
       {isPastDeadline && canEdit && (
         <div className="bg-blue-500/10 border border-blue-500/20 p-4 rounded-xl text-sm text-blue-700 font-medium flex items-start gap-3">
           <span className="text-xl">ℹ️</span>
-          <p>Batas waktu pengisian bebas (10 April) telah lewat. Setiap perubahan yang Anda simpan mulai sekarang akan masuk ke status <strong>Menunggu Persetujuan Admin</strong> dan tidak akan langsung mengubah jadwal (rundown).</p>
+          <p>Akses pengisian bebas telah <strong>ditutup oleh Admin</strong>. Setiap perubahan data yang Anda simpan mulai sekarang akan masuk ke status <strong>Menunggu Persetujuan Admin</strong> dan tidak akan langsung mengubah jadwal Anda secara publik sebelum divalidasi.</p>
         </div>
       )}
 
