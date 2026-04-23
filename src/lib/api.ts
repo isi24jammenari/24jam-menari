@@ -53,4 +53,55 @@ api.interceptors.response.use(
   }
 );
 
+// ==========================================
+// TENANT / BAZAAR API ENDPOINTS
+// ==========================================
+
+export const getTenantStands = async () => {
+  try {
+    const response = await api.get('/tenant/stands');
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Gagal mengambil data stand tenant');
+  }
+};
+
+export const holdTenantStand = async (data: {
+  stand_id: string;
+  payment_method: string;
+  pendaftar_name: string;
+  pendaftar_email: string;
+  phone: string;
+}) => {
+  try {
+    const response = await api.post('/tenant/booking/hold', data);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Gagal booking stand');
+  }
+};
+
+export const getTenantStatus = async (orderId: string) => {
+  try {
+    const response = await api.get(`/tenant/booking/status/${orderId}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Gagal mengambil status transaksi');
+  }
+};
+
+export const submitTenantForm = async (data: {
+  order_id?: string;
+  access_code?: string;
+  tenant_name: string;
+  product_type: string;
+}) => {
+  try {
+    const response = await api.post('/tenant/booking/submit-form', data);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Gagal submit formulir');
+  }
+};
+
 export default api;

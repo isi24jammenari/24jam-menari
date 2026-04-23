@@ -103,7 +103,6 @@ export const useBookingStore = create<BookingState>((set, get) => ({
       registrant: null,
       paymentStatus: "idle",
       timerExpiry: null,
-      // ✅ FIX 1: Reset bookingId juga
       bookingId: null,
     }),
 }));
