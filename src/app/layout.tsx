@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-import "./globals.css";
+import "@/app/globals.css"; // REVISI: Menggunakan alias @ agar TS Server tidak error
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
 

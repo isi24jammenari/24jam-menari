@@ -3,10 +3,20 @@ import PageWrapper from "@/components/layout/PageWrapper";
 export default function TenantLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      {/* INJEKSI CSS: Secara paksa mematikan Footer Global Web Utama */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        /* Sembunyikan semua tag footer KECUALI footer yang memiliki id="tenant-footer" */
+        footer:not(#tenant-footer) { 
+          display: none !important; 
+        }
+      `}} />
+      
       <div className="flex-1">
         {children}
       </div>
-      <footer className="py-12 border-t border-border bg-card/30">
+      
+      {/* FOOTER KHUSUS TENANT */}
+      <footer id="tenant-footer" className="py-12 border-t border-border bg-card/30">
         <div className="max-w-5xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8 md:gap-4 text-center md:text-left">
           <div>
             <p className="text-primary font-bold text-lg mb-1">Bazaar 24 Jam Menari #20</p>
