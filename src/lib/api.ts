@@ -15,7 +15,7 @@ const api = axios.create({
 });
 
 // ==========================================
-// ✅ REQUEST INTERCEPTOR (YANG SEBELUMNYA HILANG)
+// ✅ REQUEST INTERCEPTOR
 // Mengambil token dari localStorage dan menaruhnya di Headers
 // ==========================================
 api.interceptors.request.use((config) => {
@@ -54,7 +54,7 @@ api.interceptors.response.use(
 );
 
 // ==========================================
-// TENANT / BAZAAR API ENDPOINTS
+// TENANT / BAZAAR API ENDPOINTS (PUBLIC)
 // ==========================================
 
 export const getTenantStands = async () => {
@@ -104,4 +104,37 @@ export const submitTenantForm = async (data: {
   }
 };
 
+// ==========================================
+// TENANT ADMIN API ENDPOINTS (PROTECTED)
+// ==========================================
+
+export const getTenantAdminData = async () => {
+  try {
+    const response = await api.get('/admin/tenants');
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || 'Gagal mengambil data admin tenant');
+  }
+};
+
+export const exportTenantCsv = async () => {
+  try {
+    const response = await api.get('/admin/tenants/export', { responseType: 'blob' });
+    
+    // Logika force download blob (karena file diproteksi Sanctum)
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = url;
+    link.setAttribute('download', `Data-Tenant-Bazaar-${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    
+    return true;
+  } catch (error: any) {
+    throw new Error('Gagal mengunduh CSV Tenant');
+  }
+};
+
+// Export mutlak harus paling bawah
 export default api;
