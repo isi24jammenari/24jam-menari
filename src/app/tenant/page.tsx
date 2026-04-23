@@ -22,9 +22,16 @@ export default function TenantLandingPage() {
   });
 
   useEffect(() => { fetchStands(); }, []);
+  
   const fetchStands = async () => {
-    try { const res = await getTenantStands(); setStands(res.data); } 
-    catch (e) { console.error(e); } finally { setLoading(false); }
+    try { 
+      const res = await getTenantStands(); 
+      // Proteksi jika data yang kembali dibungkus object
+      const standsData = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+      setStands(standsData); 
+    } 
+    catch (e) { console.error(e); } 
+    finally { setLoading(false); }
   };
 
   const handleHold = async (e: React.FormEvent) => {
@@ -43,12 +50,12 @@ export default function TenantLandingPage() {
   return (
     <PageWrapper>
       {/* Hero Section */}
-      <section className="text-center pt-8 pb-16 px-4">
-        <p className="text-lg md:text-2xl font-bold tracking-[0.3em] text-accent uppercase mb-4">
-          Pendaftaran Bazaar
+      <section className="text-center pt-10 pb-12 px-4">
+        <p className="text-sm md:text-base font-bold tracking-[0.3em] text-accent uppercase mb-4">
+          Pendaftaran Tenant
         </p>
-        <h1 className="text-tradisional text-5xl md:text-7xl lg:text-8xl font-bold text-primary leading-tight mb-6">
-          TENANT #20 <br /> ISI SURAKARTA
+        <h1 className="text-tradisional text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-tight mb-8 max-w-4xl mx-auto">
+          Bazaar 24Jam Menari<br/>ISI Surakarta
         </h1>
         <div className="flex items-center justify-center gap-4 mb-8">
           <div className="h-px w-24 bg-gradient-to-r from-transparent to-accent/50" />
@@ -60,68 +67,105 @@ export default function TenantLandingPage() {
         </p>
       </section>
 
-      {/* Rules & Facilities Card (Dari PDF) */}
-      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
-        <div className="bg-card/50 border border-border/60 rounded-3xl p-8 relative overflow-hidden batik-border">
-          <h3 className="text-accent font-bold uppercase tracking-widest text-sm mb-6">Syarat & Ketentuan</h3>
-          <ul className="space-y-4 text-sm text-foreground/80">
-            <li className="flex gap-3">
-              <span className="text-primary font-bold">01</span>
-              <p>Pembayaran wajib diselesaikan dalam durasi <strong>15 menit</strong> setelah booking stand.</p>
-            </li>
-            <li className="flex gap-3">
-              <span className="text-primary font-bold">02</span>
-              <p>Produk wajib dalam bentuk kemasan / <strong>takeaway</strong>. Panitia tidak menyediakan tempat <em>dine-in</em>.</p>
-            </li>
-            <li className="flex gap-3">
-              <span className="text-primary font-bold">03</span>
-              <p>Peserta tidak diperbolehkan pindah stand dan wajib menjaga kebersihan selama acara.</p>
-            </li>
-            <li className="flex gap-3">
-              <span className="text-primary font-bold">04</span>
-              <p>Uang pendaftaran <strong>tidak dapat dikembalikan</strong> apabila peserta mengundurkan diri.</p>
-            </li>
-          </ul>
-        </div>
+      {/* Rules & Facilities (Sesuai PDF) */}
+      <div className="max-w-5xl mx-auto space-y-6 mb-20 px-4">
+        
+        {/* Card 1: Fasilitas & Operasional */}
+        <Card className="bg-card/50 border border-border/60 rounded-3xl overflow-hidden batik-border shadow-md">
+          <div className="bg-primary/10 border-b border-primary/20 px-8 py-4">
+            <h3 className="text-accent font-bold uppercase tracking-widest text-sm">Fasilitas Bazar & Jadwal (16 Stand)</h3>
+          </div>
+          <CardContent className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <p className="font-bold text-primary mb-4 text-sm uppercase">Fasilitas yang didapat:</p>
+              <ul className="list-disc pl-5 space-y-2 text-sm text-foreground/80">
+                <li>Lokasi di halaman parkir Teater Besar ISI Surakarta</li>
+                <li>Tenda sanavil 3x3, Meja, dan Kursi</li>
+                <li>Kelistrikan 450 watt (MCB, Stop Kontak dan lampu)</li>
+                <li>Air & Kebersihan</li>
+              </ul>
+            </div>
+            <div>
+              <p className="font-bold text-primary mb-4 text-sm uppercase">Waktu & Operasional:</p>
+              <ul className="space-y-3 text-sm text-foreground/80">
+                <li className="flex justify-between border-b border-border/50 pb-2">
+                  <span>Loading In</span> <span className="font-bold">28 April 2026, 15.00 WIB</span>
+                </li>
+                <li className="flex justify-between border-b border-border/50 pb-2">
+                  <span>Operasional Hari 1</span> <span className="font-bold">28 April, 17.00 - 21.00 WIB</span>
+                </li>
+                <li className="flex justify-between border-b border-border/50 pb-2 text-right">
+                  <span>Operasional Hari 2 & 3</span> <span className="font-bold">29 April (05.00 WIB) <br/>s/d 30 April (09.00 WIB)</span>
+                </li>
+                <li className="flex justify-between">
+                  <span>Loading Out</span> <span className="font-bold">30 April 2026, 09.00 WIB</span>
+                </li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
 
-        <div className="bg-card/30 border border-border/60 rounded-3xl p-8">
-          <h3 className="text-accent font-bold uppercase tracking-widest text-sm mb-6">Fasilitas & Jadwal</h3>
-          <div className="grid grid-cols-2 gap-4 text-xs font-semibold mb-8">
-            <div className="bg-background/50 p-3 rounded-xl border border-border italic text-center">Tenda Sanavil 3x3</div>
-            <div className="bg-background/50 p-3 rounded-xl border border-border italic text-center">Listrik 450 Watt</div>
-            <div className="bg-background/50 p-3 rounded-xl border border-border italic text-center">Meja & Kursi</div>
-            <div className="bg-background/50 p-3 rounded-xl border border-border italic text-center">Keamanan & Air</div>
+        {/* Card 2: Tata Tertib & Ketentuan */}
+        <Card className="bg-card/30 border border-border/60 rounded-3xl overflow-hidden shadow-sm">
+          <div className="bg-background/80 border-b border-border px-8 py-4">
+            <h3 className="text-primary font-bold uppercase tracking-widest text-sm">Syarat, Ketentuan & Tata Tertib</h3>
           </div>
-          <div className="space-y-2 border-t border-border pt-6 text-xs text-muted-foreground uppercase tracking-widest font-bold">
-            <p className="flex justify-between"><span>Loading In:</span> <span className="text-foreground">28 April, 15.00 WIB</span></p>
-            <p className="flex justify-between"><span>Hari 1:</span> <span className="text-foreground">28 April, 17.00 - 21.00</span></p>
-            <p className="flex justify-between"><span>Hari 2-3:</span> <span className="text-foreground">29 Apr (05.00) - 30 Apr (09.00)</span></p>
-          </div>
-        </div>
+          <CardContent className="p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-foreground/80">
+              <div className="space-y-4">
+                <p className="flex gap-3 items-start"><span className="text-accent font-black">1.</span> <span>Pendaftaran wajib melalui link resmi. Selesaikan pembayaran dalam <strong>15 menit</strong> setelah memilih stand. Lengkapi formulir pendaftaran setelah pembayaran sukses.</span></p>
+                <p className="flex gap-3 items-start"><span className="text-accent font-black">2.</span> <span>Produk wajib dalam bentuk kemasan / <strong>takeaway</strong>. Panitia tidak menyediakan tempat untuk <em>dine in</em>.</span></p>
+                <p className="flex gap-3 items-start"><span className="text-accent font-black">3.</span> <span>Hanya diperbolehkan menjual produk yang telah didaftarkan. Dilarang menggunakan area melebihi stand.</span></p>
+                <p className="flex gap-3 items-start"><span className="text-accent font-black">4.</span> <span>Dilarang keras merusak fasilitas, dan wajib menjaga kebersihan stand selama acara.</span></p>
+              </div>
+              <div className="space-y-4">
+                <p className="flex gap-3 items-start"><span className="text-accent font-black">5.</span> <span>Peserta <strong>tidak dapat berpindah stand</strong> dan wajib menandatangani surat perjanjian pada tanggal 28 April 2026 saat <em>loading in</em>.</span></p>
+                <p className="flex gap-3 items-start"><span className="text-accent font-black">6.</span> <span>Uang pendaftaran <strong>tidak dapat dikembalikan</strong> apabila peserta mengundurkan diri.</span></p>
+                <p className="flex gap-3 items-start"><span className="text-accent font-black">7.</span> <span>Barang berharga dijaga secara pribadi. Kehilangan dan kerusakan karena keteledoran peserta <strong>di luar tanggung jawab Panitia</strong>.</span></p>
+              </div>
+            </div>
+            
+            <div className="mt-8 bg-destructive/10 border border-destructive/30 p-4 rounded-xl">
+              <p className="text-destructive font-bold text-xs uppercase mb-2">Catatan Tambahan Panitia:</p>
+              <p className="text-xs text-foreground/80">
+                Akses jalan raya antara Pendhapa dan Teater Besar tidak ditutup. Asongan dan pedagang lainnya tetap masuk di area pertunjukan. Panitia memiliki kewenangan mengingatkan asongan yang masuk area bazaar, namun <strong>trotoar area parkir Teater Besar dan Kecil di luar kewenangan panitia bazaar</strong>.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Grid Stand */}
-      <section className="max-w-4xl mx-auto pb-24">
-        <SectionTitle title="Denah Stand Bazaar" subtitle="Warna primer menunjukkan stand masih tersedia untuk dipesan." className="mb-12" />
+      <section className="max-w-4xl mx-auto pb-24 px-4">
+        <SectionTitle 
+          title="Denah Stand Bazaar" 
+          subtitle="Warna abu-abu menandakan stand sudah dipesan, warna hijau menandakan stand masih bisa dipesan." 
+          className="mb-12" 
+        />
+        
         {loading ? (
-           <div className="flex justify-center py-20 animate-pulse text-primary font-bold">Menghubungkan ke Denah...</div>
+           <div className="flex justify-center py-20">
+             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+           </div>
+        ) : stands.length === 0 ? (
+           <div className="text-center text-muted-foreground italic py-10">Data denah stand belum tersedia atau gagal dimuat.</div>
         ) : (
-          <div className="grid grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {stands.map((stand) => (
               <button
                 key={stand.id}
                 disabled={stand.is_booked}
                 onClick={() => { setSelectedStand(stand); setIsModalOpen(true); }}
-                className={`aspect-square rounded-2xl flex flex-col items-center justify-center transition-all border-2 relative overflow-hidden group ${
+                className={`aspect-square rounded-3xl flex flex-col items-center justify-center transition-all border-2 relative overflow-hidden group ${
                   stand.is_booked 
-                    ? "bg-secondary/20 border-border opacity-40 cursor-not-allowed" 
-                    : "bg-primary/10 border-primary/30 hover:bg-primary hover:border-primary hover:scale-105 shadow-lg shadow-primary/5"
+                    ? "bg-secondary/30 border-border/50 cursor-not-allowed" 
+                    : "bg-accent/10 border-accent/30 hover:bg-accent hover:border-accent hover:scale-105 shadow-lg shadow-accent/5"
                 }`}
               >
-                <span className={`text-4xl font-black ${stand.is_booked ? "text-muted-foreground" : "text-primary group-hover:text-primary-foreground"}`}>
+                <span className={`text-3xl sm:text-4xl md:text-5xl font-black transition-colors ${stand.is_booked ? "text-muted-foreground/50" : "text-accent group-hover:text-accent-foreground"}`}>
                   {stand.stand_number}
                 </span>
-                {stand.is_booked && <Badge className="absolute bottom-2 bg-destructive text-[8px] px-1">SOLD</Badge>}
+                {stand.is_booked && <Badge className="absolute bottom-3 bg-muted-foreground/20 text-muted-foreground border-none text-[8px] sm:text-[10px] px-2 uppercase tracking-widest rounded-full">Booked</Badge>}
               </button>
             ))}
           </div>
@@ -130,37 +174,37 @@ export default function TenantLandingPage() {
 
       {/* Dialog Form Tahap 1 */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="bg-card border-border rounded-3xl p-8 max-w-lg">
+        <DialogContent className="bg-card border-border rounded-3xl p-6 sm:p-8 max-w-lg w-[95vw]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-primary">Booking Stand #{selectedStand?.stand_number}</DialogTitle>
-            <DialogDescription className="italic">Mohon isi identitas pendaftar untuk pembuatan invoice pembayaran.</DialogDescription>
+            <DialogTitle className="text-xl sm:text-2xl font-bold text-primary">Booking Stand #{selectedStand?.stand_number}</DialogTitle>
+            <DialogDescription className="italic text-xs sm:text-sm">Mohon isi identitas pendaftar untuk pembuatan invoice pembayaran.</DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleHold} className="space-y-6 mt-4">
+          <form onSubmit={handleHold} className="space-y-5 sm:space-y-6 mt-4">
             <div className="space-y-2">
-              <label className="text-xs font-bold text-foreground uppercase">Nama Pendaftar</label>
-              <input required className="w-full px-4 py-3 rounded-xl border-2 border-input bg-background focus:ring-2 focus:ring-primary outline-none transition-all" value={formData.pendaftar_name} onChange={(e)=>setFormData({...formData, pendaftar_name: e.target.value})} />
+              <label className="text-[10px] sm:text-xs font-bold text-foreground uppercase tracking-widest">Nama Pendaftar</label>
+              <input required className="w-full px-4 py-3 rounded-xl border-2 border-input bg-background focus:ring-2 focus:ring-primary outline-none transition-all text-sm" value={formData.pendaftar_name} onChange={(e)=>setFormData({...formData, pendaftar_name: e.target.value})} />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <label className="text-xs font-bold text-foreground uppercase">Email</label>
-                <input type="email" required className="w-full px-4 py-3 rounded-xl border-2 border-input bg-background focus:ring-2 focus:ring-primary outline-none transition-all" value={formData.pendaftar_email} onChange={(e)=>setFormData({...formData, pendaftar_email: e.target.value})} />
+                <label className="text-[10px] sm:text-xs font-bold text-foreground uppercase tracking-widest">Email</label>
+                <input type="email" required className="w-full px-4 py-3 rounded-xl border-2 border-input bg-background focus:ring-2 focus:ring-primary outline-none transition-all text-sm" value={formData.pendaftar_email} onChange={(e)=>setFormData({...formData, pendaftar_email: e.target.value})} />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-bold text-foreground uppercase">No. WhatsApp</label>
-                <input required className="w-full px-4 py-3 rounded-xl border-2 border-input bg-background focus:ring-2 focus:ring-primary outline-none transition-all" value={formData.phone} onChange={(e)=>setFormData({...formData, phone: e.target.value})} />
+                <label className="text-[10px] sm:text-xs font-bold text-foreground uppercase tracking-widest">No. WhatsApp</label>
+                <input required className="w-full px-4 py-3 rounded-xl border-2 border-input bg-background focus:ring-2 focus:ring-primary outline-none transition-all text-sm" value={formData.phone} onChange={(e)=>setFormData({...formData, phone: e.target.value})} />
               </div>
             </div>
-            <div className="space-y-3">
-              <label className="text-xs font-bold text-accent uppercase">Metode Pembayaran</label>
+            <div className="space-y-3 pt-2">
+              <label className="text-[10px] sm:text-xs font-bold text-primary uppercase tracking-widest">Metode Pembayaran</label>
               <div className="grid grid-cols-3 gap-2">
                 {['bni', 'bri', 'mandiri', 'gopay', 'qris'].map((m) => (
-                  <button key={m} type="button" onClick={() => setFormData({...formData, payment_method: m})} className={`py-2 rounded-lg border-2 text-[10px] font-black uppercase transition-all ${formData.payment_method === m ? "bg-accent border-accent text-accent-foreground" : "border-input hover:border-primary"}`}>
+                  <button key={m} type="button" onClick={() => setFormData({...formData, payment_method: m})} className={`py-2 rounded-xl border-2 text-[10px] font-black uppercase tracking-wider transition-all ${formData.payment_method === m ? "bg-primary border-primary text-primary-foreground shadow-md" : "bg-background border-input hover:border-primary/50 text-muted-foreground"}`}>
                     {m}
                   </button>
                 ))}
               </div>
             </div>
-            <Button type="submit" disabled={isSubmitting || !formData.payment_method} className="w-full py-7 text-lg font-bold rounded-full shadow-xl shadow-primary/20">
+            <Button type="submit" disabled={isSubmitting || !formData.payment_method} className="w-full py-6 sm:py-7 text-sm sm:text-lg font-bold rounded-full shadow-xl shadow-primary/20 mt-4">
               {isSubmitting ? "Memproses..." : "Selesaikan Pendaftaran →"}
             </Button>
           </form>
