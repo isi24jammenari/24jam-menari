@@ -182,9 +182,13 @@ export default function TenantLandingPage() {
                   <button 
                     key={method} type="button" 
                     onClick={() => setFormData({...formData, payment_method: method})} 
-                    className={`relative py-3 flex items-center justify-center rounded-xl border-2 transition-all ${formData.payment_method === method ? "border-primary bg-primary/10 shadow-md" : "bg-background border-input hover:border-primary/50"}`}
+                    className={`relative py-3 flex items-center justify-center rounded-xl border-2 transition-all ${
+                      formData.payment_method === method 
+                        ? "bg-[#c6ff33] border-primary shadow-[0_0_15px_rgba(198,255,51,0.8)] scale-105 z-10" 
+                        : "bg-[#c6ff33]/80 border-transparent hover:bg-[#c6ff33]"
+                    }`}
                   >
-                    <Image src={logoPath} alt={method} width={60} height={20} className="object-contain h-5" unoptimized />
+                    <Image src={logoPath} alt={method} width={60} height={20} className="object-contain h-6" unoptimized />
                   </button>
                 ))}
               </div>
