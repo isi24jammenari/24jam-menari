@@ -2,198 +2,170 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import PageWrapper from "@/components/layout/PageWrapper";
+import SectionTitle from "@/components/shared/SectionTitle";
 import { getTenantStands, holdTenantStand } from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-
-interface Stand {
-  id: string;
-  stand_number: number;
-  price: number;
-  is_booked: boolean;
-}
 
 export default function TenantLandingPage() {
   const router = useRouter();
-  const [stands, setStands] = useState<Stand[]>([]);
+  const [stands, setStands] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  
-  // State Modal & Form
-  const [selectedStand, setSelectedStand] = useState<Stand | null>(null);
+  const [selectedStand, setSelectedStand] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    pendaftar_name: "",
-    pendaftar_email: "",
-    phone: "",
-    payment_method: ""
+    pendaftar_name: "", pendaftar_email: "", phone: "", payment_method: ""
   });
 
-  useEffect(() => {
-    fetchStands();
-  }, []);
-
+  useEffect(() => { fetchStands(); }, []);
   const fetchStands = async () => {
-    try {
-      const res = await getTenantStands();
-      setStands(res.data);
-    } catch (error) {
-      console.error("Gagal mengambil data stand", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleOpenModal = (stand: Stand) => {
-    setSelectedStand(stand);
-    setIsModalOpen(true);
+    try { const res = await getTenantStands(); setStands(res.data); } 
+    catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
   const handleHold = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedStand || !formData.payment_method) return;
-
     setIsSubmitting(true);
     try {
-      const res = await holdTenantStand({
-        stand_id: selectedStand.id,
-        ...formData
-      });
-      // Membawa order_id dan waktu expired ke halaman payment
+      const res = await holdTenantStand({ stand_id: selectedStand.id, ...formData });
       router.push(`/payment?order_id=${res.data.order_id}&expires_at=${res.data.expires_at}`);
     } catch (error: any) {
-      alert(error.message || "Gagal melakukan booking stand.");
-      fetchStands(); // Refresh status stand jika ternyata direbut orang
+      alert(error.message);
+      fetchStands();
       setIsModalOpen(false);
-    } finally {
-      setIsSubmitting(false);
-    }
+    } finally { setIsSubmitting(false); }
   };
 
   return (
-    <div className="w-full bg-[#000000] text-white min-h-screen pb-20">
-      {/* HEADER SECTION */}
-      <section className="pt-16 pb-12 px-4 border-b border-[#6849cf]/50 bg-[#000000] text-center">
-        <h1 className="text-4xl md:text-5xl font-black text-[#c6ff33] uppercase tracking-tighter mb-4">
-          Pendaftaran Tenant Bazaar
+    <PageWrapper>
+      {/* Hero Section */}
+      <section className="text-center pt-8 pb-16 px-4">
+        <p className="text-lg md:text-2xl font-bold tracking-[0.3em] text-accent uppercase mb-4">
+          Pendaftaran Bazaar
+        </p>
+        <h1 className="text-tradisional text-5xl md:text-7xl lg:text-8xl font-bold text-primary leading-tight mb-6">
+          TENANT #20 <br /> ISI SURAKARTA
         </h1>
-        <h2 className="text-xl md:text-2xl text-[#ff00cc] font-bold tracking-widest uppercase">
-          24 Jam Menari #20 - ISI Surakarta 2026
-        </h2>
+        <div className="flex items-center justify-center gap-4 mb-8">
+          <div className="h-px w-24 bg-gradient-to-r from-transparent to-accent/50" />
+          <span className="text-accent text-xl">❦</span>
+          <div className="h-px w-24 bg-gradient-to-l from-transparent to-accent/50" />
+        </div>
+        <p className="text-muted-foreground max-w-2xl mx-auto italic">
+          "Silakan pilih nomor stand yang tersedia pada denah di bawah untuk memulai proses administrasi."
+        </p>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 mt-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* KOLOM KIRI: RULES */}
-        <div className="lg:col-span-5 space-y-6">
-          <Card className="bg-[#000000] border-[#6849cf] rounded-none">
-            <CardHeader className="border-b border-[#6849cf]/30 bg-[#6849cf]/10">
-              <CardTitle className="text-[#c6ff33] uppercase tracking-widest text-lg">Aturan & Tata Tertib</CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6 text-sm text-gray-300 space-y-4">
-              <p><strong className="text-[#ff00cc]">Takeaway Only:</strong> Wajib kemasan, dilarang dine-in.</p>
-              <Separator className="bg-[#6849cf]/30" />
-              <p><strong className="text-[#ff00cc]">Loading In:</strong> 28 April 2026, 15.00 WIB.</p>
-              <Separator className="bg-[#6849cf]/30" />
-              <p><strong className="text-[#ff00cc]">Non-Refundable:</strong> Uang pendaftaran tidak dapat dikembalikan jika mengundurkan diri.</p>
-            </CardContent>
-          </Card>
+      {/* Rules & Facilities Card (Dari PDF) */}
+      <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 mb-20">
+        <div className="bg-card/50 border border-border/60 rounded-3xl p-8 relative overflow-hidden batik-border">
+          <h3 className="text-accent font-bold uppercase tracking-widest text-sm mb-6">Syarat & Ketentuan</h3>
+          <ul className="space-y-4 text-sm text-foreground/80">
+            <li className="flex gap-3">
+              <span className="text-primary font-bold">01</span>
+              <p>Pembayaran wajib diselesaikan dalam durasi <strong>15 menit</strong> setelah booking stand.</p>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-primary font-bold">02</span>
+              <p>Produk wajib dalam bentuk kemasan / <strong>takeaway</strong>. Panitia tidak menyediakan tempat <em>dine-in</em>.</p>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-primary font-bold">03</span>
+              <p>Peserta tidak diperbolehkan pindah stand dan wajib menjaga kebersihan selama acara.</p>
+            </li>
+            <li className="flex gap-3">
+              <span className="text-primary font-bold">04</span>
+              <p>Uang pendaftaran <strong>tidak dapat dikembalikan</strong> apabila peserta mengundurkan diri.</p>
+            </li>
+          </ul>
         </div>
 
-        {/* KOLOM KANAN: GRID */}
-        <div className="lg:col-span-7">
-          <div className="grid grid-cols-4 gap-4 p-4 border border-[#6849cf]/30 bg-[#6849cf]/5">
-            {stands.map((stand) => (
-              <button
-                key={stand.id}
-                disabled={stand.is_booked}
-                onClick={() => handleOpenModal(stand)}
-                className={`relative aspect-square flex flex-col items-center justify-center border-2 transition-all duration-300 ${
-                  stand.is_booked 
-                    ? "bg-[#ff00cc] border-[#ff00cc] opacity-50 cursor-not-allowed" 
-                    : "bg-[#000000] border-[#6849cf]/50 hover:border-[#c6ff33] hover:shadow-[0_0_15px_rgba(198,255,51,0.5)]"
-                }`}
-              >
-                <span className={`text-4xl font-black ${stand.is_booked ? "text-black" : "text-[#c6ff33]"}`}>
-                  {stand.stand_number}
-                </span>
-                {stand.is_booked && <Badge className="absolute bottom-2 bg-black text-white text-[8px] rounded-none border-none">SOLD</Badge>}
-              </button>
-            ))}
+        <div className="bg-card/30 border border-border/60 rounded-3xl p-8">
+          <h3 className="text-accent font-bold uppercase tracking-widest text-sm mb-6">Fasilitas & Jadwal</h3>
+          <div className="grid grid-cols-2 gap-4 text-xs font-semibold mb-8">
+            <div className="bg-background/50 p-3 rounded-xl border border-border italic text-center">Tenda Sanavil 3x3</div>
+            <div className="bg-background/50 p-3 rounded-xl border border-border italic text-center">Listrik 450 Watt</div>
+            <div className="bg-background/50 p-3 rounded-xl border border-border italic text-center">Meja & Kursi</div>
+            <div className="bg-background/50 p-3 rounded-xl border border-border italic text-center">Keamanan & Air</div>
+          </div>
+          <div className="space-y-2 border-t border-border pt-6 text-xs text-muted-foreground uppercase tracking-widest font-bold">
+            <p className="flex justify-between"><span>Loading In:</span> <span className="text-foreground">28 April, 15.00 WIB</span></p>
+            <p className="flex justify-between"><span>Hari 1:</span> <span className="text-foreground">28 April, 17.00 - 21.00</span></p>
+            <p className="flex justify-between"><span>Hari 2-3:</span> <span className="text-foreground">29 Apr (05.00) - 30 Apr (09.00)</span></p>
           </div>
         </div>
       </div>
 
-      {/* MODAL FORM TAHAP 1 */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="bg-[#000000] border-2 border-[#6849cf] text-white rounded-none max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-black text-[#c6ff33] uppercase">Booking Stand #{selectedStand?.stand_number}</DialogTitle>
-            <DialogDescription className="text-gray-400">Isi data diri untuk melanjutkan pembayaran stand seharga Rp 1.800.000</DialogDescription>
-          </DialogHeader>
+      {/* Grid Stand */}
+      <section className="max-w-4xl mx-auto pb-24">
+        <SectionTitle title="Denah Stand Bazaar" subtitle="Warna primer menunjukkan stand masih tersedia untuk dipesan." className="mb-12" />
+        {loading ? (
+           <div className="flex justify-center py-20 animate-pulse text-primary font-bold">Menghubungkan ke Denah...</div>
+        ) : (
+          <div className="grid grid-cols-4 gap-4 md:gap-6">
+            {stands.map((stand) => (
+              <button
+                key={stand.id}
+                disabled={stand.is_booked}
+                onClick={() => { setSelectedStand(stand); setIsModalOpen(true); }}
+                className={`aspect-square rounded-2xl flex flex-col items-center justify-center transition-all border-2 relative overflow-hidden group ${
+                  stand.is_booked 
+                    ? "bg-secondary/20 border-border opacity-40 cursor-not-allowed" 
+                    : "bg-primary/10 border-primary/30 hover:bg-primary hover:border-primary hover:scale-105 shadow-lg shadow-primary/5"
+                }`}
+              >
+                <span className={`text-4xl font-black ${stand.is_booked ? "text-muted-foreground" : "text-primary group-hover:text-primary-foreground"}`}>
+                  {stand.stand_number}
+                </span>
+                {stand.is_booked && <Badge className="absolute bottom-2 bg-destructive text-[8px] px-1">SOLD</Badge>}
+              </button>
+            ))}
+          </div>
+        )}
+      </section>
 
-          <form onSubmit={handleHold} className="space-y-5 mt-4">
-            <div className="space-y-2 flex flex-col">
-              <label htmlFor="name" className="text-sm font-bold text-[#ff00cc] uppercase tracking-wider">Nama Pendaftar</label>
-              <input 
-                id="name" 
-                type="text"
-                required 
-                className="w-full bg-black border border-[#6849cf] rounded-none p-2.5 text-white focus:outline-none focus:border-[#c6ff33] transition-colors" 
-                value={formData.pendaftar_name} 
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({...formData, pendaftar_name: e.target.value})} 
-              />
+      {/* Dialog Form Tahap 1 */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="bg-card border-border rounded-3xl p-8 max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-primary">Booking Stand #{selectedStand?.stand_number}</DialogTitle>
+            <DialogDescription className="italic">Mohon isi identitas pendaftar untuk pembuatan invoice pembayaran.</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleHold} className="space-y-6 mt-4">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-foreground uppercase">Nama Pendaftar</label>
+              <input required className="w-full px-4 py-3 rounded-xl border-2 border-input bg-background focus:ring-2 focus:ring-primary outline-none transition-all" value={formData.pendaftar_name} onChange={(e)=>setFormData({...formData, pendaftar_name: e.target.value})} />
             </div>
-            <div className="space-y-2 flex flex-col">
-              <label htmlFor="email" className="text-sm font-bold text-[#ff00cc] uppercase tracking-wider">Email Aktif</label>
-              <input 
-                id="email" 
-                type="email" 
-                required 
-                className="w-full bg-black border border-[#6849cf] rounded-none p-2.5 text-white focus:outline-none focus:border-[#c6ff33] transition-colors" 
-                value={formData.pendaftar_email} 
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({...formData, pendaftar_email: e.target.value})} 
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-foreground uppercase">Email</label>
+                <input type="email" required className="w-full px-4 py-3 rounded-xl border-2 border-input bg-background focus:ring-2 focus:ring-primary outline-none transition-all" value={formData.pendaftar_email} onChange={(e)=>setFormData({...formData, pendaftar_email: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-foreground uppercase">No. WhatsApp</label>
+                <input required className="w-full px-4 py-3 rounded-xl border-2 border-input bg-background focus:ring-2 focus:ring-primary outline-none transition-all" value={formData.phone} onChange={(e)=>setFormData({...formData, phone: e.target.value})} />
+              </div>
             </div>
-            <div className="space-y-2 flex flex-col">
-              <label htmlFor="phone" className="text-sm font-bold text-[#ff00cc] uppercase tracking-wider">Nomor WhatsApp</label>
-              <input 
-                id="phone" 
-                type="text"
-                required 
-                className="w-full bg-black border border-[#6849cf] rounded-none p-2.5 text-white focus:outline-none focus:border-[#c6ff33] transition-colors" 
-                value={formData.phone} 
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({...formData, phone: e.target.value})} 
-              />
-            </div>
-            
-            <div className="space-y-3 pt-2 border-t border-[#6849cf]/30">
-              <label className="text-sm font-bold text-[#c6ff33] uppercase tracking-wider">Metode Pembayaran</label>
+            <div className="space-y-3">
+              <label className="text-xs font-bold text-accent uppercase">Metode Pembayaran</label>
               <div className="grid grid-cols-3 gap-2">
                 {['bni', 'bri', 'mandiri', 'gopay', 'qris'].map((m) => (
-                  <Button 
-                    key={m} 
-                    type="button" 
-                    variant="outline" 
-                    className={`uppercase text-[10px] font-bold rounded-none border-[#6849cf] transition-all ${formData.payment_method === m ? "bg-[#c6ff33] text-black border-[#c6ff33]" : "bg-black text-gray-400 hover:text-white"}`}
-                    onClick={() => setFormData({...formData, payment_method: m})}
-                  >
+                  <button key={m} type="button" onClick={() => setFormData({...formData, payment_method: m})} className={`py-2 rounded-lg border-2 text-[10px] font-black uppercase transition-all ${formData.payment_method === m ? "bg-accent border-accent text-accent-foreground" : "border-input hover:border-primary"}`}>
                     {m}
-                  </Button>
+                  </button>
                 ))}
               </div>
             </div>
-
-            <DialogFooter className="mt-8">
-              <Button type="submit" disabled={isSubmitting || !formData.payment_method} className="w-full bg-[#6849cf] text-white font-black uppercase tracking-widest rounded-none hover:bg-[#ff00cc] transition-all h-12">
-                {isSubmitting ? "MEMPROSES..." : "KUNCI STAND & BAYAR"}
-              </Button>
-            </DialogFooter>
+            <Button type="submit" disabled={isSubmitting || !formData.payment_method} className="w-full py-7 text-lg font-bold rounded-full shadow-xl shadow-primary/20">
+              {isSubmitting ? "Memproses..." : "Selesaikan Pendaftaran →"}
+            </Button>
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </PageWrapper>
   );
 }
