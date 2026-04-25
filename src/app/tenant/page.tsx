@@ -75,55 +75,71 @@ export default function TenantLandingPage() {
         <p className="text-muted-foreground max-w-2xl mx-auto italic">"Silakan pilih nomor stand yang tersedia pada denah di bawah untuk memulai proses administrasi."</p>
       </section>
 
-      {/* Rules & Facilities Card (Sama dengan sebelumnya) */}
+      {/* RUANG INFORMASI: Syarat, Fasilitas & Tata Tertib (Sesuai Revisi) */}
       <div className="max-w-5xl mx-auto space-y-6 mb-20 px-4">
+        
+        {/* Card 1: Fasilitas */}
         <Card className="bg-card/50 border border-border/60 rounded-3xl overflow-hidden batik-border shadow-md">
           <div className="bg-primary/10 border-b border-primary/20 px-8 py-4">
-            <h3 className="text-accent font-bold uppercase tracking-widest text-sm">Fasilitas Bazar & Jadwal (16 Stand)</h3>
+            <h3 className="text-accent font-bold uppercase tracking-widest text-sm">Fasilitas Bazar (18 Stand)</h3>
           </div>
-          <CardContent className="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <p className="font-bold text-primary mb-4 text-sm uppercase">Fasilitas yang didapat:</p>
-              <ul className="list-disc pl-5 space-y-2 text-sm text-foreground/80">
-                <li>Lokasi di halaman parkir Teater Besar ISI Surakarta</li>
-                <li>Tenda sanavil 3x3, Meja, dan Kursi</li>
-                <li>Kelistrikan 450 watt (MCB, Stop Kontak dan lampu)</li>
-                <li>Air & Kebersihan</li>
-              </ul>
-            </div>
-            <div>
-              <p className="font-bold text-primary mb-4 text-sm uppercase">Waktu & Operasional:</p>
-              <ul className="space-y-3 text-sm text-foreground/80">
-                <li className="flex justify-between border-b border-border/50 pb-2"><span>Loading In</span> <span className="font-bold">28 April 2026, 15.00 WIB</span></li>
-                <li className="flex justify-between border-b border-border/50 pb-2"><span>Operasional Hari 1</span> <span className="font-bold">28 April, 17.00 - 21.00 WIB</span></li>
-                <li className="flex justify-between border-b border-border/50 pb-2 text-right"><span>Operasional Hari 2 & 3</span> <span className="font-bold">29 April (05.00 WIB) <br/>s/d 30 April (09.00 WIB)</span></li>
-                <li className="flex justify-between"><span>Loading Out</span> <span className="font-bold">30 April 2026, 09.00 WIB</span></li>
-              </ul>
+          <CardContent className="p-8">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-foreground/80 list-disc pl-5">
+              <li>18 Stand dengan lokasi di halaman parkir Teater Besar ISI Surakarta</li>
+              <li>Tenda 3*3</li>
+              <li>Meja 60 x 120 cm</li>
+              <li>2 Kursi lipat</li>
+              <li>Kelistrikan 450 watt (MCB, Stop Kontak dan lampu)</li>
+              <li>Air & Kebersihan</li>
+            </ul>
+          </CardContent>
+        </Card>
+
+        {/* Card 2: Syarat & Ketentuan */}
+        <Card className="bg-card/30 border border-border/60 rounded-3xl overflow-hidden shadow-sm">
+          <div className="bg-background/80 border-b border-border px-8 py-4">
+            <h3 className="text-primary font-bold uppercase tracking-widest text-sm">Syarat dan Ketentuan Pendaftaran</h3>
+          </div>
+          <CardContent className="p-8">
+            <div className="space-y-4 text-sm text-foreground/80">
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">1.</span> <span>Pendaftaran peserta bazar wajib melalui link yang telah ditentukan panitia.</span></p>
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">2.</span> <span>Peserta memilih nomor stand dan menyelesaikan administrasi pada link yang telah disediakan panitia:<br/>
+              - Pemilihan nomor stand dan pembayaran stand. Harga per stand <strong>Rp. 1.200.000,-</strong> (diberikan durasi waktu <strong>15 menit</strong> untuk menyelesaikan pembayaran).<br/>
+              - Registrasi akun dan mengisi formulir pendaftaran yang berisikan nama pendaftar, nomor stand, nama tenant, jenis produk, nomor kontak aktif, email aktif, dan file bukti pembayaran melalui link pendaftaran.</span></p>
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">3.</span> <span>Produk yang dijual wajib dalam bentuk kemasan / <strong>takeaway</strong>. Panitia tidak menyediakan tempat untuk <em>dine in</em>.</span></p>
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">4.</span> <span>Peserta bazar <strong>tidak dapat berpindah ke nomor stand yang lain</strong> atau mengambil fasilitas seperti meja/kursi dari stand lain, dan wajib menandatangani surat perjanjian tenan bazar pada tanggal 28 April 2026 pada saat <em>loading in</em> stand.</span></p>
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">5.</span> <span>Jadwal Loading in: <strong>28 April 2026 Pukul 17.00 WIB</strong>. Loading out: <strong>30 April pukul 09.00 WIB</strong>.</span></p>
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">6.</span> <span>Apabila peserta mengundurkan diri, uang pendaftaran stand <strong>tidak dapat dikembalikan</strong>.</span></p>
             </div>
           </CardContent>
         </Card>
 
+        {/* Card 3: Tata Tertib */}
         <Card className="bg-card/30 border border-border/60 rounded-3xl overflow-hidden shadow-sm">
           <div className="bg-background/80 border-b border-border px-8 py-4">
-            <h3 className="text-primary font-bold uppercase tracking-widest text-sm">Syarat, Ketentuan & Tata Tertib</h3>
+            <h3 className="text-primary font-bold uppercase tracking-widest text-sm">Tata Tertib</h3>
           </div>
           <CardContent className="p-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-foreground/80">
               <div className="space-y-4">
-                <p className="flex gap-3 items-start"><span className="text-accent font-black">1.</span> <span>Pendaftaran wajib melalui link resmi. Selesaikan pembayaran dalam <strong>15 menit</strong> setelah memilih stand. Lengkapi formulir pendaftaran setelah pembayaran sukses.</span></p>
-                <p className="flex gap-3 items-start"><span className="text-accent font-black">2.</span> <span>Produk wajib dalam bentuk kemasan / <strong>takeaway</strong>. Panitia tidak menyediakan tempat untuk <em>dine in</em>.</span></p>
-                <p className="flex gap-3 items-start"><span className="text-accent font-black">3.</span> <span>Hanya diperbolehkan menjual produk yang telah didaftarkan. Dilarang menggunakan area melebihi stand.</span></p>
-                <p className="flex gap-3 items-start"><span className="text-accent font-black">4.</span> <span>Dilarang keras merusak fasilitas, dan wajib menjaga kebersihan stand selama acara.</span></p>
+                <p className="flex gap-3 items-start"><span className="text-accent font-black">•</span> <span>Bazaar adalah area yang disediakan panitia untuk digunakan hanya untuk menjual produk barang/jasa yang berhubungan dengan produk yang telah didaftarkan kepada panitia melalui link pendaftaran.</span></p>
+                <p className="flex gap-3 items-start"><span className="text-accent font-black">•</span> <span>Peserta harus menaati waktu loading in tgl 28 April 2026 pukul 17.00 WIB dan loading out 30 April 2026 pukul 09.00.</span></p>
+                <p className="flex gap-3 items-start"><span className="text-accent font-black">•</span> <span>Jam operasional stand bazar:<br/>- 28 April 2026 Pukul 17.00 - 21.00 WIB<br/>- 29 April 2026 Pukul 05.00 s/d 30 April pukul 09.00 WIB</span></p>
               </div>
               <div className="space-y-4">
-                <p className="flex gap-3 items-start"><span className="text-accent font-black">5.</span> <span>Peserta <strong>tidak dapat berpindah stand</strong> dan wajib menandatangani surat perjanjian pada tanggal 28 April 2026 saat <em>loading in</em>.</span></p>
-                <p className="flex gap-3 items-start"><span className="text-accent font-black">6.</span> <span>Uang pendaftaran <strong>tidak dapat dikembalikan</strong> apabila peserta mengundurkan diri.</span></p>
-                <p className="flex gap-3 items-start"><span className="text-accent font-black">7.</span> <span>Barang berharga dijaga secara pribadi. Kehilangan dan kerusakan karena keteledoran peserta <strong>di luar tanggung jawab Panitia</strong>.</span></p>
+                <p className="flex gap-3 items-start"><span className="text-accent font-black">•</span> <span>Apabila ada produk air mineral yang diperjual-belikan <strong>WAJIB dari merk Aqua</strong>.</span></p>
+                <p className="flex gap-3 items-start"><span className="text-accent font-black">•</span> <span>Peserta tidak diperbolehkan pindah stand, menggunakan area bazar melebihi stand, mengambil fasilitas dari stand lain, membuat keributan, dan dilarang keras merusak fasilitas.</span></p>
+                <p className="flex gap-3 items-start"><span className="text-accent font-black">•</span> <span>Peserta bazar harus menjaga kebersihan stand selama bazar berlangsung.</span></p>
+                <p className="flex gap-3 items-start"><span className="text-accent font-black">•</span> <span>Barang berharga dijaga secara pribadi. Kehilangan dan kerusakan karena keteledoran peserta <strong>di luar tanggung jawab Tim Panitia Bazaar</strong>.</span></p>
               </div>
             </div>
-            <div className="mt-8 bg-destructive/10 border border-destructive/30 p-4 rounded-xl">
-              <p className="text-destructive font-bold text-xs uppercase mb-2">Catatan Tambahan Panitia:</p>
-              <p className="text-xs text-foreground/80">Akses jalan raya antara Pendhapa dan Teater Besar tidak ditutup. Asongan dan pedagang lainnya tetap masuk di area pertunjukan. Panitia memiliki kewenangan mengingatkan asongan yang masuk area bazaar, namun <strong>trotoar area parkir Teater Besar dan Kecil di luar kewenangan panitia bazaar</strong>.</p>
+            
+            <div className="mt-8 bg-destructive/10 border border-destructive/30 p-5 rounded-xl">
+              <p className="text-destructive font-black text-xs uppercase tracking-widest mb-2">Catatan Tambahan bagi Peserta:</p>
+              <ul className="text-xs text-foreground/80 space-y-2 list-disc pl-4">
+                <li>Akses jalan raya antara Pendhapa dan Teater Besar tidak ditutup. Dengan demikian asongan dan pedagang lainnya tetap masuk di area pertunjukan (pendhapa dan teater kapal).</li>
+                <li>Panitia memiliki kewenangan untuk mengingatkan asongan dan pedagang lain apabila masuk di area bazaar. <strong>Trotoar area parkir Teater Besar dan area parkir Teater Kecil di luar kewenangan panitia bazaar.</strong></li>
+              </ul>
             </div>
           </CardContent>
         </Card>
