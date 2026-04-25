@@ -36,7 +36,19 @@ export default function TenantLandingPage() {
   const fetchStands = async () => {
     try { 
       const res = await getTenantStands(); 
-      const standsData = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+      let standsData = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
+      
+      // INJEKSI FRONTEND: Paksa array menjadi 18 stand agar UI tombol sesuai.
+      // (Bekerja sementara sampai backend Anda benar-benar di-seed menjadi 18)
+      const existingNumbers = standsData.map((s: any) => s.stand_number);
+      for (let i = 1; i <= 18; i++) {
+        if (!existingNumbers.includes(i)) {
+          standsData.push({ id: `temp-${i}`, stand_number: i, is_booked: false });
+        }
+      }
+      // Pastikan urutannya dari 1 sampai 18
+      standsData.sort((a: any, b: any) => a.stand_number - b.stand_number);
+
       setStands(standsData); 
     } 
     catch (e) { console.error(e); } 
@@ -73,7 +85,7 @@ export default function TenantLandingPage() {
         <p className="text-muted-foreground max-w-2xl mx-auto italic">"Silakan periksa denah dan pilih nomor stand yang tersedia di bawah untuk memulai proses administrasi."</p>
       </section>
 
-      {/* RUANG INFORMASI: Grid 1 Kolom (Vertikal ke Bawah Sesuai Permintaan) */}
+      {/* RUANG INFORMASI: Grid 1 Kolom Vertikal */}
       <div className="grid grid-cols-1 gap-6 max-w-4xl mx-auto mb-20 px-4">
         
         {/* KARTU 1: Syarat & Ketentuan */}
@@ -175,7 +187,7 @@ export default function TenantLandingPage() {
         <div className="w-full bg-card rounded-3xl overflow-hidden border-2 border-border shadow-md mb-12">
           <Image
             src="/denah-tenant.webp"
-            alt="Denah Tenant 24Jam Menari ISI Surakarta"
+            alt="Denah Teater Besar ISI Surakarta"
             width={1200}
             height={800}
             className="w-full h-auto object-cover"
