@@ -31,30 +31,6 @@ export default function TenantLandingPage() {
     qris: "/QRIS.png"
   };
 
-  // INJEKSI DENAH INTERAKTIF: KOORDINAT 18 STAND
-  // X = Kiri ke Kanan (Left), Y = Atas ke Bawah (Top)
-  // (Sesuaikan nilai persentase ini setelah halaman dirender agar letaknya pas di kotak denah Anda)
-  const standPositions: Record<number, { top: string; left: string }> = {
-    1: { top: "25%", left: "15%" },
-    2: { top: "25%", left: "25%" },
-    3: { top: "25%", left: "35%" },
-    4: { top: "25%", left: "45%" },
-    5: { top: "25%", left: "55%" },
-    6: { top: "25%", left: "65%" },
-    7: { top: "50%", left: "15%" },
-    8: { top: "50%", left: "25%" },
-    9: { top: "50%", left: "35%" },
-    10: { top: "50%", left: "45%" },
-    11: { top: "50%", left: "55%" },
-    12: { top: "50%", left: "65%" },
-    13: { top: "75%", left: "15%" },
-    14: { top: "75%", left: "25%" },
-    15: { top: "75%", left: "35%" },
-    16: { top: "75%", left: "45%" },
-    17: { top: "75%", left: "55%" },
-    18: { top: "75%", left: "65%" },
-  };
-
   useEffect(() => { fetchStands(); }, []);
   
   const fetchStands = async () => {
@@ -94,85 +70,96 @@ export default function TenantLandingPage() {
           <span className="text-accent text-xl">❦</span>
           <div className="h-px w-24 bg-gradient-to-l from-transparent to-accent/50" />
         </div>
-        <p className="text-muted-foreground max-w-2xl mx-auto italic">"Silakan pilih nomor stand yang tersedia pada denah di bawah untuk memulai proses administrasi."</p>
+        <p className="text-muted-foreground max-w-2xl mx-auto italic">"Silakan periksa denah dan pilih nomor stand yang tersedia di bawah untuk memulai proses administrasi."</p>
       </section>
 
-      {/* RUANG INFORMASI: Grid 1 Kolom (Vertikal ke bawah) dengan Teks Utuh */}
+      {/* RUANG INFORMASI: Grid 1 Kolom (Vertikal ke Bawah Sesuai Permintaan) */}
       <div className="grid grid-cols-1 gap-6 max-w-4xl mx-auto mb-20 px-4">
         
         {/* KARTU 1: Syarat & Ketentuan */}
-        <Card className="rounded-3xl border-border/60 bg-card/50 shadow-md batik-border overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
+        <Card className="rounded-3xl border-border/60 bg-card/50 shadow-md batik-border overflow-hidden flex flex-col">
           <CardHeader className="bg-background/80 border-b border-border py-4 px-6">
             <CardTitle className="flex items-center gap-2 text-primary text-sm uppercase tracking-widest font-black">
-              <Info size={18} /> Syarat dan ketentuan Pendaftaran
+              <Info size={18} /> Syarat dan Ketentuan Pendaftaran
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6 md:p-8 flex-1">
-            <ol className="list-decimal pl-5 space-y-3 text-sm text-foreground/80 leading-relaxed font-medium">
-              <li>Pendaftaran peserta bazar wajib melalui link yang telah ditentukan panitia</li>
-              <li>
-                Peserta memilih nomor stand dan menyelesaikan administrasi pada link yang telah disediakan panitia:
-                <ul className="list-disc pl-5 mt-2 space-y-2">
-                  <li>Pemilihan nomor stand dan pembayaran stand. Harga per stand <strong>Rp. 1.200.000,-</strong> (diberikan durasi waktu <strong>15 menit</strong> untuk menyelesaikan pembayaran).</li>
-                  <li>Registrasi akun dan mengisi formulir pendaftaran yang berisikan nama pendaftar, nomor stand, nama tenant, jenis produk, nomor kontak aktif, email aktif, dan file bukti pembayaran melalui link pendaftaran.</li>
-                </ul>
-              </li>
-              <li>Produk yang dijual wajib dalam bentuk kemasan / takeaway. Panitia tidak menyediakan tempat untuk dine in.</li>
-              <li>Peserta bazar tidak dapat berpindah ke nomor stand yang lain atau mengambil fasilitas seperti meja/krsi dari stand lain, dan wajib menandatangi surat perjanjian tenan bazar pada tanggal 28 April 2026 pada saat loading in stand.</li>
-              <li>Jadwal Loading in 28 April 2026 Pukul 17.00 WIB Loading out 30 April pukul 09.00 WIB</li>
-              <li>Apabila peserta mengundurkan diri, uang pendaftaran stand tidak dapat dikembalikan.</li>
-              <li>Contact Person Bazar :<br/>Sri Lestariningsih (0813-3107-3894)</li>
-            </ol>
+            <div className="space-y-4 text-sm text-foreground/80 leading-relaxed">
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">1.</span> <span>Pendaftaran peserta bazar wajib melalui link yang telah ditentukan panitia.</span></p>
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">2.</span> <span>Peserta memilih nomor stand dan menyelesaikan administrasi pada link yang telah disediakan panitia:<br/>
+              - Pemilihan nomor stand dan pembayaran stand. Harga per stand <strong>Rp. 1.200.000,-</strong> (diberikan durasi waktu <strong>15 menit</strong> untuk menyelesaikan pembayaran).<br/>
+              - Registrasi akun dan mengisi formulir pendaftaran yang berisikan nama pendaftar, nomor stand, nama tenant, jenis produk, nomor kontak aktif, email aktif, dan file bukti pembayaran melalui link pendaftaran.</span></p>
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">3.</span> <span>Produk yang dijual wajib dalam bentuk kemasan / <strong>takeaway</strong>. Panitia tidak menyediakan tempat untuk <em>dine in</em>.</span></p>
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">4.</span> <span>Peserta bazar <strong>tidak dapat berpindah ke nomor stand yang lain</strong> atau mengambil fasilitas seperti meja/kursi dari stand lain, dan wajib menandatangani surat perjanjian tenan bazar pada tanggal 28 April 2026 pada saat <em>loading in</em> stand.</span></p>
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">5.</span> <span>Jadwal Loading in: <strong>28 April 2026 Pukul 17.00 WIB</strong>. Loading out: <strong>30 April pukul 09.00 WIB</strong>.</span></p>
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">6.</span> <span>Apabila peserta mengundurkan diri, uang pendaftaran stand <strong>tidak dapat dikembalikan</strong>.</span></p>
+            </div>
+            <div className="pt-6 border-t border-border/50 mt-6">
+              <p className="text-xs font-bold text-accent uppercase mb-2">Contact Person Bazar:</p>
+              <a href="https://wa.me/6281331073894" target="_blank" className="flex items-center gap-2 text-sm font-bold text-foreground hover:text-primary transition-colors">
+                 <Phone size={16} className="text-primary" /> Sri Lestariningsih (0813-3107-3894)
+              </a>
+            </div>
           </CardContent>
         </Card>
 
         {/* KARTU 2: Fasilitas */}
-        <Card className="rounded-3xl border-border/60 bg-card/50 shadow-md batik-border overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
+        <Card className="rounded-3xl border-border/60 bg-card/50 shadow-md batik-border overflow-hidden flex flex-col">
           <CardHeader className="bg-primary/10 border-b border-primary/20 py-4 px-6">
             <CardTitle className="flex items-center gap-2 text-accent text-sm uppercase tracking-widest font-black">
               <CheckCircle2 size={18} /> Fasilitas Bazar (18 Stand)
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6 md:p-8 flex-1">
-            <ul className="list-disc pl-5 space-y-2 text-sm text-foreground/80 leading-relaxed font-medium">
-              <li>18 Stand dengan lokasi di halaman parkir Teater Besar ISI Surakarta</li>
-              <li>Tenda 3*3</li>
-              <li>Meja 60 x 120 cm</li>
-              <li>2 Kursi lipat</li>
-              <li>Kelistrikan 450 watt (MCB, Stop Kontak dan lampu)</li>
-              <li>Air</li>
-              <li>Kebersihan</li>
+            <ul className="space-y-3">
+              {[
+                "18 Stand dengan lokasi di halaman parkir Teater Besar ISI Surakarta",
+                "Tenda 3*3",
+                "Meja 60 x 120 cm",
+                "2 Kursi lipat",
+                "Kelistrikan 450 watt (MCB, Stop Kontak dan lampu)",
+                "Air",
+                "Kebersihan"
+              ].map((item, i) => (
+                <li key={i} className="flex gap-3 text-sm text-foreground/80 leading-relaxed">
+                  <CheckCircle2 size={18} className="text-primary shrink-0 mt-0.5" />
+                  <span>{item}</span>
+                </li>
+              ))}
             </ul>
           </CardContent>
         </Card>
 
-        {/* KARTU 3: Tata Tertib & Catatan */}
-        <Card className="rounded-3xl border-border/60 bg-card/50 shadow-md batik-border overflow-hidden flex flex-col hover:shadow-lg transition-shadow">
+        {/* KARTU 3: Tata Tertib */}
+        <Card className="rounded-3xl border-border/60 bg-card/50 shadow-md batik-border overflow-hidden flex flex-col">
           <CardHeader className="bg-background/80 border-b border-border py-4 px-6">
             <CardTitle className="flex items-center gap-2 text-primary text-sm uppercase tracking-widest font-black">
               <AlertTriangle size={18} /> Tata Tertib
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6 md:p-8 space-y-8 flex-1 flex flex-col">
-            <ul className="list-disc pl-5 space-y-3 text-sm text-foreground/80 leading-relaxed font-medium">
-              <li>Bazaar adalah area yang disediakan panitia untuk digunakan hanya untuk menjual produk barang/jasa yang berhubungan dengan yang produk yang telah didaftarkan kepada panitia melalui link pendaftaran yang tersedia.</li>
-              <li>Peserta harus menaati waktu loading in tgl 28 April 2026 pukul 17.00 WIB dan loading out 30 April 2026 pukul 09.00 sesuai dengan ketentuan.</li>
-              <li>
-                Jam operasional stand bazar:
-                <ul className="list-none pl-0 mt-2 space-y-1">
-                  <li>28 April 2026 Pukul 17.00 - 21.00 WIB</li>
-                  <li>29 April 2026 Pukul 05.00 s/d 30 April pukul 09.00 WIB</li>
-                </ul>
-              </li>
-              <li>Apabila ada produk air mineral yang diperjual-belikan WAJIB dari merk Aqua.</li>
-              <li>Peserta tidak diperbolehkan pindah stand, menggunakan area bazar melebihi stand yang ditentukan, mengambil fasilitas dari stand lain, membuat kegaduhan atau keributan dengan semua pihak yang ada di lokasi stand dan dilarang keras merusak fasilitas yang diberikan oleh panitia bazar.</li>
-              <li>Peserta bazar harus menjaga kebersihan stand selama bazar berlangsung</li>
-              <li>Peserta bazar harus menjaga barang berharga dan berbagai perlengkapan peserta bazaar dijaga dengan baik secara pribadi. Apabila terjadi kehilangan dan kerusakan karena keteledoran peserta, hal tersebut di luar tanggung jawab Tim Panitia Bazaar</li>
-            </ul>
+            <div className="space-y-4 text-sm text-foreground/80 leading-relaxed">
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">•</span> <span>Bazaar adalah area yang disediakan panitia untuk digunakan hanya untuk menjual produk barang/jasa yang berhubungan dengan produk yang telah didaftarkan kepada panitia melalui link pendaftaran yang tersedia.</span></p>
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">•</span> <span>Peserta harus menaati waktu loading in tgl 28 April 2026 pukul 17.00 WIB dan loading out 30 April 2026 pukul 09.00 sesuai dengan ketentuan.</span></p>
+              <div className="flex gap-3 items-start">
+                <span className="text-accent font-black">•</span> 
+                <div>
+                  Jam operasional stand bazar:
+                  <ul className="list-none pl-0 mt-2 space-y-1">
+                    <li>- 28 April 2026 Pukul 17.00 - 21.00 WIB</li>
+                    <li>- 29 April 2026 Pukul 05.00 s/d 30 April pukul 09.00 WIB</li>
+                  </ul>
+                </div>
+              </div>
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">•</span> <span>Apabila ada produk air mineral yang diperjual-belikan <strong>WAJIB dari merk Aqua</strong>.</span></p>
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">•</span> <span>Peserta tidak diperbolehkan pindah stand, menggunakan area bazar melebihi stand yang ditentukan, mengambil fasilitas dari stand lain, membuat kegaduhan atau keributan dengan semua pihak yang ada di lokasi stand dan dilarang keras merusak fasilitas yang diberikan oleh panitia bazar.</span></p>
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">•</span> <span>Peserta bazar harus menjaga kebersihan stand selama bazar berlangsung.</span></p>
+              <p className="flex gap-3 items-start"><span className="text-accent font-black">•</span> <span>Peserta bazar harus menjaga barang berharga dan berbagai perlengkapan peserta bazar dijaga dengan baik secara pribadi. Apabila terjadi kehilangan dan kerusakan karena keteledoran peserta, hal tersebut di luar tanggung jawab Tim Panitia Bazaar.</span></p>
+            </div>
 
             <div className="mt-auto bg-destructive/10 border border-destructive/20 p-5 rounded-2xl">
-              <p className="font-black text-destructive text-sm uppercase tracking-widest mb-3">Catatan tambahan bagi peserta</p>
-              <ul className="list-disc pl-4 space-y-3 text-sm text-foreground/90 font-medium leading-relaxed">
+              <p className="font-black text-destructive text-sm uppercase tracking-widest mb-3">Catatan Tambahan Bagi Peserta:</p>
+              <ul className="list-disc pl-5 space-y-3 text-sm text-foreground/90 leading-relaxed">
                 <li>Akses jalan raya antara Pendhapa dan Teater Besar tidak ditutup. Dengan demikian asongan dan pedagang lainnya tetap masuk di area pertunjukan (pendhapa dan teater kapal).</li>
                 <li>Panitia memiliki kewenangan untuk mengingatkan asongan dan pedagang lain apabila masuk di area bazaar. Trotoar area parkir Teater Besar dan area parkir Teater Kecil di luar kewenangan panitia bazaar.</li>
               </ul>
@@ -181,54 +168,57 @@ export default function TenantLandingPage() {
         </Card>
       </div>
 
-      {/* DENAH INTERAKTIF STAND BAZAAR */}
-      <section className="max-w-6xl mx-auto pb-24 px-4">
+      {/* AREA DENAH & PEMILIHAN STAND (DIPISAH) */}
+      <section className="max-w-5xl mx-auto pb-24 px-4">
+        
+        {/* 1. GAMBAR DENAH DI ATAS */}
+        <div className="w-full bg-card rounded-3xl overflow-hidden border-2 border-border shadow-md mb-12">
+          <Image
+            src="/denah-tenant.webp.jpg"
+            alt="Denah Teater Besar ISI Surakarta"
+            width={1200}
+            height={800}
+            className="w-full h-auto object-cover"
+            unoptimized
+          />
+        </div>
+
+        {/* 2. JUDUL PILIH STAND */}
         <SectionTitle 
           title="Pilih Lokasi Stand" 
-          subtitle="Klik pada nomor stand di atas denah untuk melakukan pemesanan. Warna hijau menandakan stand tersedia." 
-          className="mb-12" 
+          subtitle="Cocokkan nomor dengan denah di atas. Warna hijau menandakan stand tersedia untuk dipesan." 
+          className="mb-8" 
         />
         
+        {/* 3. GRID TOMBOL STAND 1-18 DI BAWAHNYA */}
         {loading ? (
            <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div></div>
         ) : stands.length === 0 ? (
            <div className="text-center text-muted-foreground italic py-10">Data denah stand belum tersedia atau gagal dimuat.</div>
         ) : (
-          <div className="relative w-full aspect-[4/3] md:aspect-[16/9] bg-card rounded-3xl overflow-hidden border-4 border-border shadow-2xl">
-            {/* GAMBAR BACKGROUND DENAH */}
-            <Image
-              src="/denah-tenant.webp.jpg" // Mutlak dipastikan nama file ini sudah benar di public/
-              alt="Denah Teater Besar ISI Surakarta"
-              fill
-              className="object-cover md:object-contain opacity-95"
-              unoptimized
-            />
-
-            {/* OVERLAY TOMBOL STAND BERDASARKAN KOORDINAT PERSENTASE */}
-            {stands.map((stand) => {
-              const pos = standPositions[stand.stand_number] || { top: "50%", left: "50%" };
-              
-              return (
-                <button
-                  key={stand.id}
-                  disabled={stand.is_booked}
-                  onClick={() => { setSelectedStand(stand); setIsModalOpen(true); }}
-                  style={{ top: pos.top, left: pos.left }}
-                  className={`absolute -translate-x-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 lg:w-16 lg:h-16 rounded-full flex items-center justify-center transition-all font-black text-xs sm:text-sm md:text-lg lg:text-2xl shadow-lg border-[3px] hover:z-50 ${
-                    stand.is_booked 
-                      ? "bg-secondary/90 border-border cursor-not-allowed text-muted-foreground" 
-                      : "bg-[#c6ff33] border-primary text-primary hover:bg-primary hover:text-primary-foreground hover:scale-125 hover:shadow-[0_0_20px_rgba(198,255,51,0.8)] cursor-pointer"
-                  }`}
-                >
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
+            {stands.map((stand) => (
+              <button
+                key={stand.id}
+                disabled={stand.is_booked}
+                onClick={() => { setSelectedStand(stand); setIsModalOpen(true); }}
+                className={`aspect-square rounded-3xl flex flex-col items-center justify-center transition-all border-2 relative overflow-hidden group ${
+                  stand.is_booked 
+                    ? "bg-secondary/30 border-border/50 cursor-not-allowed" 
+                    : "bg-accent/10 border-accent/30 hover:bg-accent hover:border-accent hover:scale-105 shadow-lg shadow-accent/5"
+                }`}
+              >
+                <span className={`text-3xl sm:text-4xl md:text-5xl font-black transition-colors ${stand.is_booked ? "text-muted-foreground/50" : "text-accent group-hover:text-accent-foreground"}`}>
                   {stand.stand_number}
-                </button>
-              );
-            })}
+                </span>
+                {stand.is_booked && <Badge className="absolute bottom-2 bg-muted-foreground/20 text-muted-foreground border-none text-[8px] sm:text-[10px] px-2 uppercase tracking-widest rounded-full">Booked</Badge>}
+              </button>
+            ))}
           </div>
         )}
       </section>
 
-      {/* Modal Form */}
+      {/* Modal Form Pembayaran */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="bg-card border-border rounded-3xl p-6 sm:p-8 max-w-md w-[95vw]">
           <DialogHeader>
