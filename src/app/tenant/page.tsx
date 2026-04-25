@@ -68,23 +68,22 @@ export default function TenantLandingPage() {
 
   return (
     <PageWrapper>
-      {/* Hero Section */}
-      <section className="text-center pt-10 pb-12 px-4">
-        <p className="text-sm md:text-base font-bold tracking-[0.3em] text-accent uppercase mb-4">Pendaftaran Tenant</p>
-        <h1 className="text-tradisional text-4xl md:text-5xl lg:text-6xl font-bold text-primary leading-tight mb-8 max-w-4xl mx-auto">
-          Bazaar 24Jam Menari<br/>ISI Surakarta
+      {/* HERO SECTION: REVISI UKURAN TEKS MAKSIMAL */}
+      <section className="text-center pt-12 md:pt-20 pb-16 px-4 min-h-[60vh] flex flex-col justify-center">
+        <p className="text-lg md:text-2xl font-black tracking-[0.4em] text-accent uppercase mb-6">Pendaftaran Tenant</p>
+        <h1 className="text-tradisional text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-black text-primary leading-[1.1] mb-10 max-w-5xl mx-auto drop-shadow-sm">
+          Bazaar 24Jam Menari<br/>ISI Surakarta 2026
         </h1>
-        <div className="flex items-center justify-center gap-4 mb-8">
-          <div className="h-px w-24 bg-gradient-to-r from-transparent to-accent/50" />
-          <span className="text-accent text-xl">❦</span>
-          <div className="h-px w-24 bg-gradient-to-l from-transparent to-accent/50" />
+        <div className="flex items-center justify-center gap-6 mb-10">
+          <div className="h-1 w-32 bg-gradient-to-r from-transparent to-accent/80 rounded-full" />
+          <span className="text-accent text-3xl">❦</span>
+          <div className="h-1 w-32 bg-gradient-to-l from-transparent to-accent/80 rounded-full" />
         </div>
-        <p className="text-muted-foreground max-w-2xl mx-auto italic">"Silakan periksa denah dan pilih nomor stand yang tersedia di bawah untuk memulai proses administrasi."</p>
+        <p className="text-muted-foreground max-w-3xl mx-auto italic text-base md:text-lg">"Silakan periksa denah dan pilih nomor stand yang tersedia di bawah untuk memulai proses administrasi."</p>
       </section>
 
-      {/* RUANG INFORMASI: Grid 1 Kolom Vertikal */}
-      <div className="grid grid-cols-1 gap-6 max-w-4xl mx-auto mb-20 px-4">
-        
+      {/* RUANG INFORMASI */}
+      <div className="grid grid-cols-1 gap-6 max-w-4xl mx-auto mb-24 px-4">
         {/* KARTU 1: Syarat & Ketentuan */}
         <Card className="rounded-3xl border-border/60 bg-card/50 shadow-md batik-border overflow-hidden flex flex-col">
           <CardHeader className="bg-background/80 border-b border-border py-4 px-6">
@@ -97,7 +96,6 @@ export default function TenantLandingPage() {
               <p className="flex gap-3 items-start"><span className="text-accent font-black">1.</span> <span>Pendaftaran peserta bazar wajib melalui link yang telah ditentukan panitia.</span></p>
               <p className="flex gap-3 items-start"><span className="text-accent font-black">2.</span> <span>Peserta memilih nomor stand dan menyelesaikan administrasi pada link yang telah disediakan panitia:<br/>
               - Pemilihan nomor stand dan pembayaran stand. Harga per stand <strong>Rp. 1.200.000,-</strong> (diberikan durasi waktu <strong>15 menit</strong> untuk menyelesaikan pembayaran).<br/>
-              {/* REVISI TEKS REGISTRASI */}
               - Registrasi akun dan mengisi formulir pendaftaran yang berisikan nama pendaftar, nama tenant, jenis produk, nomor kontak aktif, dan email aktif melalui link pendaftaran.</span></p>
               <p className="flex gap-3 items-start"><span className="text-accent font-black">3.</span> <span>Produk yang dijual wajib dalam bentuk kemasan / <strong>takeaway</strong>. Panitia tidak menyediakan tempat untuk <em>dine in</em>.</span></p>
               <p className="flex gap-3 items-start"><span className="text-accent font-black">4.</span> <span>Peserta bazar <strong>tidak dapat berpindah ke nomor stand yang lain</strong> atau mengambil fasilitas seperti meja/kursi dari stand lain, dan wajib menandatangani surat perjanjian tenan bazar pada tanggal 28 April 2026 pada saat <em>loading in</em> stand.</span></p>
@@ -122,7 +120,6 @@ export default function TenantLandingPage() {
           </CardHeader>
           <CardContent className="p-6 md:p-8 flex-1">
             <ul className="space-y-3">
-              {/* REVISI ITEM FASILITAS */}
               {[
                 "18 Stand dengan lokasi di halaman parkir Teater Besar ISI Surakarta",
                 "Tenda Lipat 3x3",
@@ -179,11 +176,16 @@ export default function TenantLandingPage() {
         </Card>
       </div>
 
-      {/* AREA DENAH & PEMILIHAN STAND (DIPISAH) */}
+      {/* AREA DENAH & PEMILIHAN STAND */}
       <section className="max-w-5xl mx-auto pb-24 px-4">
         
-        {/* 1. GAMBAR DENAH DI ATAS */}
-        <div className="w-full bg-card rounded-3xl overflow-hidden border-2 border-border shadow-md mb-12">
+        {/* REVISI: JUDUL DENAH */}
+        <div className="text-center mb-10">
+           <h2 className="text-3xl md:text-4xl font-black text-primary tracking-tight">Denah Lokasi Stand</h2>
+           <p className="text-muted-foreground mt-2 font-medium">Halaman Parkir Teater Besar ISI Surakarta</p>
+        </div>
+
+        <div className="w-full bg-card rounded-3xl overflow-hidden border-2 border-border shadow-md mb-16">
           <Image
             src="/denah-tenant.webp"
             alt="Denah Teater Besar ISI Surakarta"
@@ -194,14 +196,12 @@ export default function TenantLandingPage() {
           />
         </div>
 
-        {/* 2. JUDUL PILIH STAND */}
         <SectionTitle 
           title="Pilih Lokasi Stand" 
           subtitle="Cocokkan nomor dengan denah di atas. Warna hijau menandakan stand tersedia untuk dipesan." 
           className="mb-8" 
         />
         
-        {/* 3. GRID TOMBOL STAND 1-18 DI BAWAHNYA */}
         {loading ? (
            <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div></div>
         ) : stands.length === 0 ? (
@@ -229,7 +229,7 @@ export default function TenantLandingPage() {
         )}
       </section>
 
-      {/* Modal Form Pembayaran */}
+      {/* Modal Form Pembayaran (Sama seperti sebelumnya) */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="bg-card border-border rounded-3xl p-6 sm:p-8 max-w-md w-[95vw]">
           <DialogHeader>
