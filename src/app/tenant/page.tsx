@@ -38,15 +38,12 @@ export default function TenantLandingPage() {
       const res = await getTenantStands(); 
       let standsData = Array.isArray(res.data) ? res.data : (Array.isArray(res) ? res : []);
       
-      // INJEKSI FRONTEND: Paksa array menjadi 18 stand agar UI tombol sesuai.
-      // (Bekerja sementara sampai backend Anda benar-benar di-seed menjadi 18)
       const existingNumbers = standsData.map((s: any) => s.stand_number);
       for (let i = 1; i <= 18; i++) {
         if (!existingNumbers.includes(i)) {
           standsData.push({ id: `temp-${i}`, stand_number: i, is_booked: false });
         }
       }
-      // Pastikan urutannya dari 1 sampai 18
       standsData.sort((a: any, b: any) => a.stand_number - b.stand_number);
 
       setStands(standsData); 
@@ -100,7 +97,8 @@ export default function TenantLandingPage() {
               <p className="flex gap-3 items-start"><span className="text-accent font-black">1.</span> <span>Pendaftaran peserta bazar wajib melalui link yang telah ditentukan panitia.</span></p>
               <p className="flex gap-3 items-start"><span className="text-accent font-black">2.</span> <span>Peserta memilih nomor stand dan menyelesaikan administrasi pada link yang telah disediakan panitia:<br/>
               - Pemilihan nomor stand dan pembayaran stand. Harga per stand <strong>Rp. 1.200.000,-</strong> (diberikan durasi waktu <strong>15 menit</strong> untuk menyelesaikan pembayaran).<br/>
-              - Registrasi akun dan mengisi formulir pendaftaran yang berisikan nama pendaftar, nomor stand, nama tenant, jenis produk, nomor kontak aktif, email aktif, dan file bukti pembayaran melalui link pendaftaran.</span></p>
+              {/* REVISI TEKS REGISTRASI */}
+              - Registrasi akun dan mengisi formulir pendaftaran yang berisikan nama pendaftar, nama tenant, jenis produk, nomor kontak aktif, dan email aktif melalui link pendaftaran.</span></p>
               <p className="flex gap-3 items-start"><span className="text-accent font-black">3.</span> <span>Produk yang dijual wajib dalam bentuk kemasan / <strong>takeaway</strong>. Panitia tidak menyediakan tempat untuk <em>dine in</em>.</span></p>
               <p className="flex gap-3 items-start"><span className="text-accent font-black">4.</span> <span>Peserta bazar <strong>tidak dapat berpindah ke nomor stand yang lain</strong> atau mengambil fasilitas seperti meja/kursi dari stand lain, dan wajib menandatangani surat perjanjian tenan bazar pada tanggal 28 April 2026 pada saat <em>loading in</em> stand.</span></p>
               <p className="flex gap-3 items-start"><span className="text-accent font-black">5.</span> <span>Jadwal Loading in: <strong>28 April 2026 Pukul 17.00 WIB</strong>. Loading out: <strong>30 April pukul 09.00 WIB</strong>.</span></p>
@@ -124,11 +122,12 @@ export default function TenantLandingPage() {
           </CardHeader>
           <CardContent className="p-6 md:p-8 flex-1">
             <ul className="space-y-3">
+              {/* REVISI ITEM FASILITAS */}
               {[
                 "18 Stand dengan lokasi di halaman parkir Teater Besar ISI Surakarta",
-                "Tenda 3*3",
-                "Meja 60 x 120 cm",
-                "2 Kursi lipat",
+                "Tenda Lipat 3x3",
+                "Meja Ukuran 60x120cm sejumlah 1 buah",
+                "Kursi lipat 2 buah",
                 "Kelistrikan 450 watt (MCB, Stop Kontak dan lampu)",
                 "Air",
                 "Kebersihan"
