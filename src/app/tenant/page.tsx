@@ -174,7 +174,7 @@ export default function TenantLandingPage() {
         {/* 1. GAMBAR DENAH DI ATAS */}
         <div className="w-full bg-card rounded-3xl overflow-hidden border-2 border-border shadow-md mb-12">
           <Image
-            src="/denah-tenant.webp.jpg"
+            src="/denah-tenant.webp"
             alt="Denah Teater Besar ISI Surakarta"
             width={1200}
             height={800}
