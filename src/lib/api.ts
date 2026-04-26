@@ -136,5 +136,10 @@ export const exportTenantCsv = async () => {
   }
 };
 
+// === TENANT ADMIN STAND MANAGEMENT ===
+export const toggleTenantStand = (id: string) => api.post(`/admin/tenants/stands/${id}/toggle`);
+export const toggleAllTenantStands = (action: 'lock'|'unlock') => api.post(`/admin/tenants/stands/toggle-all`, { action });
+export const manualRegisterTenant = (data: any) => api.post('/admin/tenants/manual-register', data);
+
 // Export mutlak harus paling bawah
 export default api;

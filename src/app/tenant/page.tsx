@@ -66,6 +66,19 @@ export default function TenantLandingPage() {
     } finally { setIsSubmitting(false); }
   };
 
+  // Fungsi Helper Kalkulasi Biaya
+  const calculateTotal = (method: string) => {
+    const basePrice = selectedStand?.price ? Number(selectedStand.price) : 1050000;
+    const payoutFee = 4000;
+    let adminFee = 0;
+
+    if (method === 'gopay') adminFee = Math.ceil(basePrice * 0.02) + payoutFee;
+    else if (method === 'qris') adminFee = Math.ceil(basePrice * 0.007) + payoutFee;
+    else if (method) adminFee = 4000 + payoutFee;
+
+    return { basePrice, adminFee, total: basePrice + adminFee };
+  };
+
   return (
     <PageWrapper>
       {/* HERO SECTION: REVISI UKURAN TEKS MAKSIMAL */}
@@ -229,7 +242,7 @@ export default function TenantLandingPage() {
         )}
       </section>
 
-      {/* Modal Form Pembayaran (Sama seperti sebelumnya) */}
+      {/* Modal Form Pembayaran */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="bg-card border-border rounded-3xl p-6 sm:p-8 max-w-md w-[95vw]">
           <DialogHeader>
@@ -268,6 +281,27 @@ export default function TenantLandingPage() {
                 ))}
               </div>
             </div>
+
+            {/* RINCIAN BIAYA TRANSAKSI */}
+            {formData.payment_method && (
+              <div className="mt-6 p-4 rounded-2xl bg-primary/5 border border-primary/20 space-y-2 animate-in fade-in zoom-in duration-300">
+                <div className="flex justify-between text-xs font-bold text-muted-foreground">
+                  <span>Harga Stand</span>
+                  <span>Rp {calculateTotal(formData.payment_method).basePrice.toLocaleString('id-ID')}</span>
+                </div>
+                <div className="flex justify-between text-xs font-bold text-muted-foreground">
+                  <span>Biaya Layanan & Penarikan</span>
+                  <span>Rp {calculateTotal(formData.payment_method).adminFee.toLocaleString('id-ID')}</span>
+                </div>
+                <div className="pt-3 mt-3 border-t border-primary/20 flex justify-between items-center">
+                  <span className="text-sm font-black text-foreground">Grand Total</span>
+                  <span className="text-xl font-black text-primary italic">
+                    Rp {calculateTotal(formData.payment_method).total.toLocaleString('id-ID')}
+                  </span>
+                </div>
+              </div>
+            )}
+
             <Button type="submit" disabled={isSubmitting || !formData.payment_method} className="w-full py-6 sm:py-7 text-sm sm:text-lg font-bold rounded-full shadow-xl shadow-primary/20 mt-4">
               {isSubmitting ? "Memproses..." : "Selesaikan Pendaftaran →"}
             </Button>
