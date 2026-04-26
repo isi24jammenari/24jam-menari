@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import PageWrapper from "@/components/layout/PageWrapper";
 import SectionTitle from "@/components/shared/SectionTitle";
 import { getTenantAdminData, exportTenantCsv } from "@/lib/api";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, Download, Store, Users, Wallet } from "lucide-react";
@@ -42,7 +42,7 @@ export default function TenantAdminDashboard() {
 
   return (
     <PageWrapper>
-      <div className="py-12 space-y-12">
+      <div className="py-12 space-y-12 max-w-[90rem] mx-auto px-4">
         {/* Header Admin */}
         <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-border pb-10">
           <SectionTitle 
@@ -56,7 +56,7 @@ export default function TenantAdminDashboard() {
             className="rounded-full px-8 py-6 font-bold shadow-xl shadow-primary/20 bg-primary hover:scale-105 transition-all gap-2"
           >
             <Download size={20} />
-            {exporting ? "Mengekspor..." : "Export Data Tenant"}
+            {exporting ? "Mengekspor..." : "Export Data Excel"}
           </Button>
         </div>
 
@@ -85,9 +85,10 @@ export default function TenantAdminDashboard() {
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
-              <thead className="bg-background/50 text-accent uppercase font-black text-[11px] tracking-tighter">
+              <thead className="bg-background/50 text-accent uppercase font-black text-[11px] tracking-tighter whitespace-nowrap">
                 <tr>
                   <th className="px-8 py-5">Stand</th>
+                  <th className="px-8 py-5">Waktu & Metode</th> {/* Kolom Baru */}
                   <th className="px-8 py-5">Brand & Produk</th>
                   <th className="px-8 py-5">Identitas Pendaftar</th>
                   <th className="px-8 py-5">Status</th>
@@ -95,18 +96,30 @@ export default function TenantAdminDashboard() {
               </thead>
               <tbody className="divide-y divide-border/40">
                 {participants.length === 0 ? (
-                  <tr><td colSpan={4} className="px-8 py-20 text-center text-muted-foreground font-bold italic">Belum ada tenant yang lunas.</td></tr>
+                  <tr><td colSpan={5} className="px-8 py-20 text-center text-muted-foreground font-bold italic">Belum ada tenant yang lunas.</td></tr>
                 ) : (
                   participants.map((p) => (
                     <tr key={p.id} className="hover:bg-primary/5 transition-colors group">
                       <td className="px-8 py-6 font-black text-4xl text-primary/40 group-hover:text-primary transition-colors italic">#{p.stand?.stand_number}</td>
+                      
+                      {/* Kolom Waktu & Metode */}
+                      <td className="px-8 py-6 whitespace-nowrap">
+                        <p className="font-bold text-foreground">
+                          {new Date(p.updated_at).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })} WIB
+                        </p>
+                        <Badge variant="outline" className="mt-1.5 bg-secondary/30 text-[10px] uppercase font-black tracking-widest text-primary border-primary/20">
+                          {p.payment_method || "-"}
+                        </Badge>
+                      </td>
+
                       <td className="px-8 py-6">
                         <p className="font-bold text-foreground text-lg uppercase leading-none mb-1">{p.tenant_name || "BELUM ISI FORM"}</p>
                         <p className="text-xs text-muted-foreground font-medium italic">{p.product_type || "-"}</p>
                       </td>
                       <td className="px-8 py-6">
                         <p className="font-bold text-foreground">{p.pendaftar_name}</p>
-                        <p className="text-xs text-primary font-mono">{p.phone}</p>
+                        <p className="text-xs text-muted-foreground">{p.pendaftar_email}</p>
+                        <p className="text-xs text-primary font-mono mt-0.5">{p.phone}</p>
                       </td>
                       <td className="px-8 py-6">
                         <Badge className="bg-accent/10 text-accent border-accent/20 rounded-full px-4 py-1 font-bold uppercase text-[10px]">Success</Badge>
