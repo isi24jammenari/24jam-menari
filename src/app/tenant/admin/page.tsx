@@ -193,49 +193,49 @@ export default function TenantAdminDashboard() {
 
       {/* MODAL MANAJEMEN STAND MANUAL */}
       <Dialog open={isManageModalOpen} onOpenChange={setIsManageModalOpen}>
-        <DialogContent className="bg-card border-border rounded-3xl p-6 max-w-lg w-[95vw]">
+        <DialogContent className="bg-card border-border rounded-3xl p-8 max-w-2xl w-[95vw]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-black text-primary border-b border-border/50 pb-4 mb-2">Kelola Stand #{manageStand?.stand_number}</DialogTitle>
+            <DialogTitle className="text-3xl font-black text-primary border-b border-border/50 pb-4 mb-2">Kelola Stand #{manageStand?.stand_number}</DialogTitle>
           </DialogHeader>
           
           {manageStand?.is_booked ? (
-            <div className="space-y-6 py-4 text-center">
-              <div className="w-16 h-16 bg-destructive/10 text-destructive rounded-full flex items-center justify-center mx-auto mb-2"><Lock size={32} /></div>
-              <p className="text-sm font-medium">Stand ini sedang dalam status <strong>Terkunci atau Sudah Disewa</strong>.</p>
-              <Button onClick={() => handleToggleStand(manageStand.id)} disabled={isProcessing} variant="outline" className="w-full border-primary text-primary font-bold py-6 rounded-xl hover:bg-primary hover:text-white">
+            <div className="space-y-6 py-6 text-center">
+              <div className="w-20 h-20 bg-destructive/10 text-destructive rounded-full flex items-center justify-center mx-auto mb-4"><Lock size={40} /></div>
+              <p className="text-base font-medium">Stand ini sedang dalam status <strong>Terkunci atau Sudah Disewa</strong>.</p>
+              <Button onClick={() => handleToggleStand(manageStand.id)} disabled={isProcessing} variant="outline" className="w-full border-primary text-primary font-bold py-7 text-lg rounded-xl hover:bg-primary hover:text-white">
                 {isProcessing ? "Memproses..." : "Buka Slot Ini (Tersedia Kembali)"}
               </Button>
-              <p className="text-[10px] text-destructive italic mt-2">*Hati-hati, membuka slot yang sudah dibayar oleh tenant akan memicu bentrok pesanan ganda.</p>
+              <p className="text-xs text-destructive italic mt-4">*Hati-hati, membuka slot yang sudah dibayar oleh tenant akan memicu bentrok pesanan ganda.</p>
             </div>
           ) : (
-            <div className="space-y-6 pt-2">
-              <div className="bg-destructive/5 border border-destructive/20 p-4 rounded-xl flex justify-between items-center gap-4">
-                <span className="text-[11px] font-bold text-destructive leading-tight">Tutup stand ini agar tidak bisa dipesan dari halaman pendaftaran publik?</span>
-                <Button variant="destructive" size="sm" disabled={isProcessing} onClick={() => handleToggleStand(manageStand.id)} className="font-black whitespace-nowrap">
+            <div className="space-y-6 pt-4">
+              <div className="bg-destructive/5 border border-destructive/20 p-5 rounded-xl flex justify-between items-center gap-4">
+                <span className="text-sm font-bold text-destructive leading-tight">Tutup stand ini agar tidak bisa dipesan dari halaman pendaftaran publik?</span>
+                <Button variant="destructive" size="default" disabled={isProcessing} onClick={() => handleToggleStand(manageStand.id)} className="font-black whitespace-nowrap px-6">
                   Kunci Slot
                 </Button>
               </div>
               
-              <div className="relative"><div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border/50" /></div><div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-muted-foreground font-black">Atau Pendaftaran Manual</span></div></div>
+              <div className="relative my-6"><div className="absolute inset-0 flex items-center"><span className="w-full border-t border-border/50" /></div><div className="relative flex justify-center text-sm uppercase"><span className="bg-card px-4 text-muted-foreground font-black tracking-widest">Atau Pendaftaran Manual</span></div></div>
 
-              <form onSubmit={handleManualRegister} className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
-                   <input required placeholder="Nama Pendaftar *" value={manualForm.pendaftar_name} onChange={e=>setManualForm({...manualForm, pendaftar_name: e.target.value})} className="w-full px-4 py-2.5 rounded-lg border-2 bg-background focus:ring-2 focus:ring-primary text-xs" />
-                   <input required placeholder="No. WhatsApp *" value={manualForm.phone} onChange={e=>setManualForm({...manualForm, phone: e.target.value})} className="w-full px-4 py-2.5 rounded-lg border-2 bg-background focus:ring-2 focus:ring-primary text-xs" />
+              <form onSubmit={handleManualRegister} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                   <input required placeholder="Nama Pendaftar *" value={manualForm.pendaftar_name} onChange={e=>setManualForm({...manualForm, pendaftar_name: e.target.value})} className="w-full px-5 py-3.5 rounded-xl border-2 bg-background focus:ring-2 focus:ring-primary text-sm" />
+                   <input required placeholder="No. WhatsApp *" value={manualForm.phone} onChange={e=>setManualForm({...manualForm, phone: e.target.value})} className="w-full px-5 py-3.5 rounded-xl border-2 bg-background focus:ring-2 focus:ring-primary text-sm" />
                 </div>
-                <input type="email" placeholder="Email (Opsional)" value={manualForm.pendaftar_email} onChange={e=>setManualForm({...manualForm, pendaftar_email: e.target.value})} className="w-full px-4 py-2.5 rounded-lg border-2 bg-background focus:ring-2 focus:ring-primary text-xs" />
-                <div className="grid grid-cols-2 gap-3">
-                   <input required placeholder="Nama Brand/Tenant *" value={manualForm.tenant_name} onChange={e=>setManualForm({...manualForm, tenant_name: e.target.value})} className="w-full px-4 py-2.5 rounded-lg border-2 bg-background focus:ring-2 focus:ring-primary text-xs" />
-                   <input required placeholder="Jenis Produk *" value={manualForm.product_type} onChange={e=>setManualForm({...manualForm, product_type: e.target.value})} className="w-full px-4 py-2.5 rounded-lg border-2 bg-background focus:ring-2 focus:ring-primary text-xs" />
+                <input type="email" placeholder="Email (Opsional)" value={manualForm.pendaftar_email} onChange={e=>setManualForm({...manualForm, pendaftar_email: e.target.value})} className="w-full px-5 py-3.5 rounded-xl border-2 bg-background focus:ring-2 focus:ring-primary text-sm" />
+                <div className="grid grid-cols-2 gap-4">
+                   <input required placeholder="Nama Brand/Tenant *" value={manualForm.tenant_name} onChange={e=>setManualForm({...manualForm, tenant_name: e.target.value})} className="w-full px-5 py-3.5 rounded-xl border-2 bg-background focus:ring-2 focus:ring-primary text-sm" />
+                   <input required placeholder="Jenis Produk *" value={manualForm.product_type} onChange={e=>setManualForm({...manualForm, product_type: e.target.value})} className="w-full px-5 py-3.5 rounded-xl border-2 bg-background focus:ring-2 focus:ring-primary text-sm" />
                 </div>
-                <div>
-                   <select value={manualForm.payment_method} onChange={e=>setManualForm({...manualForm, payment_method: e.target.value})} className="w-full px-4 py-2.5 rounded-lg border-2 bg-background focus:ring-2 focus:ring-primary text-xs font-bold font-mono">
+                <div className="pt-2">
+                   <select value={manualForm.payment_method} onChange={e=>setManualForm({...manualForm, payment_method: e.target.value})} className="w-full px-5 py-4 rounded-xl border-2 bg-background focus:ring-2 focus:ring-primary text-sm font-bold font-mono">
                       <option value="CASH">💵 DIBAYAR CASH LUNAS</option>
                       <option value="MANUAL_TRANSFER">💳 TRANSFER MANUAL PANITIA</option>
                       <option value="UNDANGAN_FREE">🎁 GRATIS / UNDANGAN KHUSUS</option>
                    </select>
                 </div>
-                <Button type="submit" disabled={isProcessing} className="w-full mt-2 py-6 rounded-xl font-bold bg-accent hover:bg-accent/80 text-accent-foreground shadow-lg">
+                <Button type="submit" disabled={isProcessing} className="w-full mt-4 py-7 text-lg rounded-xl font-bold bg-accent hover:bg-accent/80 text-accent-foreground shadow-lg">
                   {isProcessing ? "Menyimpan Data..." : "Simpan Pendaftaran Manual"}
                 </Button>
               </form>
