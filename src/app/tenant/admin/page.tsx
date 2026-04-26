@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { LayoutDashboard, Download, Store, Users, Wallet, Lock, Unlock, Settings2, ShieldAlert, UserCheck, Edit3 } from "lucide-react";
+import { LayoutDashboard, Download, Store, Users, Wallet, Lock, Unlock, Settings2, ShieldAlert, UserCheck, Edit3, Copy } from "lucide-react";
 
 export default function TenantAdminDashboard() {
   const router = useRouter();
@@ -138,17 +138,23 @@ export default function TenantAdminDashboard() {
           </div>
         </Card>
 
-        {/* Tabel Tenant Sukses (Sama seperti sebelumnya) */}
+        {/* Tabel Tenant Sukses */}
         <Card className="bg-card/50 border border-border/60 rounded-3xl overflow-hidden batik-border">
           <div className="p-6 bg-primary/5 border-b border-border flex items-center gap-2">
             <LayoutDashboard size={18} className="text-primary" />
             <p className="font-bold text-sm uppercase tracking-widest">Detail Pendaftar Lunas</p>
           </div>
           <div className="overflow-x-auto">
-             {/* Tampilkan tabel participants dari API */}
              <table className="w-full text-sm text-left">
                 <thead className="bg-background/50 text-accent uppercase font-black text-[11px]">
-                    <tr><th className="px-8 py-5">Stand</th><th className="px-8 py-5">Waktu</th><th className="px-8 py-5">Brand</th><th className="px-8 py-5">Pendaftar</th><th className="px-8 py-5">Tipe</th></tr>
+                    <tr>
+                      <th className="px-8 py-5">Stand</th>
+                      <th className="px-8 py-5">Waktu</th>
+                      <th className="px-8 py-5">Brand</th>
+                      <th className="px-8 py-5">Pendaftar</th>
+                      <th className="px-8 py-5">Kode Akses</th> {/* Judul Baru */}
+                      <th className="px-8 py-5">Tipe</th>
+                    </tr>
                 </thead>
                 <tbody className="divide-y divide-border/40">
                     {participants.map(p => (
@@ -157,6 +163,26 @@ export default function TenantAdminDashboard() {
                             <td className="px-8 py-6 font-bold">{new Date(p.updated_at).toLocaleString('id-ID', {dateStyle:'short', timeStyle:'short'})}</td>
                             <td className="px-8 py-6"><p className="font-black uppercase">{p.tenant_name}</p></td>
                             <td className="px-8 py-6"><p className="font-bold">{p.pendaftar_name}</p><p className="text-xs text-muted-foreground">{p.phone}</p></td>
+                            
+                            {/* KOLOM BARU: KODE AKSES + COPY BUTTON */}
+                            <td className="px-8 py-6">
+                                <div className="flex items-center gap-2">
+                                    <code className="bg-background border-2 border-border px-2 py-1 rounded text-primary font-black text-xs tracking-widest shadow-sm">
+                                        {p.access_code}
+                                    </code>
+                                    <button 
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(p.access_code);
+                                            alert(`Kode ${p.access_code} berhasil disalin!`);
+                                        }}
+                                        className="p-1.5 hover:bg-primary/10 rounded-lg text-muted-foreground hover:text-primary transition-all"
+                                        title="Salin Kode"
+                                    >
+                                        <Copy size={14} />
+                                    </button>
+                                </div>
+                            </td>
+
                             <td className="px-8 py-6">
                                 <Badge className={p.midtrans_order_id.startsWith('MANUAL-') ? "bg-blue-500" : "bg-destructive"}>
                                     {p.midtrans_order_id.startsWith('MANUAL-') ? "MANUAL" : "USER ASLI"}
